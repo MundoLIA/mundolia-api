@@ -17,12 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-Route::get('/schools', function () {
-    $schools = App\Models\School::all();
-    return $schools;
-});
-
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/schools', 'SchoolController@index')->name('schools.index');

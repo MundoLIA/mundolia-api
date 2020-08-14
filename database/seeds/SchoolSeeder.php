@@ -11,9 +11,6 @@ class SchoolSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('schools')->insert([
-                    'id' => 'S00000000000000000001',
-                    'name' => 'LIA Collage',
-               ]);
+        factory(App\School::class, 10)->create();
     }
 }
