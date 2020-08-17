@@ -18,7 +18,7 @@ class CreateContactsTable extends Migration
             //foreign keys
             $table->string('school_id')->index();
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
-            $table->string('user_id')->index();
+            $table->unsignedBigInteger('user_id')->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('contact_type_id')->index();
             $table->foreign('contact_type_id')->references('id')->on('contact_type')->onDelete('cascade');

@@ -16,7 +16,7 @@ class CreateOperationsLogTable extends Migration
         Schema::create('operations_log', function (Blueprint $table) {
             $table->string('id', 100)->primary();
             //foreign keys
-            $table->string('user_id')->index();
+            $table->unsignedBigInteger('user_id')->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('action_id')->index();
             $table->foreign('action_id')->references('id')->on('actions')->onDelete('cascade');

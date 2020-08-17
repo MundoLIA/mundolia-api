@@ -23,7 +23,7 @@ class CreateLicensesTable extends Migration
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->unsignedBigInteger('license_type_id')->index();
             $table->foreign('license_type_id')->references('id')->on('licenses_type')->onDelete('cascade');
-            $table->string('user_id')->index();
+            $table->unsignedBigInteger('user_id')->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             //extra info
             $table->integer('studens_limit');
