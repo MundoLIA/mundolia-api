@@ -21,4 +21,5 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/schools', 'SchoolController@index')->name('schools.index');
+
+

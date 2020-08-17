@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\School;
 use Illuminate\Http\Request;
+use Psy\Util\Str;
+use function MongoDB\BSON\toJSON;
 
 class SchoolController extends Controller
 {
@@ -14,7 +16,90 @@ class SchoolController extends Controller
      */
     public function index()
     {
-        $schools = School::paginate();
-        return view('schools.index', compact('schools'));
+        $schools = School::get()->toJson(JSON_PRETTY_PRINT);
+        return response($schools, 200);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+        ]);
+
+        $school = School::create($request->all());
+        //return $escuela;
+
+        return response()->json([
+            $school,
+            "message" => "Escuela creada existosamente",
+        ], 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\School  $school
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $school = School::find($id)->toJson(JSON_PRETTY_PRINT);
+        return response($school, 200);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\School  $school
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(School $school)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\School  $school
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, School $school)
+    {
+        $school->update($request->all());
+
+        return response()->json($school, 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\School  $school
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(School $school, $id)
+    {
+        School::destroy($id);
+
+        return response()->json([
+            $school,
+            "message" => "Escuela eliminada existosamente",
+        ], 204);
     }
 }
