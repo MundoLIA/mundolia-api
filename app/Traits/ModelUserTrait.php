@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 
 

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\School;
+use App\License;
 use Illuminate\Http\Request;
 
-class SchoolController extends Controller
+class LicenseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,8 @@ class SchoolController extends Controller
      */
     public function index()
     {
-        $schools = School::get()->toJson(JSON_PRETTY_PRINT);
-        return response($schools, 200);
+        $licenses = License::get()->toJson(JSON_PRETTY_PRINT);
+        return response($licenses, 200);
     }
 
     /**
@@ -25,6 +25,7 @@ class SchoolController extends Controller
      */
     public function create()
     {
+
     }
 
     /**
@@ -36,37 +37,40 @@ class SchoolController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'titular' => 'required',
+            'email_admin' => 'required',
+            'school_id' => 'required',
+            'license_type_id' =>'required',
+            'user_id' => 'required',
+            'studens_limit' => 'required',
         ]);
 
-        $school = School::create($request->all());
+        $licencia = License::create($request->all());
 
         return response()->json([
-            $school,
-            "message" => "Escuela creada existosamente",
+            $licencia,
+            "message" => "Nueva licencia creada existosamente",
         ], 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\School  $school
-     * @param  int $id
+     * @param  \App\License  $license
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(License $license)
     {
-        $school = School::find($id);
-        return response($school, 200);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\School  $school
+     * @param  \App\License  $license
      * @return \Illuminate\Http\Response
      */
-    public function edit(School $school)
+    public function edit(License $license)
     {
         //
     }
@@ -74,29 +78,23 @@ class SchoolController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param  int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\License  $license
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, License $license)
     {
-        $school = School::findOrFail($id);
-        $school->update($request->all());
-
-        return response()->json($school, 200);
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\School  $school
-     * @param  int $id
+     * @param  \App\License  $license
      * @return \Illuminate\Http\Response
      */
-    public function destroy(School $school, $id)
+    public function destroy(License $license)
     {
-        $school::destroy($id);
-
-        return response()->json(null, 204);
+        //
     }
 }

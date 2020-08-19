@@ -26,8 +26,14 @@ Route::post('usuarios', 'UserController@store');
 Route::put('usuarios/{uuid}', 'UserController@update');
 Route::delete('usuarios/{uuid}', 'UserController@destroy');
 
+Route::get('tipo_licencias', 'LicenseTypeController@index');
+Route::get('tipo_licencias/{id}', 'LicenseTypeController@show');
+Route::post('tipo_licencias', 'LicenseTypeController@store');
+Route::put('tipo_licencias/{id}', 'LicenseTypeController@update');
+Route::delete('tipo_licencias/{id}', 'LicenseTypeController@destroy');
+
 Route::get('licencias', 'LicenseController@index');
-Route::get('licencias/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'LicenseController@show']);
+Route::get('licencias/{id}', 'LicenseController@show');
 Route::post('licencias', 'LicenseController@store');
-Route::put('licencias/{uuid}', 'LicenseController@update');
-Route::delete('licencias/{uuid}', 'LicenseController@destroy');
+Route::put('licencias/{id}', 'LicenseController@update');
+Route::delete('licencias/{id}', 'LicenseController@destroy');

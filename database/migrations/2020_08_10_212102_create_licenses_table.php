@@ -28,7 +28,7 @@ class CreateLicensesTable extends Migration
             //extra info
             $table->integer('studens_limit');
             $table->dateTime('purchase_at', 0);
-            $table->boolean('is_current');
+            $table->boolean('is_current')->default(true);
             $table->dateTime('expiration_date', 0);
             $table->timestamps();
         });
