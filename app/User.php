@@ -2,18 +2,20 @@
 
 namespace App;
 
+use App\Traits\ModelUserTrait;
+use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Model;
-use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use Notifiable, ModelUserTrait;
+
     protected $guarded = [];
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'uuid', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password',
     ];
 
     /**

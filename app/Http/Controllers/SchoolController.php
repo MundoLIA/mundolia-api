@@ -42,7 +42,6 @@ class SchoolController extends Controller
         ]);
 
         $school = School::create($request->all());
-        //return $escuela;
 
         return response()->json([
             $school,
@@ -54,11 +53,12 @@ class SchoolController extends Controller
      * Display the specified resource.
      *
      * @param  \App\School  $school
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $school = School::find($id)->toJson(JSON_PRETTY_PRINT);
+        $school = School::find($id);
         return response($school, 200);
     }
 
@@ -76,12 +76,13 @@ class SchoolController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\School  $school
+     * @param \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, School $school)
+    public function update(Request $request, $id)
     {
+        $school = School::findOrFail($id);
         $school->update($request->all());
 
         return response()->json($school, 200);
@@ -91,15 +92,13 @@ class SchoolController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\School  $school
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(School $school, $id)
     {
-        School::destroy($id);
+        $school::destroy($id);
 
-        return response()->json([
-            $school,
-            "message" => "Escuela eliminada existosamente",
-        ], 204);
+        return response()->json(null, 204);
     }
 }

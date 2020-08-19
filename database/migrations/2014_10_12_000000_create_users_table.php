@@ -24,13 +24,14 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('id_school')->nullable();
             $table->integer('grade');
-            $table->string('avatar');
+            $table->string('avatar')->nullable();
             $table->string('password');
-            $table->boolean('active')->default(false);
+            $table->boolean('active')->default(true);
 
             //email
             $table->boolean('verified_email')->default(false);
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

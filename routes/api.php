@@ -14,17 +14,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::apiResource('/escuelas', 'SchoolController');
-
-Route::get('/escuelas/{id}', 'SchoolController@show');
-
 Route::get('escuelas', 'SchoolController@index');
-Route::get('escuelas    /{id}', 'SchoolController@show');
+Route::get('escuelas/{id}', 'SchoolController@show');
 Route::post('escuelas', 'SchoolController@store');
 Route::put('escuelas/{id}', 'SchoolController@update');
-Route::delete('escuelas/{id}', 'SchoolController@delete');
+Route::delete('escuelas/{id}', 'SchoolController@destroy');
 
-//Route::get('/schools', 'SchoolController@index')->name('schools.index');
-//Route::get('/schools', 'SchoolController@create')->name('schools.create');
-//Route::get('/schools', 'SchoolController@')->name('schools.index');
+Route::get('usuarios', 'UserController@index');
+Route::get('usuarios/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'UserController@show']);
+Route::post('usuarios', 'UserController@store');
+Route::put('usuarios/{uuid}', 'UserController@update');
+Route::delete('usuarios/{uuid}', 'UserController@destroy');
 
+Route::get('licencias', 'LicenseController@index');
+Route::get('licencias/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'LicenseController@show']);
+Route::post('licencias', 'LicenseController@store');
+Route::put('licencias/{uuid}', 'LicenseController@update');
+Route::delete('licencias/{uuid}', 'LicenseController@destroy');
