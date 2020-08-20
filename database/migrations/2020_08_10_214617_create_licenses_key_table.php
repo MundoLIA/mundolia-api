@@ -17,8 +17,8 @@ class CreateLicensesKeyTable extends Migration
             $table->string('id', 100)->primary();
             $table->string('license_id')->index();
             $table->foreign('license_id')->references('id')->on('licenses')->onDelete('cascade');
-            $table->unsignedBigInteger('user_id')->index();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->uuid('user_id')->index();
+            $table->foreign('user_id')->references('uuid')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
