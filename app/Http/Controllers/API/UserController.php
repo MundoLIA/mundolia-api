@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use mysql_xdevapi\Exception;
 use Validator;
 class UserController extends Controller
 {
@@ -14,13 +15,44 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function login(){
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-            $user = Auth::user();
-            $success['token'] =  $user->createToken('MyApp')-> accessToken;
-            return response()->json(['success' => $success], $this-> successStatus);
-        }
-        else{
-            return response()->json(['error'=>'Unauthorised'], 401);
+        try {
+            if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+                $user = Auth::user();
+                $success['access_token'] = $user->createToken('MyApp')->accessToken;
+
+                $dataUser['displayName'] = $user->name;
+                $dataUser['email'] = $user->email;
+                $dataUser['photoURL'] = $user->email;
+                $dataUser['role'] = ['user'];
+                $dataUser['uuid'] = $user->id;
+
+                $success['user'] = (['data' =>$dataUser]);
+
+
+                return response()->json($success, $this->successStatus);
+            } else {
+                $error["code"] = 'INVALID_PASSWORD';
+                $error["message"] = "The password is invalid or the user does not have a password.";
+
+                $errors["message"] = "The password is invalid or the user does not have a password.";
+                $errors["domain"] = "global";
+                $errors["reason"] = "invalid";
+
+                $error["errors"] =[$errors];
+
+                return response()->json(['error' => $error], 400);
+            }
+        }catch (Exception $e){
+            $error["code"] = 'INVALID_PASSWORD';
+            $error["message"] = "The password is invalid or the user does not have a password.";
+
+            $errors["message"] = "The password is invalid or the user does not have a password.";
+            $errors["domain"] = "global";
+            $errors["reason"] = "invalid";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 500);
         }
     }
     /**
@@ -37,23 +69,83 @@ class UserController extends Controller
             'c_password' => 'required|same:password',
         ]);
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "The field is invalid or the user does not have a password.";
+
+            $errors["message"] = ['error'=>$validator->errors()];
+            $errors["domain"] = "global";
+            $errors["reason"] = "invalid";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 401);
         }
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')-> accessToken;
-        $success['name'] =  $user->name;
-        return response()->json(['success'=>$success], $this-> successStatus);
+
+        try{
+            $input = $request->all();
+            $input['password'] = bcrypt($input['password']);
+            $user = User::create($input);
+
+            $success['access_token'] = $user->createToken('MyApp')->accessToken;
+
+            $dataUser['displayName'] = $user->name;
+            $dataUser['email'] = $user->email;
+            $dataUser['photoURL'] = $user->email;
+            $dataUser['role'] = ['user'];
+            $dataUser['uuid'] = $user->id;
+
+            $success['user'] = (['data' =>$dataUser]);
+
+
+            return response()->json($success, $this->successStatus);
+
+        }catch (Exception $e){
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "The field is invalid or the user does not have a password.";
+
+            $errors["message"] = "The fields is invalid or the user does not have a password.";
+            $errors["domain"] = "global";
+            $errors["reason"] = "invalid";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 500);
+        }
+
     }
     /**
      * details api
      *
      * @return \Illuminate\Http\Response
      */
-    public function details()
+    public function accessToken()
     {
-        $user = Auth::user();
-        return response()->json(['success' => $user], $this-> successStatus);
+        try{
+            $user = Auth::user();
+
+            $success['access_token'] = $user->createToken('MyApp')->accessToken;
+
+            $dataUser['displayName'] = $user->name;
+            $dataUser['email'] = $user->email;
+            $dataUser['photoURL'] = $user->email;
+            $dataUser['role'] = ['user'];
+            $dataUser['uuid'] = $user->id;
+
+            $success['user'] = (['data' =>$dataUser]);
+            return response()->json($success, $this->successStatus);
+        }catch (Exception $e){
+            $error["code"] = 'INVALID_TOKEN';
+            $error["message"] = "The token is invalid.";
+
+            $errors["message"] = "The token is invalid.";
+            $errors["domain"] = "global";
+            $errors["reason"] = "invalid";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 500);
+
+        }
+
     }
 }
