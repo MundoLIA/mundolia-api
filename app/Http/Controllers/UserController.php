@@ -90,12 +90,13 @@ class UserController extends Controller
      * @param  uuid $uuid
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $uuid)
+    public function update($uuid)
     {
-        $user = User::where('uuid','like','%'.$uuid.'%')->firstOrFail();
-        $user->update($request->all());
+        User::updateData($uuid);
 
-        return response()->json($user, 200);
+        return response()->json([
+            "message" => "El usuario ha sido actualizado",
+        ], 200);
     }
 
     /**

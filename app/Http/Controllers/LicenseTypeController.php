@@ -80,13 +80,11 @@ class LicenseTypeController extends Controller
      * @param  \App\LicenseType  $licenseType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update($id)
     {
-        $licenseType= LicenseType::findOrFail($id);
-        $licenseType->update($request->all());
+        LicenseType::updateDataId($id);
 
         return response()->json([
-            $licenseType,
             "message" => "Se ha actualizado existosamente",
         ], 201);
     }

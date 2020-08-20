@@ -3,12 +3,13 @@
 namespace App;
 
 use App\Traits\ModelLicenseTrait;
+use App\Traits\UpdateGenericClass;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\Model;
 
 class License extends Model
 {
-    use Uuid, ModelLicenseTrait;
+    use Uuid, ModelLicenseTrait, UpdateGenericClass;
 
     protected $table = 'licenses';
     protected $guarded = [];

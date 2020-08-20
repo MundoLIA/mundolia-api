@@ -45,10 +45,10 @@ class LicenseController extends Controller
             'studens_limit' => 'required',
         ]);
 
-        $licencia = License::create($request->all());
+        $license = License::create($request->all());
 
         return response()->json([
-            $licencia,
+            $license,
             "message" => "Nueva licencia creada existosamente",
         ], 201);
     }
@@ -57,22 +57,25 @@ class LicenseController extends Controller
      * Display the specified resource.
      *
      * @param  \App\License  $license
+     * @param  uuid $id
      * @return \Illuminate\Http\Response
      */
-    public function show(License $license)
+    public function show($id)
     {
-        //
+        $licenseType = License::find($id);
+        return response($licenseType, 200);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\License  $license
+     * @param  uuid $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(License $license)
+    public function edit($id)
     {
-        //
+
     }
 
     /**
@@ -80,21 +83,32 @@ class LicenseController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\License  $license
+     * @param uuid $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, License $license)
+    public function update($id)
     {
-        //
+        License::updateDataId($id);
+
+        return response()->json([
+            "message" => "Se ha actualizado la licencia existosamente",
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\License  $license
+     * @param  uuid $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(License $license)
+    public function destroy(License $license, $id)
     {
-        //
+        $license::destroy($id);
+
+        return response()->json([
+            $license,
+            "message" => "Se ha eliminado la licencia",
+        ], 200);
     }
 }

@@ -78,12 +78,13 @@ class SchoolController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        $school = School::findOrFail($id);
-        $school->update($request->all());
+        School::updateDataId($id);
 
-        return response()->json($school, 200);
+        return response()->json([
+            "message" => "Se ha actualizado la escuela existosamente",
+        ], 200);
     }
 
     /**
