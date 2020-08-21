@@ -3,7 +3,6 @@
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use App\License;
-use Illuminate\Support\Str;
 
 class LicenseSeeder extends Seeder
 {
@@ -18,9 +17,9 @@ class LicenseSeeder extends Seeder
         License::create([
             'titular' => 'Colegio Lia',
             'email_admin' => 'test@email.com',
-            'school_id' => '8LXJlwzctCqk5HhBb96I1yNYV9QatrYHodgT',
+            'school_id' => '029cb405-9f65-461a-9019-ad4fd4d2c27a',
             'license_type_id' =>'1',
-            'user_id' => '30925d13-c2f1-4ea9-a71b-4e183270bb2d',
+            'user_id' => 'c1a22696-0769-4bce-bdf9-7ab796cda251',
             'studens_limit' => '500',
             'purchase_at' => Carbon::now(),
             'expiration_date' =>  Carbon::now()->add(1, 'year'),

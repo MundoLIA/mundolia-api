@@ -15,7 +15,7 @@ class CreateLicensesTable extends Migration
     {
         Schema::create('licenses', function (Blueprint $table) {
 
-            $table->string('id', 100)->primary();
+            $table->uuid('id')->primary();
             $table->string('titular');
             $table->string('email_admin')->unique();
             //foreign keys
