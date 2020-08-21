@@ -14,8 +14,8 @@ class CreateSchoolsTable extends Migration
     public function up()
     {
         Schema::create('schools', function (Blueprint $table) {
-            $table->uuid('id', 100)->primary();
-            $table->string('name');
+            $table->uuid('id')->primary();
+            $table->string('name')->index();
             $table->timestamps();
         });
     }

@@ -44,3 +44,15 @@ Route::get('licencias/{id}', 'LicenseController@show');
 Route::post('licencias', 'LicenseController@store');
 Route::put('licencias/{id}', 'LicenseController@update');
 Route::delete('licencias/{id}', 'LicenseController@destroy');
+
+Route::get('key/licencias', 'LicenseKeyController@index');
+Route::get('key/licencias/{id}', 'LicenseKeyController@show');
+Route::post('key/licencias', 'LicenseKeyController@store');
+Route::put('key/licencias/{id}', 'LicenseKeyController@update');
+Route::delete('key/licencias/{id}', 'LicenseKeyController@destroy');
+
+Route::get('tipo/contacto', 'ContactTypeController@index');
+Route::get('tipo/contacto/{id}', 'ContactTypeController@show');
+Route::post('tipo/contacto', 'ContactTypeController@store');
+Route::put('tipo/contacto/{id}', 'ContactTypeController@update');
+Route::delete('tipo/contacto/{id}', 'ContactTypeController@destroy');

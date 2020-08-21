@@ -3,11 +3,12 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
 use App\School;
+use Ramsey\Uuid\Uuid;
 use Faker\Generator as Faker;
 
 $factory->define(School::class, function (Faker $faker) {
     return [
-        'id' => Str::random(36),
+        'id' => Uuid::uuid4(),
         'name' => $faker->name,
     ];
 });
