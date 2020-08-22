@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendgridMail;
+use Illuminate\Support\Facades\Mail;
 use App\User;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -38,9 +40,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
-
         $request->validate([
+            'username' => 'required',
             'name' => 'required',
             'last_name' => 'required',
             'second_last_name' => 'required',
@@ -49,11 +50,22 @@ class UserController extends Controller
             'grade' => 'required'
         ]);
 
+        $data = ([
+            'uuid' => $request->get('uuid'),
+            'username' => $request->get('username'),
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'grade' => $request->get('grade'),
+            'password' => $request->get('password')
+        ]);
+
         $user = User::create($request->all());
+
+        Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
 
         return response()->json([
             $user,
-            "message" => "El estudiante ha sido registrado existosamente",
+            "message" => "Se ha registrado un nuevo usuario",
         ], 201);
     }
 
@@ -115,6 +127,8 @@ class UserController extends Controller
             $user,
             "message" => "El estudiante ha sido eliminado existosamente",
         ], 200);
+
+
     }
 
 }

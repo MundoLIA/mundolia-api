@@ -17,7 +17,7 @@ class User extends Authenticatable
     protected $guarded = [];
 
     protected $fillable = [
-        'uuid', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
+        'uuid', 'username', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
     ];
 
     /**

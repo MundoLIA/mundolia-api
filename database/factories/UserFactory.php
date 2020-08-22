@@ -29,7 +29,6 @@ $factory->define(User::class, function (Faker $faker) {
         'grade' => $faker->randomNumber(),
         'avatar' => '',
         'password' => "123456",
-        'last_login' => Carbon::now(),
         'verified_email' => true,
         'remember_token' => Str::random(10),
     ];

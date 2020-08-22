@@ -56,3 +56,15 @@ Route::get('tipos/contacto/{id}', 'ContactTypeController@show');
 Route::post('tipos/contacto', 'ContactTypeController@store');
 Route::put('tipos/contacto/{id}', 'ContactTypeController@update');
 Route::delete('tipos/contacto/{id}', 'ContactTypeController@destroy');
+
+Route::get('contacto', 'ContactController@index');
+Route::get('contacto/{id}', 'ContactController@show');
+Route::post('contacto', 'ContactController@store');
+Route::put('contacto/{id}', 'ContactController@update');
+Route::delete('contacto/{id}', 'ContactController@destroy');
+
+Route::get('roles', 'RoleController@index');
+Route::get('roles/{id}', 'RoleController@show');
+Route::post('roles', 'RoleController@store');
+Route::put('roles/{id}', 'RoleController@update');
+Route::delete('roles/{id}', 'RoleController@destroy');
