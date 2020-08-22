@@ -14,11 +14,11 @@ class CreateLicensesKeyTable extends Migration
     public function up()
     {
         Schema::create('licenses_key', function (Blueprint $table) {
-            $table->string('id', 100)->primary();
-            $table->string('license_id')->index();
-            $table->foreign('license_id')->references('id')->on('licenses')->onDelete('cascade');
+            $table->uuid('id')->primary();
             $table->uuid('user_id')->index();
             $table->foreign('user_id')->references('uuid')->on('users')->onDelete('cascade');
+            $table->uuid('license_id')->index();
+            $table->foreign('license_id')->references('id')->on('licenses')->onDelete('cascade');
             $table->timestamps();
         });
     }

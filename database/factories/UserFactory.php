@@ -3,6 +3,7 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
 use App\User;
+use Carbon\Carbon;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -19,17 +20,16 @@ use Illuminate\Support\Str;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'uuid' => Str::random(36),
+        'username' => $faker->userName,
         'name' => $faker->name,
         'second_name' =>$faker->name,
         'last_name' => $faker->name,
         'second_last_name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'id_school' => '',
         'grade' => $faker->randomNumber(),
         'avatar' => '',
         'password' => "123456",
-        'active' => true,
+        'last_login' => Carbon::now(),
         'verified_email' => true,
         'remember_token' => Str::random(10),
     ];

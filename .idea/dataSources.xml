@@ -7,5 +7,11 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/mundolia</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="Microsoft SQL Server - goMindDB2019@184.168.194.62" uuid="ec6e8124-438c-445e-b21f-5384cae4daed">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://184.168.194.62;database=goMindDB2019</jdbc-url>
+    </data-source>
   </component>
 </project>
