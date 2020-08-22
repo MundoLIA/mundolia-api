@@ -18,7 +18,22 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::get()->toJson(JSON_PRETTY_PRINT);
+        $users = User::select(
+            'id',
+            'uuid',
+            'name',
+            'second_name',
+            'last_name',
+            'second_last_name',
+            'email',
+            'id_school',
+            'grade',
+            'avatar',
+            'active',
+            'verified_email',
+            'updated_at',
+            'created_at'
+        )->get()->toJson(JSON_PRETTY_PRINT);
         return response($users, 200);
     }
 
@@ -44,7 +59,6 @@ class UserController extends Controller
             'username' => 'required',
             'name' => 'required',
             'last_name' => 'required',
-            'second_last_name' => 'required',
             'email' => 'required',
             'password' => 'required',
             'grade' => 'required'
@@ -102,9 +116,18 @@ class UserController extends Controller
      * @param  uuid $uuid
      * @return \Illuminate\Http\Response
      */
-    public function update($uuid)
+    public function update(Request $request, $uuid)
     {
-        User::updateData($uuid);
+
+        $updateData = $request->validate([
+            'userdata.name' => 'required|max:255',
+            'userdata.uuid' => 'required|max:255',
+            'userdata.last_name' => 'required|max:255',
+            'userdata.email' => 'required|max:255',
+            'userdata.grade' => 'required|max:255'
+        ]);
+
+        User::whereId($uuid)->update($updateData);
 
         return response()->json([
             "message" => "El usuario ha sido actualizado",
