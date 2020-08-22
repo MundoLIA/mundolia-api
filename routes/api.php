@@ -29,7 +29,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('usuarios', 'UserController@index');
     Route::get('usuarios/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'UserController@show']);
     Route::post('usuarios', 'UserController@store');
-    Route::put('usuarios/{uuid}', 'UserController@update');
+    Route::post('usuarios/{uuid}', 'UserController@update');
     Route::delete('usuarios/{uuid}', 'UserController@destroy');
 
     Route::get('tipolicencias', 'LicenseTypeController@index');
@@ -43,6 +43,10 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('licencias', 'LicenseController@store');
     Route::put('licencias/{id}', 'LicenseController@update');
     Route::delete('licencias/{id}', 'LicenseController@destroy');
+
 });
+
+    Route::get('lia-schools', 'LiaSchoolController@index');
+
 
 
