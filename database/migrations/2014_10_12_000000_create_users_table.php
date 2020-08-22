@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
 
             $table->bigIncrements('id');
             $table->uuid('uuid')->index();
+            $table->string('username');
             $table->string('name');
             $table->string('second_name')->nullable();
             $table->string('last_name')->nullable();
@@ -25,9 +26,12 @@ class CreateUsersTable extends Migration
             $table->integer('grade')->nullable();
             $table->string('avatar')->nullable();
             $table->string('password');
-            $table->boolean('active')->default(true);
+            $table->boolean('is_active')->default(true);
 
-            //email
+            //extra info
+            $table->dateTime('member_since');
+            $table->dateTime('last_login')->nullable();
+
             $table->boolean('verified_email')->default(false);
             $table->rememberToken();
             $table->softDeletes();

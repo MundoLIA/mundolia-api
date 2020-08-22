@@ -17,7 +17,7 @@ class User extends Authenticatable
     protected $guarded = [];
 
     protected $fillable = [
-        'uuid', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password',
+        'uuid', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
     ];
 
     /**
@@ -35,7 +35,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime', 'member_since' =>'datetime', 'last_login' => 'datetime',
     ];
 
     public function getRouteKeyName()

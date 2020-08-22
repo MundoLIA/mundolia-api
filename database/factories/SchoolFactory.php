@@ -10,5 +10,6 @@ $factory->define(School::class, function (Faker $faker) {
     return [
         'id' => Uuid::uuid4(),
         'name' => $faker->name,
+        'description' => $faker->text,
     ];
 });

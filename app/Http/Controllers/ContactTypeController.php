@@ -52,11 +52,15 @@ class ContactTypeController extends Controller
             'description' => 'required',
         ]);
 
-        $license = ContactType::create($request->all());
+        $type = new ContactType();
+
+        $type->description = $request->description;
+
+        $type->save();
 
         return response()->json([
-            $license,
-            "message" => "Nueva llave creada",
+            $type,
+            "message" => "Nuevo tipo de contacto creado",
         ], 201);
     }
 
@@ -68,7 +72,7 @@ class ContactTypeController extends Controller
      */
     public function show($id)
     {
-        $type = ContactType::find($id);
+        $type = ContactType::firstWhere('id', $id);
         if ($type !== null) {
             return response()->json([
                 "info" => $type,

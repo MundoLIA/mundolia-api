@@ -19,6 +19,9 @@ class CreateRolesTable extends Migration
             $table->string('name')->unique();
             $table->string('slug')->unique();
             $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->integer('this_order')->nullable();
+            $table->integer('role_number')->nullable();
             $table->timestamps();
         });
     }
