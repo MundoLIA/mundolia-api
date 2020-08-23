@@ -120,14 +120,14 @@ class UserController extends Controller
     {
 
         $updateData = $request->validate([
-            'userdata.name' => 'required|max:255',
-            'userdata.uuid' => 'required|max:255',
-            'userdata.last_name' => 'required|max:255',
-            'userdata.email' => 'required|max:255',
-            'userdata.grade' => 'required|max:255'
+            'name' => 'required|max:255',
+            'last_name' => 'required|max:255',
+            'email' => 'required|max:255',
+            'grade' => 'required|max:255'
         ]);
 
-        User::whereId($uuid)->update($updateData);
+        $user = User::whereId($uuid);
+        $user->update($request->all());
 
         return response()->json([
             "message" => "El usuario ha sido actualizado",
