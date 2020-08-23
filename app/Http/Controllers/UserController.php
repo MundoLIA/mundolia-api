@@ -87,7 +87,6 @@ class UserController extends Controller
                 $user,
                 "message" => "Se ha registrado correctamente",
             ], 201);
-
         }catch (Exception $e){
             $error["code"] = 'INVALID_DATA';
             $error["message"] = "The field is invalid or the user does not have a password.";
@@ -135,7 +134,7 @@ class UserController extends Controller
      */
     public function update($uuid)
     {
-        User::whereId($uuid);
+        User::updateData($uuid);
 
         return response()->json([
             "message" => "El usuario ha sido actualizado",
