@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 trait UpdateGenericClass{
 

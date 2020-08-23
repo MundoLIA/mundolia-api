@@ -30,6 +30,15 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $rules = [
+        'username' => 'required|unique:users',
+        'name' => 'required',
+        'last_name' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:6|max:255',
+        'grade' => 'required|max:1',
+    ];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -42,5 +51,11 @@ class User extends Authenticatable
     public function getRouteKeyName()
     {
         return 'uuid';
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+        $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
     }
 }
