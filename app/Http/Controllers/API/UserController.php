@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use mysql_xdevapi\Exception;
 use Validator;
+
 class UserController extends Controller
 {
     public $successStatus = 200;

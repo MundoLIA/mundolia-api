@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SendgridMail;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\User;
 use Illuminate\Http\Request;
+use mysql_xdevapi\Exception;
 use Ramsey\Uuid\Uuid;
-use function MongoDB\BSON\toJSON;
+
 
 class UserController extends Controller
 {
@@ -25,11 +27,12 @@ class UserController extends Controller
             'second_name',
             'last_name',
             'second_last_name',
+            'school_id',
+            'school_name',
             'email',
-            'id_school',
             'grade',
             'avatar',
-            'active',
+            'is_active',
             'verified_email',
             'updated_at',
             'created_at'
@@ -51,36 +54,50 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required',
+            'username' => 'required|unique:users',
             'name' => 'required',
             'last_name' => 'required',
-            'email' => 'required',
-            'password' => 'required',
-            'grade' => 'required'
+            'email' => 'required|email',
+            'password' => 'required|min:6|max:255',
+            'grade' => 'required|max:1',
         ]);
 
-        $data = ([
-            'uuid' => $request->get('uuid'),
-            'username' => $request->get('username'),
-            'name' => $request->get('name'),
-            'email' => $request->get('email'),
-            'grade' => $request->get('grade'),
-            'password' => $request->get('password')
-        ]);
+        try{
+            $input = $request->all();
+            $input['password'] = Hash::make($input['password']);
+            $input['password'] = str_replace("$2y$", "$2a$", $input['password']);
+            $user = User::create($input);
 
-        $user = User::create($request->all());
+            $data = ([
+                'username' => $user->username,
+                'name' => $user->name,
+                'email' => $user->email,
+                'grade' => $user->grade,
+                'password' => $user->password
+            ]);
 
-        Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
+            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
 
-        return response()->json([
-            $user,
-            "message" => "Se ha registrado un nuevo usuario",
-        ], 201);
+            return response()->json([
+                $user,
+                "message" => "Se ha registrado correctamente",
+            ], 201);
+
+        }catch (Exception $e){
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "The field is invalid or the user does not have a password.";
+            $errors["domain"] = "global";
+            $errors["reason"] = "invalid";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 500);
+        }
     }
 
     /**
@@ -116,18 +133,9 @@ class UserController extends Controller
      * @param  uuid $uuid
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $uuid)
+    public function update($uuid)
     {
-
-        $updateData = $request->validate([
-            'userdata.name' => 'required|max:255',
-            'userdata.uuid' => 'required|max:255',
-            'userdata.last_name' => 'required|max:255',
-            'userdata.email' => 'required|max:255',
-            'userdata.grade' => 'required|max:255'
-        ]);
-
-        User::whereId($uuid)->update($updateData);
+        User::whereId($uuid);
 
         return response()->json([
             "message" => "El usuario ha sido actualizado",
