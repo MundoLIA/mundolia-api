@@ -69,6 +69,7 @@ class UserController extends Controller
 
         try{
             $input = $request->all();
+            $password = $input['password'];
             $input['password'] = Hash::make($input['password']);
             $input['password'] = str_replace("$2y$", "$2a$", $input['password']);
             $user = User::create($input);
@@ -76,12 +77,13 @@ class UserController extends Controller
             $data = ([
                 'username' => $user->username,
                 'name' => $user->name,
+                'last_name' => $user->last_name,
                 'email' => $user->email,
                 'grade' => $user->grade,
-                'password' => $user->password
+                'password' => $password
             ]);
 
-            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
+            Mail::to('antonio2120@gmail.com')->queue(new SendgridMail($data));
 
             return response()->json([
                 $user,
