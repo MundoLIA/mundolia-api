@@ -8,6 +8,7 @@ use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -58,4 +59,6 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
         $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
     }
+
+
 }

@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Console\Input\Input;
 
 
 class UserController extends Controller
@@ -23,6 +25,7 @@ class UserController extends Controller
         $users = User::select(
             'id',
             'uuid',
+            'username',
             'name',
             'second_name',
             'last_name',
@@ -58,20 +61,40 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'username' => 'required|unique:users',
-            'name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:6|max:255',
-            'grade' => 'required|max:1',
-        ]);
-
         try{
             $input = $request->all();
             $password = $input['password'];
-            $input['password'] = Hash::make($input['password']);
-            $input['password'] = str_replace("$2y$", "$2a$", $input['password']);
+            $firstName = $input['name'];
+            $lastName = $input['last_name'];
+            $email = $input['email'];
+            $username= Str::slug($firstName . $lastName);
+
+
+            $reuser = User::where([
+                ['username','=', $username]
+            ])->first(['id', 'username', 'email']);
+
+
+
+            if ($reuser) {
+
+                if ($reuser['email'] === $email){
+                    return response()->json(['Usuario en base de datos encontrado']);
+                }
+                else{
+                        $i = 0;
+                        while (User::whereUsername($username)->exists()) {
+                            $i++;
+                            $username = $firstName[0] . $lastName . $i;
+                        }
+
+                        $input['username'] = $username;
+                    }
+            }
+            else{
+
+                $input['username'] = $username;
+            }
             $user = User::create($input);
 
             $data = ([
@@ -83,7 +106,7 @@ class UserController extends Controller
                 'password' => $password
             ]);
 
-            Mail::to('antonio2120@gmail.com')->queue(new SendgridMail($data));
+            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
 
             return response()->json([
                 $user,

@@ -20,7 +20,7 @@ class SendgridMail extends Mailable
 
     public function build()
     {
-        $address = 'dlievano@arkusnexus.com';
+        $address = 'noreply@clublia.com';
         $subject = 'Bienvenido a Club Lia';
         $name = 'Club LIA';
 
