@@ -69,12 +69,9 @@ class UserController extends Controller
             $email = $input['email'];
             $username= Str::slug($firstName . $lastName);
 
-
             $reuser = User::where([
                 ['username','=', $username]
             ])->first(['id', 'username', 'email']);
-
-
 
             if ($reuser) {
 
