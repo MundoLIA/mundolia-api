@@ -53,7 +53,7 @@ class UserImportController extends Controller
                 $result [++$i] = $resp;
             }
 
-            return response()->json($result,200);
+            return response($result,200);
 
 
         } catch (Exception $e) {
