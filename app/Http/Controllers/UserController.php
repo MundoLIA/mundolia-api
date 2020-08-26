@@ -31,14 +31,12 @@ class UserController extends Controller
             'last_name',
             'second_last_name',
             'school_id',
-            'school_name',
             'email',
             'grade',
             'avatar',
             'is_active',
-            'verified_email',
-            'updated_at',
-            'created_at'
+            'verified_email'
+
         )->get()->toJson(JSON_PRETTY_PRINT);
         return response($users, 200);
     }

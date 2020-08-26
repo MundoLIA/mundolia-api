@@ -42,16 +42,19 @@ class UserImportController extends Controller
         try {
 
             $data = $request->input('data');
-
+            $i = 0;
             foreach ($data as $obj) {
                 foreach ($obj as $key => $value) {
 
                     $insertArr[Str::slug($key, '_')] = $value;
                 }
-
-                $user = User::dataUser($insertArr);
+                $resp = $obj;
+                $resp ['result'] = User::dataUser($insertArr);
+                $result [++$i] = $resp;
             }
-            dd($user, "Finished adding data in examples table");
+
+            return response()->json($result,200);
+
 
         } catch (Exception $e) {
             $error["code"] = 'INVALID_DATA';

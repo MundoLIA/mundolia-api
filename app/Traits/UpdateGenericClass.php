@@ -37,8 +37,6 @@ trait UpdateGenericClass{
             $input['last_name'] = $input['apellido_paterno'];
             $input['second_lats_name'] = $input['apellido_materno'];
 
-
-
             $email = $input['email'];
             $username = Str::slug($firstName . $lastName);
 
@@ -49,7 +47,7 @@ trait UpdateGenericClass{
             if ($reuser) {
 
                 if ($reuser['email'] === $email) {
-                    return response('El usuario ya existe');
+                    return ('El usuario ya existe');
                 } else {
                     $i = 0;
                     while (self::whereUsername($username)->exists()) {
@@ -73,19 +71,18 @@ trait UpdateGenericClass{
                 'grade' => $user->grade,
                 'password' => $password
             ]);
+            Mail::to($user->email)->queue(new SendgridMail($data));
 
-            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
+//            if( env('MAIL_CONFIG', 'dev') == 'prod') {
+//                Mail::to($user->email)->queue(new SendgridMail($data));
+//            }else{
+//                Mail::to(env('MAIL_CONFIG', 'dylan.lievano.cuevas@gmail.com'))->queue(new SendgridMail($data));
+//            }
 
-            return response('Usuario creado');
+            return ('Usuario creado');
 
         } catch (\mysql_xdevapi\Exception $e) {
-            $error["code"] = 'INVALID_DATA';
-            $error["message"] = "The field is invalid or the user does not have a password.";
-            $errors["domain"] = "global";
-            $errors["reason"] = "invalid";
-            $error["errors"] = [$errors];
-
-            return response(['error' => $error], 500);
+            return ('Error al crear el usuario');
         }
     }
 
