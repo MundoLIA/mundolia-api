@@ -35,15 +35,11 @@ trait UpdateGenericClass{
             $input['name'] = $input['nombre'];
             $input['second_name'] = $input['segundo_nombre'];
             $input['last_name'] = $input['apellido_paterno'];
-<<<<<<< HEAD
+
             $input['second_last_name'] = $input['apellido_materno'];
             $input['email'] = $input['email'];
             $input['grade'] = $input['grado'];
             $input['second_last_name'] = $input['apellido_materno'];
-
-=======
-            $input['second_lats_name'] = $input['apellido_materno'];
->>>>>>> be1725bc2b186b8e19051735654a1d0908ad8bda
 
             $email = $input['email'];
             $username = Str::slug($firstName . $lastName);
