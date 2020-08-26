@@ -61,20 +61,45 @@ class UserController extends Controller
     {
         try{
             $input = $request->all();
-            $password = $input['password'];
-            $firstName = $input['name'];
-            $lastName = $input['last_name'];
+            $firstName = $input['nombre'];
+            $lastName = $input['apellido_paterno'];
+
+            $input['name'] = $input['nombre'];
+            $input['second_name'] = $input['segundo_nombre'];
+            $input['last_name'] = $input['apellido_paterno'];
+            $input['grade'] = $input['grado'];
+
+            if ($input['seccion'] ==  'Preescolar'){
+
+                $input['role_id'] = 9;
+
+                $password = Str::random(4);
+                $input['password'] = $password;
+            }else{
+                if ($input['seccion'] ==  'Primaria'){
+
+                    $input['role_id'] = 5;
+                    $password = Str::random(6);
+                    $input['password'] = $password;
+                }
+            }
+
+            $input['second_last_name'] = $input['apellido_materno'];
+            $input['email'] = $input['email'];
+            $input['grade'] = $input['grado'];
+            $input['second_last_name'] = $input['apellido_materno'];
+
             $email = $input['email'];
-            $username= Str::slug($firstName . $lastName);
+            $secondName = $input['second_name'];
+            $username = Str::slug($firstName . $lastName);
 
             $reuser = User::where([
-                ['username','=', $username]
-            ])->first(['id', 'username', 'email']);
+                ['username', '=', $username]
+            ])->first(['id', 'username', 'second_name', 'email' ]);
 
             if ($reuser) {
-
-                if ($reuser['email'] === $email){
-                    return response()->json(['Usuario en base de datos encontrado']);
+                if ($reuser['email'] === $email && $reuser['second_name'] === $secondName){
+                    return ('El usuario ya existe');
                 }
                 else{
                         $i = 0;
@@ -100,25 +125,13 @@ class UserController extends Controller
                 'grade' => $user->grade,
                 'password' => $password
             ]);
-            if( env('MAIL_CONFIG', 'dev') == 'dev') {
-                Mail::to(env('MAIL_CONFIG', 'dylan.lievano.cuevas@gmail.com'))->queue(new SendgridMail($data));
-            }else{
+
                 Mail::to($user->email)->queue(new SendgridMail($data));
-            }
 
-            return response()->json([
-                $user,
-                "message" => "Se ha registrado correctamente",
-            ], 201);
+            return ('Se ha creado el usuario');
+
         }catch (Exception $e){
-            $error["code"] = 'INVALID_DATA';
-            $error["message"] = "The field is invalid or the user does not have a password.";
-            $errors["domain"] = "global";
-            $errors["reason"] = "invalid";
-
-            $error["errors"] =[$errors];
-
-            return response()->json(['error' => $error], 500);
+            return ('Error al crear el usuario');
         }
     }
 
@@ -178,7 +191,7 @@ class UserController extends Controller
 
         return response()->json([
             $user,
-            "message" => "El estudiante ha sido eliminado existosamente",
+            "message" => "El usuario ha sido eliminado existosamente",
         ], 200);
 
 

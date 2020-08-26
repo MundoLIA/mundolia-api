@@ -13,6 +13,7 @@ class AddForeignkeysToUsers extends Migration
      */
     public function up()
     {
+
         Schema::table('users', function (Blueprint $table) {
             $table->uuid('school_id')->index()->nullable()->after('second_last_name');
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
@@ -20,6 +21,8 @@ class AddForeignkeysToUsers extends Migration
             $table->foreign('school_key_id')->references('id')->on('school_key_ids')->onDelete('cascade');
             $table->unsignedBigInteger('role_id')->index()->nullable()->after('school_key_id');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+            $table->unsignedBigInteger('tutor_id')->index()->nullable()->after('role_id');
+            $table->foreign('tutor_id')->references('id')->on('tutors');
         });
     }
 

@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\SendgridMail;
-use App\User;
+use App\Tutor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use mysql_xdevapi\Exception;
 
-class UserImportController extends Controller
+class TutorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +14,8 @@ class UserImportController extends Controller
      */
     public function index()
     {
-        //
+        $tutors = Tutor::get()->toJson(JSON_PRETTY_PRINT);
+        return response($tutors, 200);
     }
 
     /**
@@ -34,48 +31,34 @@ class UserImportController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        try {
+        Tutor::create($request->all());
 
-            $data = $request->input('data');
-            $i = 0;
-            foreach ($data as $obj) {
-                foreach ($obj as $key => $value) {
-
-                    $insertArr[Str::slug($key, '_')] = $value;
-                }
-
-                $resp = $obj;
-                $resp ['result'] = User::dataUser($insertArr);
-                $result [++$i] = $resp;
-            }
-
-            return response($result,200);
-
-        } catch (Exception $e) {
-
-            return ('Error al crear el usuario');
-        }
+        return ('Tutor creado exitosamente');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\User $user
+     * @param  \App\Tutor  $tutor
      * @return \Illuminate\Http\Response
      */
+    public function show(Tutor $tutor)
+    {
+        //
+    }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\User $user
+     * @param  \App\Tutor  $tutor
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit(Tutor $tutor)
     {
         //
     }
@@ -83,11 +66,11 @@ class UserImportController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\User $user
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Tutor  $tutor
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, Tutor $tutor)
     {
         //
     }
@@ -95,10 +78,10 @@ class UserImportController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\User $user
+     * @param  \App\Tutor  $tutor
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(Tutor $tutor)
     {
         //
     }
