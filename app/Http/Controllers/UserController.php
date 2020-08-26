@@ -31,14 +31,12 @@ class UserController extends Controller
             'last_name',
             'second_last_name',
             'school_id',
-            'school_name',
             'email',
             'grade',
             'avatar',
             'is_active',
-            'verified_email',
-            'updated_at',
-            'created_at'
+            'verified_email'
+
         )->get()->toJson(JSON_PRETTY_PRINT);
         return response($users, 200);
     }
@@ -102,8 +100,11 @@ class UserController extends Controller
                 'grade' => $user->grade,
                 'password' => $password
             ]);
-
-            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
+            if( env('MAIL_CONFIG', 'dev') == 'dev') {
+                Mail::to(env('MAIL_CONFIG', 'dylan.lievano.cuevas@gmail.com'))->queue(new SendgridMail($data));
+            }else{
+                Mail::to($user->email)->queue(new SendgridMail($data));
+            }
 
             return response()->json([
                 $user,

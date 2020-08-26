@@ -18,8 +18,7 @@ class User extends Authenticatable
     protected $guarded = [];
 
     protected $fillable = [
-
-        'id', 'uuid', 'username', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
+        'id', 'uuid', 'username','role_id', 'school_id', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
     ];
 
     /**
@@ -35,9 +34,11 @@ class User extends Authenticatable
         'username' => 'required|unique:users',
         'name' => 'required',
         'last_name' => 'required',
+        'role_id' => 'required',
         'email' => 'required|email',
         'password' => 'required|min:6|max:255',
         'grade' => 'required|max:1',
+
     ];
 
     /**
@@ -60,5 +61,13 @@ class User extends Authenticatable
         $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
     }
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
 
+    public function school()
+    {
+        return $this->belongsTo(School::class, 'school_id');
+    }
 }
