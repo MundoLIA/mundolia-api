@@ -42,7 +42,7 @@ class UserImportController extends Controller
         try {
 
             $data = $request->input('data');
-            $i = 0;
+            $i = -1;
             foreach ($data as $obj) {
                 foreach ($obj as $key => $value) {
 
@@ -50,10 +50,10 @@ class UserImportController extends Controller
                 }
                 $resp = $obj;
                 $resp ['result'] = User::dataUser($insertArr);
-                $result [++$i] = $resp;
+                $result [++$i] = (array) $resp;
             }
 
-            return response($result,200);
+            return response((array) $result,200);
 
 
         } catch (Exception $e) {
