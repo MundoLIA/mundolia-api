@@ -53,7 +53,13 @@ class UserImportController extends Controller
                 $resp ['result'] = User::dataUser($insertArr);
                 $result [++$i] = $resp;
             }
+<<<<<<< HEAD
             return response($result,200);
+=======
+
+            return response($result,200);
+
+>>>>>>> b19866aee027c051dbcea371f8d177c61332d4e0
 
         } catch (Exception $e) {
             $error["code"] = 'INVALID_DATA';
