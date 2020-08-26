@@ -48,6 +48,7 @@ class UserImportController extends Controller
 
                     $insertArr[Str::slug($key, '_')] = $value;
                 }
+
                 $resp = $obj;
                 $resp ['result'] = User::dataUser($insertArr);
                 $result [++$i] = (array) $resp;
@@ -55,16 +56,9 @@ class UserImportController extends Controller
 
             return response((array) $result,200);
 
-
         } catch (Exception $e) {
-            $error["code"] = 'INVALID_DATA';
-            $error["message"] = "The field is invalid or the user does not have a password.";
-            $errors["domain"] = "global";
-            $errors["reason"] = "invalid";
 
-            $error["errors"] = [$errors];
-
-            return response(['error' => $error], 500);
+            return ('Error al crear el usuario');
         }
     }
 
