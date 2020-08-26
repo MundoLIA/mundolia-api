@@ -26,10 +26,10 @@ $factory->define(User::class, function (Faker $faker) {
         'last_name' => $faker->name,
         'second_last_name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'grade' => $faker->randomNumber(),
         'avatar' => '',
         'password' => "123456",
         'verified_email' => true,
         'remember_token' => Str::random(10),
+        'role_id' => 3
     ];
 });
