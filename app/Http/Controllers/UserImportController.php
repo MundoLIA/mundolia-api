@@ -48,10 +48,10 @@ class UserImportController extends Controller
 
                     $insertArr[Str::slug($key, '_')] = $value;
                 }
-
                 $user = User::dataUser($insertArr);
             }
-            dd($user, "Finished adding data in examples table");
+
+            print_r("Se han creado correctamente los datos");
 
         } catch (Exception $e) {
             $error["code"] = 'INVALID_DATA';

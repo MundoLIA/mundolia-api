@@ -35,8 +35,10 @@ trait UpdateGenericClass{
             $input['name'] = $input['nombre'];
             $input['second_name'] = $input['segundo_nombre'];
             $input['last_name'] = $input['apellido_paterno'];
-            $input['second_lats_name'] = $input['apellido_materno'];
-
+            $input['second_last_name'] = $input['apellido_materno'];
+            $input['email'] = $input['email'];
+            $input['grade'] = $input['grado'];
+            $input['second_last_name'] = $input['apellido_materno'];
 
 
             $email = $input['email'];

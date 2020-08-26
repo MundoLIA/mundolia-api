@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         factory(App\User::class, 15)->create();
 
         Role::create([
-            'name' => 'Administrador',
+            'name' => 'admin',
             'slug' => 'admin',
             'description' => 'Administrador del sistema',
             'this_order' => 1,
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
         ]);
 
         Role::create([
-            'name' => 'AdminEscuela',
+            'name' => 'school',
             'slug' => 'admin_escuela',
             'description' => 'Administador de la escuela',
             'this_order' => 3,

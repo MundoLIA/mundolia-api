@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <!--[if !mso]><!-->
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <!--<![endif]-->
     <!--[if (gte mso 9)|(IE)]>
     <xml>
@@ -37,7 +36,7 @@
     <![endif]-->
     <style type="text/css">
         body, p, div {
-            font-family: 'Noto Serif', serif;
+            font-family: 'Lato', sans-serif;
             font-size: 14px;
         }
 
