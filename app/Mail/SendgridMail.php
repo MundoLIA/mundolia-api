@@ -24,11 +24,8 @@ class SendgridMail extends Mailable
         $subject = 'Bienvenido a Club Lia';
         $name = 'Club LIA';
 
-        return $this->view('email.message-send')
+        return $this->markdown('email.message-send')
             ->from($address, $name)
-            ->cc($address, $name)
-            ->bcc($address, $name)
-            ->replyTo($address, $name)
             ->subject($subject)
             ->with([ 'user_info' => $this->data]);
     }

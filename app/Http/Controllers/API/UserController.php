@@ -24,7 +24,10 @@ class UserController extends Controller
                 $dataUser['displayName'] = $user->name;
                 $dataUser['email'] = $user->email;
                 $dataUser['photoURL'] = $user->email;
-                $dataUser['role'] = ['user'];
+                $dataUser['role'] = $user->role->slug;
+                $dataUser['school_id'] = $user->school_id;
+                $dataUser['school_name'] = $user->school_id ? $user->school->name : null;
+
                 $dataUser['uuid'] = $user->id;
 
                 $success['user'] = (['data' =>$dataUser]);
@@ -92,7 +95,9 @@ class UserController extends Controller
             $dataUser['displayName'] = $user->name;
             $dataUser['email'] = $user->email;
             $dataUser['photoURL'] = $user->email;
-            $dataUser['role'] = ['user'];
+            $dataUser['role'] = $user->role->slug;
+            $dataUser['school_id'] = $user->school_id;
+            $dataUser['school_name'] = $user->school_id ? $user->school->name : null;
             $dataUser['uuid'] = $user->id;
 
             $success['user'] = (['data' =>$dataUser]);
@@ -129,7 +134,10 @@ class UserController extends Controller
             $dataUser['displayName'] = $user->name;
             $dataUser['email'] = $user->email;
             $dataUser['photoURL'] = $user->email;
-            $dataUser['role'] = ['user'];
+            $dataUser['role'] = $user->role->slug;
+            $dataUser['school_id'] = $user->school_id;
+            $dataUser['school_name'] = $user->school_id ? $user->school->name : null;
+
             $dataUser['uuid'] = $user->id;
 
             $success['user'] = (['data' =>$dataUser]);

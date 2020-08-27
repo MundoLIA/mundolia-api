@@ -16,7 +16,7 @@ class CreateContactsTable extends Migration
         Schema::create('contacts', function (Blueprint $table) {
             $table->string('id', 100)->primary();
             //foreign keys
-            $table->uuid('school_id')->index();
+            $table->unsignedBigInteger('school_id')->index();
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->uuid('user_id')->index();
             $table->foreign('user_id')->references('uuid')->on('users')->onDelete('cascade');

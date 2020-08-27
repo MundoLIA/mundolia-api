@@ -19,7 +19,7 @@ class CreateLicensesTable extends Migration
             $table->string('titular');
             $table->string('email_admin')->unique();
             //foreign keys
-            $table->uuid('school_id')->index()->nullable();
+            $table->unsignedBigInteger('school_id')->index()->nullable();
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->unsignedBigInteger('license_type_id')->index();
             $table->foreign('license_type_id')->references('id')->on('licenses_type')->onDelete('cascade');

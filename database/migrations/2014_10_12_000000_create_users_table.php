@@ -22,12 +22,11 @@ class CreateUsersTable extends Migration
             $table->string('second_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('second_last_name')->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->integer('grade')->nullable();
             $table->string('avatar')->nullable();
             $table->string('password');
             $table->boolean('is_active')->default(true);
-
             //extra info
             $table->dateTime('member_since');
             $table->dateTime('last_login')->nullable();

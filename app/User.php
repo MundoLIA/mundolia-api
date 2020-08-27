@@ -8,6 +8,7 @@ use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -17,8 +18,7 @@ class User extends Authenticatable
     protected $guarded = [];
 
     protected $fillable = [
-
-        'id', 'uuid', 'username', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
+        'id', 'uuid', 'username','role_id', 'school_id', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
     ];
 
     /**
@@ -28,6 +28,17 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    protected $rules = [
+        'username' => 'required|unique:users',
+        'name' => 'required',
+        'last_name' => 'required',
+        'role_id' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:6|max:255',
+        'grade' => 'required|max:1',
+
     ];
 
     /**
@@ -42,5 +53,21 @@ class User extends Authenticatable
     public function getRouteKeyName()
     {
         return 'uuid';
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+        $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class, 'school_id');
     }
 }

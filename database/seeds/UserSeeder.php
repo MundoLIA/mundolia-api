@@ -12,10 +12,10 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\User::class, 15)->create();
+
 
         Role::create([
-            'name' => 'Administrador',
+            'name' => 'admin',
             'slug' => 'admin',
             'description' => 'Administrador del sistema',
             'this_order' => 1,
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
         ]);
 
         Role::create([
-            'name' => 'AdminEscuela',
+            'name' => 'school',
             'slug' => 'admin_escuela',
             'description' => 'Administador de la escuela',
             'this_order' => 3,
@@ -101,6 +101,33 @@ class UserSeeder extends Seeder
 
 
 
+        App\User::create([
+            'username' => 'admin',
+            'name' => 'Administrador',
+            'second_name' => '',
+            'last_name' => 'System',
+            'second_last_name' => '',
+            'email' => 'lcruz@arkusnexus.com',
+            'avatar' => '',
+            'password' => "Admin123456",
+            'verified_email' => true,
+            'role_id' => 1
+        ]);
+
+        App\User::create([
+            'username' => 'adminschool',
+            'name' => 'Administrador de Escuela',
+            'second_name' => '',
+            'last_name' => 'System',
+            'second_last_name' => '',
+            'email' => 'dlievano@arkusnexus.com',
+            'avatar' => '',
+            'password' => "Admin123456",
+            'verified_email' => true,
+            'role_id' => 3,
+        ]);
+
+        //factory(App\User::class, 15)->create();
 
 
 

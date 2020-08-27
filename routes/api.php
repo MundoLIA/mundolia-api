@@ -70,3 +70,5 @@ Route::put('roles/{id}', 'RoleController@update');
 Route::delete('roles/{id}', 'RoleController@destroy');
 
 Route::get('lia-schools', 'LiaSchoolController@index');
+
+Route::post('importar/usuarios', 'UserImportController@store');

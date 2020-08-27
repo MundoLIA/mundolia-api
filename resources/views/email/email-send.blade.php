@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <!--[if !mso]><!-->
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
     <!--<![endif]-->
     <!--[if (gte mso 9)|(IE)]>
     <xml>
@@ -36,7 +37,7 @@
     <![endif]-->
     <style type="text/css">
         body, p, div {
-            font-family: 'Lato', sans-serif;
+            font-family: 'Noto Serif', serif;
             font-size: 14px;
         }
 
@@ -174,7 +175,7 @@
                                                                     valign="top" align="left">
                                                                     <img class="max-width" border="0"
                                                                          style=" display:block; color:#000000; text-decoration:none; font-family:'Poppins', sans-serif; font-size:16px; max-width:40% !important; width:40%; height:auto !important; "
-                                                                         src="https://clublia.com/wp-content/uploads/2020/02/clublia.png"
+                                                                         src="{{asset('images/clublia.png')}}"
                                                                          alt="Off Grid Adventures" width="240"
                                                                          data-responsive="true"
                                                                          data-proportionally-constrained="false">
@@ -183,9 +184,9 @@
                                                                     valign="top" align="left">
                                                                     <div>
                                                                         <h2>Bienvenido</h2>
-                                                                        <p>Usuario: {{$data['username']}} </p>
+                                                                        <p>Usuario: </p>
                                                                         &nbsp;
-                                                                        <p>Contrasena: {{$data['password']}} </p>
+                                                                        <p>Contrasena: </p>
                                                                     </div>
 
                                                                 </td>
@@ -202,7 +203,7 @@
                                                                     height="100%" valign="top" bgcolor="#FE5D61">
                                                                     <div>
                                                                         <div
-                                                                            style="color:#ffffff; font-family: inherit; text-align: justify">
+                                                                            style="font-family: inherit; text-align: center">
                                                                             Tu acceso a LA NUEVA COMUNIDAD DE CLUB LIA
                                                                             ha sido creada con éxito.
                                                                         </div>
@@ -216,7 +217,7 @@
                                                                cellpadding="0" cellspacing="0" width="100%"
                                                                style="table-layout: fixed;"
                                                                data-muid="nSVYnVzPLnGZ4wUdynLiKo">
-                                                            <tbody style="color: #ffffff !important;">
+                                                            <tbody>
                                                             <tr>
                                                                 <td style="background-color:#093E80; padding:0px 50px 30px 50px; line-height:22px; text-align:inherit;"
                                                                     height="100%" valign="top" bgcolor="#fe5d61">

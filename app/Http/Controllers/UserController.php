@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Console\Input\Input;
 
 
 class UserController extends Controller
@@ -23,19 +25,18 @@ class UserController extends Controller
         $users = User::select(
             'id',
             'uuid',
+            'username',
             'name',
             'second_name',
             'last_name',
             'second_last_name',
             'school_id',
-            'school_name',
             'email',
             'grade',
             'avatar',
             'is_active',
-            'verified_email',
-            'updated_at',
-            'created_at'
+            'verified_email'
+
         )->get()->toJson(JSON_PRETTY_PRINT);
         return response($users, 200);
     }
@@ -58,44 +59,79 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'username' => 'required|unique:users',
-            'name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:6|max:255',
-            'grade' => 'required|max:1',
-        ]);
-
         try{
             $input = $request->all();
-            $input['password'] = Hash::make($input['password']);
-            $input['password'] = str_replace("$2y$", "$2a$", $input['password']);
+            $firstName = $input['nombre'];
+            $lastName = $input['apellido_paterno'];
+
+            $input['name'] = $input['nombre'];
+            $input['second_name'] = $input['segundo_nombre'];
+            $input['last_name'] = $input['apellido_paterno'];
+            $input['grade'] = $input['grado'];
+
+            if ($input['seccion'] ==  'Preescolar'){
+
+                $input['role_id'] = 9;
+
+                $password = Str::random(4);
+                $input['password'] = $password;
+            }else{
+                if ($input['seccion'] ==  'Primaria'){
+
+                    $input['role_id'] = 5;
+                    $password = Str::random(6);
+                    $input['password'] = $password;
+                }
+            }
+
+            $input['second_last_name'] = $input['apellido_materno'];
+            $input['email'] = $input['email'];
+            $input['grade'] = $input['grado'];
+            $input['second_last_name'] = $input['apellido_materno'];
+
+            $email = $input['email'];
+            $secondName = $input['second_name'];
+            $username = Str::slug($firstName . $lastName);
+
+            $reuser = User::where([
+                ['username', '=', $username]
+            ])->first(['id', 'username', 'second_name', 'email' ]);
+
+            if ($reuser) {
+                if ($reuser['email'] === $email && $reuser['second_name'] === $secondName){
+                    return ('El usuario ya existe');
+                }
+                else{
+                        $i = 0;
+                        while (User::whereUsername($username)->exists()) {
+                            $i++;
+                            $username = $firstName[0] . $lastName . $i;
+                        }
+
+                        $input['username'] = $username;
+                    }
+            }
+            else{
+
+                $input['username'] = $username;
+            }
             $user = User::create($input);
 
             $data = ([
                 'username' => $user->username,
                 'name' => $user->name,
+                'last_name' => $user->last_name,
                 'email' => $user->email,
                 'grade' => $user->grade,
-                'password' => $user->password
+                'password' => $password
             ]);
 
-            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
+                Mail::to($user->email)->queue(new SendgridMail($data));
 
-            return response()->json([
-                $user,
-                "message" => "Se ha registrado correctamente",
-            ], 201);
+            return ('Se ha creado el usuario');
+
         }catch (Exception $e){
-            $error["code"] = 'INVALID_DATA';
-            $error["message"] = "The field is invalid or the user does not have a password.";
-            $errors["domain"] = "global";
-            $errors["reason"] = "invalid";
-
-            $error["errors"] =[$errors];
-
-            return response()->json(['error' => $error], 500);
+            return ('Error al crear el usuario');
         }
     }
 
@@ -155,7 +191,7 @@ class UserController extends Controller
 
         return response()->json([
             $user,
-            "message" => "El estudiante ha sido eliminado existosamente",
+            "message" => "El usuario ha sido eliminado existosamente",
         ], 200);
 
 
