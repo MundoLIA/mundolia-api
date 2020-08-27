@@ -50,7 +50,9 @@ class UserImportController extends Controller
                 }
 
                 $resp = $obj;
-                $resp ['result'] = User::dataUser($insertArr);
+                $respCreate = User::dataUser($insertArr);
+                $resp ['result'] = $respCreate["message"];
+                $resp ['username'] = $respCreate["username"];
                 $result [++$i] = (array) $resp;
             }
 

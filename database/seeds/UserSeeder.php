@@ -127,7 +127,7 @@ class UserSeeder extends Seeder
             'role_id' => 3,
         ]);
 
-        factory(App\User::class, 15)->create();
+        //factory(App\User::class, 15)->create();
 
 
 

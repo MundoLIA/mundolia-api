@@ -26,8 +26,6 @@ class SendgridMail extends Mailable
 
         return $this->markdown('email.message-send')
             ->from($address, $name)
-            ->cc($address, $name)
-            ->bcc($address, $name)
             ->subject($subject)
             ->with([ 'user_info' => $this->data]);
     }
