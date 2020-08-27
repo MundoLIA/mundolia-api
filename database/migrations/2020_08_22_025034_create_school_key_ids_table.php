@@ -15,7 +15,7 @@ class CreateSchoolKeyIdsTable extends Migration
     {
         Schema::create('school_key_ids', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->uuid('school_id')->index()->nullable();
+            $table->unsignedBigInteger('school_id')->index()->nullable();
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->uuid('license_id')->index();
             $table->foreign('license_id')->references('id')->on('licenses')->onDelete('cascade');

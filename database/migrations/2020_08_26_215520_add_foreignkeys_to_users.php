@@ -15,7 +15,7 @@ class AddForeignkeysToUsers extends Migration
     {
 
         Schema::table('users', function (Blueprint $table) {
-            $table->uuid('school_id')->index()->nullable()->after('second_last_name');
+            $table->unsignedBigInteger('school_id')->index()->nullable()->after('second_last_name');
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->unsignedBigInteger('school_key_id')->index()->nullable()->after('school_id');
             $table->foreign('school_key_id')->references('id')->on('school_key_ids')->onDelete('cascade');
