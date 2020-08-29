@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
@@ -14,18 +15,25 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $role = Role::get();
-        if (!$role->isEmpty()) {
-            return response()->json([
-                "info" => $role,
-                "message" => "Roles",
-            ], 200);
+        $user = Auth::user();
+
+        if($user->role_id == 1 || $user->role_id == 2){
+            $role = Role::get();
+            if (!$role->isEmpty()) {
+                return response()->json(
+                    $role
+                    , 200);
+            }
         }
-        else{
-            return response()->json([
-                "message" => "No hay elementos que mostrar",
-            ], 404);
+        if($user->role_id == 3){
+            $role = Role::find([4, 5, 9]);
+            if (!$role->isEmpty()) {
+                return response()->json(
+                    $role
+                    , 200);
+            }
         }
+
     }
 
     /**

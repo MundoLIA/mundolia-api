@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LiaSchoolController extends Controller
 {
@@ -13,9 +14,18 @@ class LiaSchoolController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
 
-        $schools = \DB::connection('sqlsrv')
-            ->select('Select SchoolId as id, SchoolId,School,Description,IsActive,CurrentUsers FROM dbo.Schools');
+        if($user->role_id == 1 || $user->role_id == 2) {
+            $schools = \DB::connection('sqlsrv')
+                ->select('Select SchoolId as id, SchoolId,School,Description,IsActive,CurrentUsers FROM dbo.Schools ORDER BY School');
+        }else{
+            $schools = \DB::connection('sqlsrv')
+                ->select('Select SchoolId as id, SchoolId,School,Description,IsActive,CurrentUsers
+                            FROM dbo.Schools
+                            WHERE SchoolId = '. $user->school_id.'
+                            ORDER BY School');
+        }
 
         return response()->json($schools, 200);
     }

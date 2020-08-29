@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SendgridMail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\User;
@@ -22,24 +23,52 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::select(
-            'id',
-            'uuid',
-            'username',
-            'name',
-            'second_name',
-            'last_name',
-            'second_last_name',
-            'school_id',
-            'email',
-            'grade',
-            'avatar',
-            'is_active',
-            'verified_email'
+        $user = Auth::user();
 
-        )->get()->toJson(JSON_PRETTY_PRINT);
-        return response($users, 200);
+        if($user->role_id == 1 || $user->role_id == 2){
+            $users = User::where('role_id','<>', 1)
+                ->select(
+                    'id',
+                    'uuid',
+                    'username',
+                    'name',
+                    'second_name',
+                    'last_name',
+                    'second_last_name',
+                    'school_id',
+                    'email',
+                    'grade',
+                    'avatar',
+                    'is_active',
+                    'verified_email'
+
+                )->get()->toJson(JSON_PRETTY_PRINT);
+            return response($users, 200);
+        }
+        if($user->role_id == 3){
+            $users = User::select(
+                    'id',
+                    'uuid',
+                    'username',
+                    'name',
+                    'second_name',
+                    'last_name',
+                    'second_last_name',
+                    'school_id',
+                    'email',
+                    'grade',
+                    'avatar',
+                    'is_active',
+                    'verified_email'
+                )->where([
+                    ['role_id','<>', 1],
+                    ['school_id','=', $user-school_id]
+                ])->get()->toJson(JSON_PRETTY_PRINT);
+            return response($users, 200);
+        }
+
     }
+
 
     /**
      * Show the form for creating a new resource.
