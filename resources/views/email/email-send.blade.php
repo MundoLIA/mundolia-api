@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <!--[if !mso]><!-->
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <!--<![endif]-->
     <!--[if (gte mso 9)|(IE)]>
     <xml>
@@ -37,7 +36,7 @@
     <![endif]-->
     <style type="text/css">
         body, p, div {
-            font-family: 'Noto Serif', serif;
+            font-family: 'Lato', sans-serif;
             font-size: 14px;
         }
 
@@ -46,7 +45,7 @@
         }
 
         body a {
-            color: #fe5d61;
+            color: #117bfe;
             text-decoration: none;
         }
 
@@ -175,7 +174,7 @@
                                                                     valign="top" align="left">
                                                                     <img class="max-width" border="0"
                                                                          style=" display:block; color:#000000; text-decoration:none; font-family:'Poppins', sans-serif; font-size:16px; max-width:40% !important; width:40%; height:auto !important; "
-                                                                         src="{{asset('images/clublia.png')}}"
+                                                                         src="https://clublia.com/wp-content/uploads/2020/02/clublia.png"
                                                                          alt="Off Grid Adventures" width="240"
                                                                          data-responsive="true"
                                                                          data-proportionally-constrained="false">
@@ -184,9 +183,9 @@
                                                                     valign="top" align="left">
                                                                     <div>
                                                                         <h2>Bienvenido</h2>
-                                                                        <p>Usuario: </p>
+                                                                        <p>Usuario:asdfg </p>
                                                                         &nbsp;
-                                                                        <p>Contrasena: </p>
+                                                                        <p>Contrasena: asdf </p>
                                                                     </div>
 
                                                                 </td>
@@ -203,7 +202,7 @@
                                                                     height="100%" valign="top" bgcolor="#FE5D61">
                                                                     <div>
                                                                         <div
-                                                                            style="font-family: inherit; text-align: center">
+                                                                            style="color:#ffffff; font-family: inherit; text-align: justify">
                                                                             Tu acceso a LA NUEVA COMUNIDAD DE CLUB LIA
                                                                             ha sido creada con éxito.
                                                                         </div>
@@ -217,7 +216,7 @@
                                                                cellpadding="0" cellspacing="0" width="100%"
                                                                style="table-layout: fixed;"
                                                                data-muid="nSVYnVzPLnGZ4wUdynLiKo">
-                                                            <tbody>
+                                                            <tbody style="color: #ffffff !important;">
                                                             <tr>
                                                                 <td style="background-color:#093E80; padding:0px 50px 30px 50px; line-height:22px; text-align:inherit;"
                                                                     height="100%" valign="top" bgcolor="#fe5d61">
@@ -296,8 +295,14 @@
                                                                data-muid="sfek66tVLi5d2iy5jmSawj">
                                                             <tbody>
                                                             <tr>
-                                                                <td style="padding:0px 0px 30px 0px;"
+                                                                <td style="text-align: center; padding: 20px 0px;"
                                                                     role="module-content" bgcolor="">
+                                                                    <div>
+                                                                        <p style="display:inline-block;margin:auto;font-size:15px;color:#2a73cc;line-height:22px;background-color:#ffffff;font-weight:bold;border:1px solid #117bfe;border-radius:2px;font-family:'Open Sans',Arial,sans-serif"
+                                                                           align="center"><a style="padding:10px 25px;display:block;text-decoration:none;"
+                                                                                             href="" style="text-decoration:none;color:#0abe51"
+                                                                                             target="_blank">Ir a la comunidad</a></p>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                             </tbody>

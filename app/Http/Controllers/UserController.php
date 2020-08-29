@@ -54,68 +54,50 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        try{
+        try {
             $input = $request->all();
+            $dataCreate['name'] = $input['nombre'];
+            $dataCreate['second_name'] = $input['segundo_nombre'];
+            $dataCreate['last_name'] = $input['apellido_paterno'];
+            $dataCreate['grade'] = User::getGrade($input['grado']);
+            $dataCreate['role_id'] = User::getRole($input['tipo_usuario'], $input['seccion']);
+            $dataCreate['second_last_name'] = $input['apellido_materno'];
+            $dataCreate['second_last_name'] = $input['apellido_materno'];
+            $dataCreate['email'] = $input['email'];
+            $dataCreate['school_id'] = $input['school_id'];
+
+            $password = $dataCreate['password'] = User::createPassword($input['seccion']);
+
             $firstName = $input['nombre'];
             $lastName = $input['apellido_paterno'];
-
-            $input['name'] = $input['nombre'];
-            $input['second_name'] = $input['segundo_nombre'];
-            $input['last_name'] = $input['apellido_paterno'];
-            $input['grade'] = $input['grado'];
-
-            if ($input['seccion'] ==  'Preescolar'){
-
-                $input['role_id'] = 9;
-
-                $password = Str::random(4);
-                $input['password'] = $password;
-            }else{
-                if ($input['seccion'] ==  'Primaria'){
-
-                    $input['role_id'] = 5;
-                    $password = Str::random(6);
-                    $input['password'] = $password;
-                }
-            }
-
-            $input['second_last_name'] = $input['apellido_materno'];
-            $input['email'] = $input['email'];
-            $input['grade'] = $input['grado'];
-            $input['second_last_name'] = $input['apellido_materno'];
-
             $email = $input['email'];
-            $secondName = $input['second_name'];
+            $secondName = $input['segundo_nombre'];
             $username = Str::slug($firstName . $lastName);
 
             $reuser = User::where([
                 ['username', '=', $username]
-            ])->first(['id', 'username', 'second_name', 'email' ]);
+            ])->first(['id', 'username', 'second_name', 'email']);
 
             if ($reuser) {
-                if ($reuser['email'] === $email && $reuser['second_name'] === $secondName){
-                    return ('El usuario ya existe');
-                }
-                else{
-                        $i = 0;
-                        while (User::whereUsername($username)->exists()) {
-                            $i++;
-                            $username = $firstName[0] . $lastName . $i;
-                        }
-
-                        $input['username'] = $username;
+                if ($reuser['email'] === $email && $reuser['second_name'] === $secondName) {
+                    return (["message" => "El usuario ya existe", "username" => $username]);
+                } else {
+                    $i = 0;
+                    while (User::whereUsername($username)->exists()) {
+                        $i++;
+                        $username = Str::slug($firstName[0] . $lastName . $i);
                     }
+                    $dataCreate['username'] = $username;
+                }
+            } else {
+                $dataCreate['username'] = $username;
             }
-            else{
-
-                $input['username'] = $username;
-            }
-            $user = User::create($input);
+            $user = User::create($dataCreate);
 
             $data = ([
                 'username' => $user->username,
@@ -126,11 +108,11 @@ class UserController extends Controller
                 'password' => $password
             ]);
 
-                Mail::to($user->email)->queue(new SendgridMail($data));
+            SendEmail::dispatchNow($data)->onQueue('processing');
 
             return ('Se ha creado el usuario');
 
-        }catch (Exception $e){
+        } catch (Exception $e) {
             return ('Error al crear el usuario');
         }
     }
@@ -138,21 +120,21 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\User  $user
-     * @param  \Illuminate\Http\Request  $request
-     * @param  uuid $uuid
+     * @param \App\User $user
+     * @param \Illuminate\Http\Request $request
+     * @param uuid $uuid
      * @return \Illuminate\Http\Response
      */
     public function show($uuid)
     {
-        $user = User::where('uuid','like','%'.$uuid.'%')->get();
+        $user = User::where('uuid', 'like', '%' . $uuid . '%')->get();
         return $user->toJson(JSON_PRETTY_PRINT);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User  $user
+     * @param \App\User $user
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
@@ -163,9 +145,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
-     * @param  uuid $uuid
+     * @param \Illuminate\Http\Request $request
+     * @param \App\User $user
+     * @param uuid $uuid
      * @return \Illuminate\Http\Response
      */
     public function update($uuid)
@@ -180,13 +162,13 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\User  $user
-     * @param  uuid  $uuid
+     * @param \App\User $user
+     * @param uuid $uuid
      * @return \Illuminate\Http\Response
      */
     public function destroy($uuid)
     {
-        $user = User::where('uuid','like','%'.$uuid.'%')->firstOrFail();
+        $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
         $user->delete();
 
         return response()->json([
