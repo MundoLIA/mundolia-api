@@ -14,9 +14,10 @@ class LiaSchoolController extends Controller
     public function index()
     {
 
-        $schools = \DB::connection('sqlsrv')->select('Select * FROM dbo.Schools');
+        $schools = \DB::connection('sqlsrv')
+            ->select('Select SchoolId as id, SchoolId,School,Description,IsActive,CurrentUsers FROM dbo.Schools');
 
-        return response($schools, 200);
+        return response()->json($schools, 200);
     }
 
     /**
