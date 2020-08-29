@@ -114,7 +114,7 @@ trait UpdateGenericClass{
                 'grade' => $user->grade,
                 'password' => $password
             ]);
-            //Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
+            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
 
 //            if( env('MAIL_CONFIG', 'dev') == 'prod') {
 //                Mail::to($user->email)->queue(new SendgridMail($data));

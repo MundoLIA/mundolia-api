@@ -45,7 +45,7 @@
         }
 
         body a {
-            color: #fe5d61;
+            color: #117bfe;
             text-decoration: none;
         }
 
@@ -185,7 +185,7 @@
                                                                         <h2>Bienvenido</h2>
                                                                         <p>Usuario: {{$data['username']}} </p>
                                                                         &nbsp;
-                                                                        <p>Contrasena: {{$data['password']}} </p>
+                                                                        <p>Contrasena: {{$data['password']}}</p>
                                                                     </div>
 
                                                                 </td>
@@ -295,8 +295,14 @@
                                                                data-muid="sfek66tVLi5d2iy5jmSawj">
                                                             <tbody>
                                                             <tr>
-                                                                <td style="padding:0px 0px 30px 0px;"
+                                                                <td style="text-align: center; padding: 20px 0px;"
                                                                     role="module-content" bgcolor="">
+                                                                    <div>
+                                                                        <p style="display:inline-block;margin:auto;font-size:15px;color:#2a73cc;line-height:22px;background-color:#ffffff;font-weight:bold;border:1px solid #117bfe;border-radius:2px;font-family:'Open Sans',Arial,sans-serif"
+                                                                           align="center"><a style="padding:10px 25px;display:block;text-decoration:none;"
+                                                                                             href="" style="text-decoration:none;color:#0abe51"
+                                                                                             target="_blank">Ir a la comunidad</a></p>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                             </tbody>
