@@ -158,7 +158,7 @@ class UserController extends Controller
                     $error["message"] = "El usuario ya existe.";
                     $errors["username"] = 'El usuario ya existe';
 
-                    $error["errors"] =[$errors];
+                    $error["errors"] =$errors;
                     return response()->json(['error' => $error], 200);
                 }
             } else {
@@ -177,7 +177,7 @@ class UserController extends Controller
 
             SendEmail::dispatchNow($data);
 
-            $success['message'] = 'Se ha creado el usuario';
+            $success['message'] = 'Usuario creado';
             $success['code'] = 200;
             return response()->json($success,200);
 
@@ -227,11 +227,68 @@ class UserController extends Controller
      */
     public function update($uuid)
     {
-        User::updateData($uuid);
 
-        return response()->json([
-            "message" => "El usuario ha sido actualizado",
-        ], 200);
+
+        $request = request()->all();
+
+        try {
+            $validator = Validator::make($request, [
+                'name' => 'required',
+                'email' => 'required|email',
+                'role_id' => 'required',
+                'school_id' => 'required',
+                'last_name' => 'required',
+                'grade' => 'required',
+            ]);
+            if ($validator->fails()) {
+                $error["code"] = 'INVALID_DATA';
+                $error["message"] = "Información Invalida.";
+                $error["errors"] =$validator->errors();
+
+                return response()->json(['error' => $error], 200);
+            }
+
+            $user = Auth::user();
+            $input = $request;
+
+            if($user->role_id == 1 || $user->role_id == 2){
+                $dataCreate['role_id'] = $input['role_id'];
+                $dataCreate['school_id'] = $input['school_id'];
+            }else{
+                if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 9 ){
+                    $dataCreate['role_id'] = $input['role_id'];
+                }else{
+                    $dataCreate['role_id'] = 4;
+                }
+                $dataCreate['school_id'] = $user->school_id;
+            }
+
+            $dataCreate['name'] = $input['name'];
+            $dataCreate['last_name'] = $input['last_name'];
+            $dataCreate['grade'] = $input['grade'];
+            $dataCreate['email'] = $input['email'];
+
+
+            if (array_key_exists('password', $input)) {
+               $dataCreate['password'] =$input['password'];
+            }
+
+            User::where('uuid','like','%'.$uuid.'%')->firstOrFail()
+                ->update($dataCreate);
+
+            $success['message'] = 'Usuario Actualizado';
+            $success['code'] = 200;
+            return response()->json($success,200);
+
+        } catch (Exception $e) {
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "Error al crear el usuario";
+            $errors["username"] = "Error al crear el usuario.";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 500);
+        }
     }
 
     /**
