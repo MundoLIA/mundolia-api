@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmail;
 use App\Mail\SendgridMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -113,7 +114,7 @@ class UserController extends Controller
             ])->first(['id', 'username', 'second_name', 'email']);
 
             if ($reuser) {
-                if ($reuser['email'] === $email && $reuser['second_name'] === $secondName) {
+                if ($reuser['email'] == $email && $reuser['second_name'] == $secondName) {
                     return (["message" => "El usuario ya existe", "username" => $username]);
                 } else {
                     $i = 0;
@@ -137,7 +138,7 @@ class UserController extends Controller
                 'password' => $password
             ]);
 
-            SendEmail::dispatchNow($data)->onQueue('processing');
+            SendEmail::dispatchNow($data);
 
             return ('Se ha creado el usuario');
 

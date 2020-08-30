@@ -11,11 +11,11 @@ class SendgridMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data;
 
-    public function __construct($data)
+
+    public function __construct()
     {
-        $this->data = $data;
+
     }
 
     public function build()

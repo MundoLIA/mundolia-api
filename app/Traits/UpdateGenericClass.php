@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Jobs\SendEmail;
 use App\Mail\SendgridMail;
 use App\User;
 use Exception;
@@ -114,7 +115,8 @@ trait UpdateGenericClass{
                 'grade' => $user->grade,
                 'password' => $password
             ]);
-            Mail::to('dylan.lievano.cuevas@gmail.com')->queue(new SendgridMail($data));
+
+            SendEmail::dispatchNow($data)->onQueue('processing');
 
 //            if( env('MAIL_CONFIG', 'dev') == 'prod') {
 //                Mail::to($user->email)->queue(new SendgridMail($data));
