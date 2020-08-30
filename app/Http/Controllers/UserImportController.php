@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\SendgridMail;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
@@ -40,7 +41,11 @@ class UserImportController extends Controller
     public function store(Request $request)
     {
         try {
-
+            $user = Auth::user();
+            $school_id =  $user->school_id;
+            if($user->role_id == 1 || $user->role_id == 2){
+                $school_id = $request->input('school_id');
+            }
             $data = $request->input('data');
             $i = -1;
             foreach ($data as $obj) {
@@ -50,7 +55,7 @@ class UserImportController extends Controller
                 }
 
                 $resp = $obj;
-                $respCreate = User::dataUser($insertArr);
+                $respCreate = User::dataUser($insertArr,$school_id);
                 $resp ['result'] = $respCreate["message"];
                 $resp ['username'] = $respCreate["username"];
                 $result [++$i] = (array) $resp;

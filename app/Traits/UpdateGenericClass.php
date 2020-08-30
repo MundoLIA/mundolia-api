@@ -64,7 +64,7 @@ trait UpdateGenericClass{
         }
         return $password;
     }
-    public static function dataUser($input)
+    public static function dataUser($input, $school_id)
     {
         try {
 
@@ -76,7 +76,7 @@ trait UpdateGenericClass{
             $dataCreate['second_last_name'] = $input['apellido_materno'];
             $dataCreate['second_last_name'] = $input['apellido_materno'];
             $dataCreate['email'] = $input['email'];
-            $dataCreate['school_id'] = $input['school_id'];
+            $dataCreate['school_id'] = $school_id;
 
             $password = $dataCreate['password'] = self::createPassword($input['seccion']);
 

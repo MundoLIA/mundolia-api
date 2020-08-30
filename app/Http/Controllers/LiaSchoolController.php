@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\SchoolLIA;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use \App\School;
 
 class LiaSchoolController extends Controller
 {
@@ -28,6 +30,38 @@ class LiaSchoolController extends Controller
         }
 
         return response()->json($schools, 200);
+    }
+    public function sync()
+    {
+        $user = Auth::user();
+
+        if($user->role_id == 1 || $user->role_id == 2) {
+            $schoolsInsert = array();
+            $schools = \App\SchoolLIA::all();
+            \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            \DB::table('schools')->truncate();
+            \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            foreach($schools as $s){
+                $a =  array(
+                    'id'=> $s->SchoolId,
+                    'name'=> $s->School ,
+                    'description'=> $s->Description,
+                    'is_active'=> $s->IsActive,
+                    'current_user'=> $s->CurrentUsers,
+                    'has_kinder'=> $s->HasKinder,
+                    'has_h2d'=> $s->HasH2D,
+                    'has_clplus'=> $s->HasCLPlus,
+                    'created_at'=>date('Y-m-d H:i:s'),
+                    'updated_at'=> date('Y-m-d H:i:s')
+                );
+                array_push($schoolsInsert, $a);
+
+            }
+            School::insert($schoolsInsert);
+
+        }
+        return response()->json(["message"=>"Sincronización completada"], 200);
     }
 
     /**

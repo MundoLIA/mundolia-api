@@ -15,13 +15,13 @@ class CreateSchoolsTable extends Migration
     {
         Schema::create('schools', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->index();
-            $table->string('description');
-            $table->boolean('is_active')->default(true);
-            $table->boolean('current_user')->default(true);
-            $table->boolean('has_kinder')->default(false);
-            $table->boolean('has_h2d')->default(true);
-            $table->boolean('has_clplus')->default(true);
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->boolean('is_active')->nullable();
+            $table->bigInteger('current_user')->nullable();
+            $table->boolean('has_kinder')->nullable();
+            $table->boolean('has_h2d')->nullable();
+            $table->boolean('has_clplus')->nullable();
             $table->timestamps();
         });
     }
