@@ -116,7 +116,8 @@ trait UpdateGenericClass{
                 'password' => $password
             ]);
 
-            SendEmail::dispatchNow($data)->onQueue('processing');
+            SendEmail::dispatch($data);
+            //SendEmail::dispatchNow($data);
 
 //            if( env('MAIL_CONFIG', 'dev') == 'prod') {
 //                Mail::to($user->email)->queue(new SendgridMail($data));

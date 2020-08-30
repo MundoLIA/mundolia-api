@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\Input;
+use Validator;
 
 
 class UserController extends Controller
@@ -27,44 +28,56 @@ class UserController extends Controller
         $user = Auth::user();
 
         if($user->role_id == 1 || $user->role_id == 2){
-            $users = User::where('role_id','<>', 1)
-                ->select(
-                    'id',
-                    'uuid',
-                    'username',
-                    'name',
-                    'second_name',
-                    'last_name',
-                    'second_last_name',
-                    'school_id',
-                    'email',
-                    'grade',
-                    'avatar',
-                    'is_active',
-                    'verified_email'
 
-                )->get()->toJson(JSON_PRETTY_PRINT);
+            $users = \DB::table('users')
+                ->leftJoin('schools', 'users.school_id', '=', 'schools.id')
+                ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
+                ->select(
+                    'users.id',
+                    'users.uuid',
+                    'users.username',
+                    'users.name',
+                    'users.second_name',
+                    'users.last_name',
+                    'users.second_last_name',
+                    'users.school_id',
+                    'schools.name as school_name',
+                    'roles.name as role_name',
+                    'users.role_id',
+                    'users.email',
+                    'users.grade',
+                    'users.avatar',
+                    'users.is_active',
+                    'users.verified_email')
+                ->get()->where('role_id','<>', 1)->toJson(JSON_PRETTY_PRINT);
+
             return response($users, 200);
         }
         if($user->role_id == 3){
-            $users = User::select(
-                    'id',
-                    'uuid',
-                    'username',
-                    'name',
-                    'second_name',
-                    'last_name',
-                    'second_last_name',
-                    'school_id',
-                    'email',
-                    'grade',
-                    'avatar',
-                    'is_active',
-                    'verified_email'
-                )->where([
+            $users = \DB::table('users')
+                ->leftJoin('schools', 'users.school_id', '=', 'schools.id')
+                ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
+                ->select(
+                    'users.id',
+                    'users.uuid',
+                    'users.username',
+                    'users.name',
+                    'users.second_name',
+                    'users.last_name',
+                    'users.second_last_name',
+                    'users.school_id',
+                    'schools.name as school_name',
+                    'roles.name as role_name',
+                    'users.role_id',
+                    'users.email',
+                    'users.grade',
+                    'users.avatar',
+                    'users.is_active',
+                    'users.verified_email')
+                ->get()->where([
                     ['role_id','<>', 1],
                     ['school_id','=', $user-school_id]
-                ])->get()->toJson(JSON_PRETTY_PRINT);
+                ])->toJson(JSON_PRETTY_PRINT);
             return response($users, 200);
         }
 
@@ -90,39 +103,70 @@ class UserController extends Controller
     public function store(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => 'required|email',
+                'role_id' => 'required',
+                'school_id' => 'required',
+                'username' => 'required',
+                'last_name' => 'required',
+                'grade' => 'required',
+            ]);
+            if ($validator->fails()) {
+                $error["code"] = 'INVALID_DATA';
+                $error["message"] = "Información Invalida.";
+
+                $errors["message"] = ['error'=>$validator->errors()];
+                $errors["domain"] = "global";
+                $errors["reason"] = "invalid";
+
+                $error["errors"] =[$errors];
+
+                return response()->json(['error' => $error], 401);
+            }
+
+            $user = Auth::user();
             $input = $request->all();
-            $dataCreate['name'] = $input['nombre'];
-            $dataCreate['second_name'] = $input['segundo_nombre'];
-            $dataCreate['last_name'] = $input['apellido_paterno'];
-            $dataCreate['grade'] = User::getGrade($input['grado']);
-            $dataCreate['role_id'] = User::getRole($input['tipo_usuario'], $input['seccion']);
-            $dataCreate['second_last_name'] = $input['apellido_materno'];
-            $dataCreate['second_last_name'] = $input['apellido_materno'];
+
+            if($user->role_id == 1 || $user->role_id == 2){
+                $dataCreate['role_id'] = $input['role_id'];
+                $dataCreate['school_id'] = $input['school_id'];
+            }else{
+                if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 9 ){
+                    $dataCreate['role_id'] = $input['role_id'];
+                }else{
+                    $dataCreate['role_id'] = 4;
+                }
+                $dataCreate['school_id'] = $user->school_id;
+            }
+
+            $dataCreate['name'] = $input['name'];
+            $dataCreate['username'] = $input['username'];
+            $dataCreate['last_name'] = $input['last_name'];
+            $dataCreate['grade'] = $input['grade'];
             $dataCreate['email'] = $input['email'];
-            $dataCreate['school_id'] = $input['school_id'];
 
-            $password = $dataCreate['password'] = User::createPassword($input['seccion']);
+            $password = $dataCreate['password'] = User::createPassword($input['password']);
 
-            $firstName = $input['nombre'];
-            $lastName = $input['apellido_paterno'];
             $email = $input['email'];
-            $secondName = $input['segundo_nombre'];
-            $username = Str::slug($firstName . $lastName);
+            $username = $dataCreate['username'];
 
             $reuser = User::where([
                 ['username', '=', $username]
             ])->first(['id', 'username', 'second_name', 'email']);
 
             if ($reuser) {
-                if ($reuser['email'] == $email && $reuser['second_name'] == $secondName) {
-                    return (["message" => "El usuario ya existe", "username" => $username]);
-                } else {
-                    $i = 0;
-                    while (User::whereUsername($username)->exists()) {
-                        $i++;
-                        $username = Str::slug($firstName[0] . $lastName . $i);
-                    }
-                    $dataCreate['username'] = $username;
+                if ($reuser['email'] == $email ) {
+
+                    $error["code"] = 'INVALID_DATA';
+                    $error["message"] = "El usuario ya existe.";
+
+                    $errors["message"] = 'El usuario ya existe';
+                    $errors["domain"] = "global";
+                    $errors["reason"] = "invalid";
+
+                    $error["errors"] =[$errors];
+                    return response()->json(['error' => $error], 401);
                 }
             } else {
                 $dataCreate['username'] = $username;
@@ -140,10 +184,20 @@ class UserController extends Controller
 
             SendEmail::dispatchNow($data);
 
-            return ('Se ha creado el usuario');
+            $success['message'] = 'Se ha creado el usuario';
+            return response()->json($success,200);
 
         } catch (Exception $e) {
-            return ('Error al crear el usuario');
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "Error al crear el usuario";
+
+            $errors["message"] = "Error al crear el usuario.";
+            $errors["domain"] = "global";
+            $errors["reason"] = "invalid";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 500);
         }
     }
 

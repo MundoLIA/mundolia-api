@@ -12,12 +12,12 @@ class SendgridMail extends Mailable
     use Queueable, SerializesModels;
 
 
+    public $data;
 
-    public function __construct()
+    public function __construct($data)
     {
-
+        $this->data = $data;
     }
-
     public function build()
     {
         $address = 'noreply@clublia.com';
@@ -27,6 +27,6 @@ class SendgridMail extends Mailable
         return $this->markdown('email.message-send')
             ->from($address, $name)
             ->subject($subject)
-            ->with([ 'user_info' => $this->data]);
+            ->with([ 'user_info' =>  $this->data]);
     }
 }
