@@ -31,6 +31,22 @@ class LiaSchoolController extends Controller
 
         return response()->json($schools, 200);
     }
+    public function list()
+    {
+        $user = Auth::user();
+
+        if($user->role_id == 1 || $user->role_id == 2) {
+            $schools = \DB::select('Select  id, id as SchoolId,name as School,description as Description,is_active as IsActive, current_user as CurrentUsers
+                            FROM schools ORDER BY name');
+        }else{
+            $schools = \DB::select('Select  id, id as SchoolId,name as School,description as Description,is_active as IsActive, current_user as CurrentUsers
+                            FROM schools
+                            WHERE SchoolId = '. $user->school_id.'
+                            ORDER BY name');
+        }
+
+        return response()->json($schools, 200);
+    }
     public function sync()
     {
         $user = Auth::user();

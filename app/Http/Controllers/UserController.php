@@ -111,18 +111,14 @@ class UserController extends Controller
                 'username' => 'required',
                 'last_name' => 'required',
                 'grade' => 'required',
+                'password' => 'required',
             ]);
             if ($validator->fails()) {
                 $error["code"] = 'INVALID_DATA';
                 $error["message"] = "Información Invalida.";
+                $error["errors"] =$validator->errors();
 
-                $errors["message"] = ['error'=>$validator->errors()];
-                $errors["domain"] = "global";
-                $errors["reason"] = "invalid";
-
-                $error["errors"] =[$errors];
-
-                return response()->json(['error' => $error], 401);
+                return response()->json(['error' => $error], 200);
             }
 
             $user = Auth::user();
@@ -146,7 +142,7 @@ class UserController extends Controller
             $dataCreate['grade'] = $input['grade'];
             $dataCreate['email'] = $input['email'];
 
-            $password = $dataCreate['password'] = User::createPassword($input['password']);
+            $password = $dataCreate['password'] =$input['password'];
 
             $email = $input['email'];
             $username = $dataCreate['username'];
@@ -160,13 +156,10 @@ class UserController extends Controller
 
                     $error["code"] = 'INVALID_DATA';
                     $error["message"] = "El usuario ya existe.";
-
-                    $errors["message"] = 'El usuario ya existe';
-                    $errors["domain"] = "global";
-                    $errors["reason"] = "invalid";
+                    $errors["username"] = 'El usuario ya existe';
 
                     $error["errors"] =[$errors];
-                    return response()->json(['error' => $error], 401);
+                    return response()->json(['error' => $error], 200);
                 }
             } else {
                 $dataCreate['username'] = $username;
@@ -185,15 +178,13 @@ class UserController extends Controller
             SendEmail::dispatchNow($data);
 
             $success['message'] = 'Se ha creado el usuario';
+            $success['code'] = 200;
             return response()->json($success,200);
 
         } catch (Exception $e) {
             $error["code"] = 'INVALID_DATA';
             $error["message"] = "Error al crear el usuario";
-
-            $errors["message"] = "Error al crear el usuario.";
-            $errors["domain"] = "global";
-            $errors["reason"] = "invalid";
+            $errors["username"] = "Error al crear el usuario.";
 
             $error["errors"] =[$errors];
 

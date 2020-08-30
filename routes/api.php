@@ -67,6 +67,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::delete('roles/{id}', 'RoleController@destroy');
 
     Route::get('lia-schools', 'LiaSchoolController@index');
+    Route::get('schools', 'LiaSchoolController@list');
     Route::get('lia-schools-sync', 'LiaSchoolController@sync');
 
     Route::post('importar/usuarios', 'UserImportController@store');
