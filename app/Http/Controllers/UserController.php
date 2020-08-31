@@ -103,30 +103,7 @@ class UserController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-    public function createUserLIA($dataCreate){
 
-
-        $now = new DateTime();
-
-        $dataLIA = ([
-            'AppUser' =>  $dataCreate['username'],
-            'Names' =>  $dataCreate['name'],
-            'LastNames' => $dataCreate['last_name'],
-            'Email' =>  $dataCreate['email'],
-            'Grade' =>  $dataCreate['grade'],
-            'Password' => $dataCreate['password'],
-            'RoleId' =>  $dataCreate['role_id'],
-            'IsActive' => 1,
-            'SchoolId' => $dataCreate['school_id'],
-            'SchoolGroupKey'=> 1,
-            'MemberSince'=> $now,
-            'CreatorId' => 68,
-            'EditorId' => 68,
-            'Avatar' => null,
-        ]);
-
-        return UserLIA::create($dataLIA);
-    }
     public function store(Request $request)
     {
         try {
@@ -155,7 +132,7 @@ class UserController extends Controller
                 $dataCreate['role_id'] = $input['role_id'];
                 $dataCreate['school_id'] = $input['school_id'];
             }else{
-                if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 9 ){
+                if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 13 ){
                     $dataCreate['role_id'] = $input['role_id'];
                 }else{
                     $dataCreate['role_id'] = 4;
@@ -191,9 +168,29 @@ class UserController extends Controller
             } else {
                 $dataCreate['username'] = $username;
             }
-            $userLIA = self::createUserLIA($dataCreate);
 
-            $dataCreate['school_key_id'] = $userLIA->AppUserId;
+            $now = new DateTime();
+
+            $dataLIA = ([
+                'AppUser' =>  $dataCreate['username'],
+                'Names' =>  $dataCreate['name'],
+                'LastNames' => $dataCreate['last_name'],
+                'Email' =>  $dataCreate['email'],
+                'Grade' =>  $dataCreate['grade'],
+                'Password' => $dataCreate['password'],
+                'RoleId' =>  $dataCreate['role_id'],
+                'IsActive' => 1,
+                'SchoolId' => $dataCreate['school_id'],
+                'SchoolGroupKey'=> 140232,
+                'MemberSince'=> $now,
+                'CreatorId' => 68,
+                'EditorId' => 68,
+                'Avatar' => null,
+            ]);
+
+            $userLIA = UserLIA::create($dataLIA);
+
+            $dataCreate['AppUserId'] = $userLIA->AppUserId;
 
             $user = User::create($dataCreate);
 
@@ -258,8 +255,6 @@ class UserController extends Controller
      */
     public function update($uuid)
     {
-
-
         $request = request()->all();
 
         try {
@@ -275,7 +270,6 @@ class UserController extends Controller
                 $error["code"] = 'INVALID_DATA';
                 $error["message"] = "Información Invalida.";
                 $error["errors"] =$validator->errors();
-
                 return response()->json(['error' => $error], 200);
             }
 
@@ -286,7 +280,7 @@ class UserController extends Controller
                 $dataCreate['role_id'] = $input['role_id'];
                 $dataCreate['school_id'] = $input['school_id'];
             }else{
-                if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 9 ){
+                if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 13 ){
                     $dataCreate['role_id'] = $input['role_id'];
                 }else{
                     $dataCreate['role_id'] = 4;
@@ -302,10 +296,33 @@ class UserController extends Controller
 
             if (array_key_exists('password', $input)) {
                $dataCreate['password'] =$input['password'];
+                $dataLIA = ([
+                    'Names' =>  $dataCreate['name'],
+                    'LastNames' => $dataCreate['last_name'],
+                    'Email' =>  $dataCreate['email'],
+                    'Grade' =>  $dataCreate['grade'],
+                    'Password' => $dataCreate['password'],
+                    'RoleId' =>  $dataCreate['role_id'],
+                    'SchoolId' => $dataCreate['school_id']
+                ]);
+            }else{
+                $dataLIA = ([
+                    'Names' =>  $dataCreate['name'],
+                    'LastNames' => $dataCreate['last_name'],
+                    'Email' =>  $dataCreate['email'],
+                    'Grade' =>  $dataCreate['grade'],
+                    'RoleId' =>  $dataCreate['role_id'],
+                    'SchoolId' => $dataCreate['school_id']
+                ]);
             }
+
+            $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
 
             User::where('uuid','like','%'.$uuid.'%')->firstOrFail()
                 ->update($dataCreate);
+
+            UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()
+                ->update($dataLIA);
 
             $success['message'] = 'Usuario Actualizado';
             $success['code'] = 200;
@@ -332,8 +349,9 @@ class UserController extends Controller
     public function destroy($uuid)
     {
         $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-        $userLIA = UserLIA::where('AppUserId', '=', $user->school_key_id )->firstOrFail();
-        //$user->delete();
+        $userLIA = UserLIA::find($user->AppUserId);
+        $userLIA->delete();
+        $user->delete();
 
 
         return response()->json([

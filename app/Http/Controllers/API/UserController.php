@@ -30,7 +30,13 @@ class UserController extends Controller
                 $dataUser['photoURL'] = $user->email;
                 $dataUser['role'] = $user->role->slug;
                 $dataUser['school_id'] = $user->school_id;
+                $dataUser['username'] = $user->username;
                 $dataUser['school_name'] = $user->school_id ? $user->school->name : null;
+
+                if($user->role->slug == 'alumno' || $user->role->slug == 'maestro' || $user->role->slug == 'preescolar'){
+                    $dataUser['uuid_'] = $user->password;
+                }
+
 
                 $dataUser['uuid'] = $user->id;
 
@@ -140,7 +146,11 @@ class UserController extends Controller
             $dataUser['photoURL'] = $user->email;
             $dataUser['role'] = $user->role->slug;
             $dataUser['school_id'] = $user->school_id;
+            $dataUser['username'] = $user->username;
             $dataUser['school_name'] = $user->school_id ? $user->school->name : null;
+            if($user->role->slug == 'alumno' || $user->role->slug == 'maestro' || $user->role->slug == 'preescolar'){
+                $dataUser['uuid_'] = $user->password;
+            }
 
             $dataUser['uuid'] = $user->id;
 

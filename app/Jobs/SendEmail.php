@@ -33,7 +33,7 @@ class SendEmail implements ShouldQueue
     public function handle()
     {
         $email = new SendgridMail($this->details);
-        Mail::to('antonio2120@gmail.com')->queue($email);
-        //Mail::to($this->details['email'])->queue($email);
+        //Mail::to('antonio2120@gmail.com')->queue($email);
+        Mail::to($this->details['email'])->queue($email);
     }
 }

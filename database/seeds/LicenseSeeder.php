@@ -14,15 +14,15 @@ class LicenseSeeder extends Seeder
     public function run()
     {
 
-        License::create([
-            'titular' => 'Colegio Lia',
-            'email_admin' => 'test@email.com',
-            'school_id' => null,
-            'license_type_id' =>'1',
-            'user_id' => null,
-            'studens_limit' => '500',
-            'purchase_at' => Carbon::now(),
-            'expiration_date' =>  Carbon::now()->add(1, 'year'),
-        ]);
+//        License::create([
+//            'titular' => 'Colegio Lia',
+//            'email_admin' => 'test@email.com',
+//            'school_id' => null,
+//            'license_type_id' =>'1',
+//            'user_id' => null,
+//            'studens_limit' => '500',
+//            'purchase_at' => Carbon::now(),
+//            'expiration_date' =>  Carbon::now()->add(1, 'year'),
+//        ]);
     }
 }

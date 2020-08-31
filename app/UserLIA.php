@@ -18,6 +18,7 @@ class UserLIA extends Authenticatable
     protected $connection= 'sqlsrv';
 
     protected $table = 'dbo.AppUsers';
+    protected $primaryKey = 'AppUserId';
     protected $fillable = [
         'AppUserId','AppUser', 'Names', 'LastNames','Password', 'RoleId', 'IsActive','Email', 'SchoolId', 'SchoolGroupKey', 'MemberSince', 'Grade', 'CreatorId','EditorId', 'Avatar'
     ];

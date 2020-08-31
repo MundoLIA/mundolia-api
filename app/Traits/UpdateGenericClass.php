@@ -5,8 +5,11 @@ namespace App\Traits;
 use App\Jobs\SendEmail;
 use App\Mail\SendgridMail;
 use App\User;
+use App\UserLIA;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -45,7 +48,7 @@ trait UpdateGenericClass{
             $rol = 3;
         }
         if($seccion == "Preescolar" && $role == "Alumno"){
-            $rol= 9;
+            $rol= 13;
         }
         if($seccion == "Primaria" && $role == "Alumno"){
             $rol = 5;
@@ -68,43 +71,75 @@ trait UpdateGenericClass{
     public static function dataUser($input, $school_id)
     {
         try {
+            $user = Auth::user();
 
-            $dataCreate['name'] = $input['nombre'];
-            $dataCreate['second_name'] = $input['segundo_nombre'];
-            $dataCreate['last_name'] = $input['apellido_paterno'];
+            $role_id= self::getRole($input['tipo_usuario'],$input['seccion']);
+            if($user->role_id == 1 || $user->role_id == 2){
+                $dataCreate['school_id'] = $school_id;
+                $dataCreate['role_id'] = $role_id;
+            }else{
+                if ( $role_id == 4 || $role_id == 5 ||  $role_id == 13 ){
+                    $dataCreate['role_id'] = $role_id;
+                }else{
+                    $dataCreate['role_id'] = 4;
+                }
+                $dataCreate['school_id'] = $user->school_id;
+            }
+            $dataCreate['name'] = $input['nombre'].' '.$input['segundo_nombre'];
+            $dataCreate['last_name'] = $input['apellido_paterno'].' '.$input['apellido_materno'];
             $dataCreate['grade'] = self::getGrade($input['grado']);
-            $dataCreate['role_id'] = self::getRole($input['tipo_usuario'],$input['seccion']);
-            $dataCreate['second_last_name'] = $input['apellido_materno'];
-            $dataCreate['second_last_name'] = $input['apellido_materno'];
             $dataCreate['email'] = $input['email'];
-            $dataCreate['school_id'] = $school_id;
 
             $password = $dataCreate['password'] = self::createPassword($input['seccion']);
 
             $firstName = $input['nombre'];
             $lastName = $input['apellido_paterno'];
             $email = $input['email'];
-            $secondName = $input['segundo_nombre'];
             $username = Str::slug($firstName . $lastName);
 
-            $reuser = self::where([
-                ['username', '=', $username]
-            ])->first(['id', 'username', 'second_name', 'email' ]);
+            $reuser = \DB::select('Select
+                            users.id,
+                            users.username,
+                            users.name,
+                            users.last_name,
+                            users.email
+                            FROM users
+                            WHERE users.email = "'.$email.'" and username = "'.$username.'"
+                            LIMIT 1');
 
             if ($reuser) {
-                if ($reuser['email'] === $email && $reuser['second_name'] === $secondName) {
                     return (["message" => "El usuario ya existe", "username" => $username]);
-                } else {
-                    $i = 0;
-                    while (self::whereUsername($username)->exists()) {
-                        $i++;
-                        $username = Str::slug($firstName[0] . $lastName . $i);
-                    }
-                    $dataCreate['username'] = $username;
-                }
             } else {
+                $i = 0;
+                while (self::whereUsername($username)->exists()) {
+                    $i++;
+                    $username = Str::slug($firstName[0] . $lastName . $i);
+                }
                 $dataCreate['username'] = $username;
             }
+
+            $now = new DateTime();
+
+            $dataLIA = ([
+                'AppUser' =>  $dataCreate['username'],
+                'Names' =>  $dataCreate['name'],
+                'LastNames' => $dataCreate['last_name'],
+                'Email' =>  $dataCreate['email'],
+                'Grade' =>  $dataCreate['grade'],
+                'Password' => $dataCreate['password'],
+                'RoleId' =>  $dataCreate['role_id'],
+                'IsActive' => 1,
+                'SchoolId' => $dataCreate['school_id'],
+                'SchoolGroupKey'=> 140232,
+                'MemberSince'=> $now,
+                'CreatorId' => 68,
+                'EditorId' => 68,
+                'Avatar' => null,
+            ]);
+
+            $userLIA = UserLIA::create($dataLIA);
+            $dataCreate['AppUserId'] = $userLIA->AppUserId;
+
             $user = self::create($dataCreate);
 
             $data = ([
