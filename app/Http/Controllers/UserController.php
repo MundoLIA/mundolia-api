@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendEmail;
 use App\Mail\SendgridMail;
+use App\UserLIA;
+use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -53,34 +55,35 @@ class UserController extends Controller
 
             return response($users, 200);
         }
+
         if($user->role_id == 3){
-            $users = \DB::table('users')
-                ->leftJoin('schools', 'users.school_id', '=', 'schools.id')
-                ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
-                ->select(
-                    'users.id',
-                    'users.uuid',
-                    'users.username',
-                    'users.name',
-                    'users.second_name',
-                    'users.last_name',
-                    'users.second_last_name',
-                    'users.school_id',
-                    'schools.name as school_name',
-                    'roles.name as role_name',
-                    'users.role_id',
-                    'users.email',
-                    'users.grade',
-                    'users.avatar',
-                    'users.is_active',
-                    'users.verified_email')
-                ->get()->where([
-                    ['role_id','<>', 1],
-                    ['school_id','=', $user-school_id]
-                ])->toJson(JSON_PRETTY_PRINT);
+
+            $users = \DB::select("Select
+                            users.id,
+                            users.uuid,
+                            users.username,
+                            users.name,
+                            users.second_name,
+                            users.last_name,
+                            users.second_last_name,
+                            users.school_id,
+                            schools.name as school_name,
+                            roles.name as role_name,
+                            users.role_id,
+                            users.email,
+                            users.grade,
+                            users.avatar,
+                            users.is_active,
+                            users.verified_email
+
+                            FROM users
+                            LEFT JOIN schools ON users.school_id = schools.id
+                            LEFT JOIN roles  ON users.role_id = roles.id
+                            WHERE users.role_id <> 1 and school_id = ". $user->school_id);
+
             return response($users, 200);
         }
-
+        return response([], 200);
     }
 
 
@@ -100,6 +103,30 @@ class UserController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
+    public function createUserLIA($dataCreate){
+
+
+        $now = new DateTime();
+
+        $dataLIA = ([
+            'AppUser' =>  $dataCreate['username'],
+            'Names' =>  $dataCreate['name'],
+            'LastNames' => $dataCreate['last_name'],
+            'Email' =>  $dataCreate['email'],
+            'Grade' =>  $dataCreate['grade'],
+            'Password' => $dataCreate['password'],
+            'RoleId' =>  $dataCreate['role_id'],
+            'IsActive' => 1,
+            'SchoolId' => $dataCreate['school_id'],
+            'SchoolGroupKey'=> 1,
+            'MemberSince'=> $now,
+            'CreatorId' => 68,
+            'EditorId' => 68,
+            'Avatar' => null,
+        ]);
+
+        return UserLIA::create($dataLIA);
+    }
     public function store(Request $request)
     {
         try {
@@ -164,6 +191,10 @@ class UserController extends Controller
             } else {
                 $dataCreate['username'] = $username;
             }
+            $userLIA = self::createUserLIA($dataCreate);
+
+            $dataCreate['school_key_id'] = $userLIA->AppUserId;
+
             $user = User::create($dataCreate);
 
             $data = ([
@@ -301,10 +332,12 @@ class UserController extends Controller
     public function destroy($uuid)
     {
         $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-        $user->delete();
+        $userLIA = UserLIA::where('AppUserId', '=', $user->school_key_id )->firstOrFail();
+        //$user->delete();
+
 
         return response()->json([
-            $user,
+            $userLIA,
             "message" => "El usuario ha sido eliminado existosamente",
         ], 200);
 

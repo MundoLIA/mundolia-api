@@ -41,7 +41,7 @@ class LiaSchoolController extends Controller
         }else{
             $schools = \DB::select('Select  id, id as SchoolId,name as School,description as Description,is_active as IsActive, current_user as CurrentUsers
                             FROM schools
-                            WHERE SchoolId = '. $user->school_id.'
+                            WHERE id = '. $user->school_id.'
                             ORDER BY name');
         }
 

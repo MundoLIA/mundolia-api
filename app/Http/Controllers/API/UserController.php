@@ -15,9 +15,13 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function username()
+    {
+        return 'username';
+    }
     public function login(){
         try {
-            if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+            if (Auth::attempt(['username' => request('username'), 'password' => request('password')])) {
                 $user = Auth::user();
                 $success['access_token'] = $user->createToken('MyApp')->accessToken;
 
