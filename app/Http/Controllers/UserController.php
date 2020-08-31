@@ -146,7 +146,10 @@ class UserController extends Controller
             $dataCreate['grade'] = $input['grade'];
             $dataCreate['email'] = $input['email'];
 
-            $password = $dataCreate['password'] =$input['password'];
+            $password  = $input['password'];
+            $passwordEncode = bcrypt($password);
+            $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
+            $dataCreate['password'] = $passwordEncode;
 
             $email = $input['email'];
             $username = $dataCreate['username'];
@@ -295,7 +298,12 @@ class UserController extends Controller
 
 
             if (array_key_exists('password', $input)) {
-               $dataCreate['password'] =$input['password'];
+
+                $password  = $input['password'];
+                $passwordEncode = bcrypt($password);
+                $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
+                $dataCreate['password'] = $passwordEncode;
+
                 $dataLIA = ([
                     'Names' =>  $dataCreate['name'],
                     'LastNames' => $dataCreate['last_name'],
@@ -317,12 +325,11 @@ class UserController extends Controller
             }
 
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
+            UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()
+                ->update($dataLIA);
 
             User::where('uuid','like','%'.$uuid.'%')->firstOrFail()
                 ->update($dataCreate);
-
-            UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()
-                ->update($dataLIA);
 
             $success['message'] = 'Usuario Actualizado';
             $success['code'] = 200;

@@ -36,7 +36,7 @@ class User extends Authenticatable
         'last_name' => 'required',
         'role_id' => 'required',
         'email' => 'required|email',
-        'password' => 'required|min:6|max:255',
+        'password' => 'required',
         'grade' => 'required|max:1',
 
     ];
@@ -55,11 +55,11 @@ class User extends Authenticatable
         return 'uuid';
     }
 
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-        $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
-    }
+//    public function setPasswordAttribute($value)
+//    {
+//        $this->attributes['password'] = bcrypt($value);
+//        $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
+//    }
 
     public function role()
     {

@@ -23,9 +23,10 @@ class UserLIA extends Authenticatable
         'AppUserId','AppUser', 'Names', 'LastNames','Password', 'RoleId', 'IsActive','Email', 'SchoolId', 'SchoolGroupKey', 'MemberSince', 'Grade', 'CreatorId','EditorId', 'Avatar'
     ];
     public $timestamps = false;
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-        $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
-    }
+//    public function setPasswordAttribute($value)
+//    {
+//
+//            $this->attributes['password'] = bcrypt($value);
+//            $this->attributes['password'] = str_replace("$2y$", "$2a$", $this->attributes['password']);
+//    }
 }

@@ -90,7 +90,10 @@ trait UpdateGenericClass{
             $dataCreate['grade'] = self::getGrade($input['grado']);
             $dataCreate['email'] = $input['email'];
 
-            $password = $dataCreate['password'] = self::createPassword($input['seccion']);
+            $password  = self::createPassword($input['seccion']);
+            $passwordEncode = bcrypt($password);
+            $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
+            $dataCreate['password'] = $passwordEncode;
 
             $firstName = $input['nombre'];
             $lastName = $input['apellido_paterno'];
