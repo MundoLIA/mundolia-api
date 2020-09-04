@@ -34,10 +34,10 @@ trait UpdateGenericClass{
         $grades["Preescolar - Tercer Grado"] = 3;
         $grades["Primaria - Primer Grado"] = 1;
         $grades["Primaria - Segundo Grado"] = 2;
-        $grades["Primaria - Tercer Grado"] = 2;
-        $grades["Primaria - Cuarto Grado"] = 3;
-        $grades["Primaria - Quinto Grado"] = 4;
-        $grades["Primaria - Sexto Grado"] = 5;
+        $grades["Primaria - Tercer Grado"] = 3;
+        $grades["Primaria - Cuarto Grado"] = 4;
+        $grades["Primaria - Quinto Grado"] = 5;
+        $grades["Primaria - Sexto Grado"] = 6;
         return $grades[$grade];
     }
     public static function getRole($role, $seccion){
