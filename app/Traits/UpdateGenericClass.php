@@ -28,7 +28,7 @@ trait UpdateGenericClass{
             ->update(request()->all());
     }
 
-    public static function getGrade($grade){
+    public static function getGrade($grade, $role, $seccion){
         $grades["Preescolar - Primer Grado"] = 1;
         $grades["Preescolar - Segundo Grado"] = 2;
         $grades["Preescolar - Tercer Grado"] = 3;
@@ -38,7 +38,16 @@ trait UpdateGenericClass{
         $grades["Primaria - Cuarto Grado"] = 4;
         $grades["Primaria - Quinto Grado"] = 5;
         $grades["Primaria - Sexto Grado"] = 6;
-        return $grades[$grade];
+
+        if (array_key_exists($grade, $grades)) {
+            $role_result = $grades[$grade];
+        }else{
+            return 0;
+        }
+        if($seccion == "Preescolar" && $role == "Alumno" && $role_result > 3){
+            return 0;
+        }
+        return $role_result;
     }
     public static function getRole($role, $seccion){
         if($role == "Maestro"){
@@ -87,7 +96,7 @@ trait UpdateGenericClass{
             }
             $dataCreate['name'] = $input['nombre'].' '.$input['segundo_nombre'];
             $dataCreate['last_name'] = $input['apellido_paterno'].' '.$input['apellido_materno'];
-            $dataCreate['grade'] = self::getGrade($input['grado']);
+            $dataCreate['grade'] = self::getGrade($input['grado'], $input['tipo_usuario'],$input['seccion']);
             $dataCreate['email'] = $input['email'];
 
             $password  = self::createPassword($input['seccion']);
