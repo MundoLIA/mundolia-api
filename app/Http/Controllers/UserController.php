@@ -194,7 +194,7 @@ class UserController extends Controller
                 'Avatar' => null,
             ]);
 
-            $userLIA = UserLIA::create($dataLIA);
+            //$userLIA = UserLIA::create($dataLIA);
 
            $dataCreate['AppUserId'] = 239042;
 

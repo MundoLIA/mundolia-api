@@ -24,6 +24,8 @@ Route::post('/usuario/thinkific', 'UserThinkificController@storeUser');
 Route::put('/usuario/thinkific/{userid}', 'UserThinkificController@editUser');
 Route::delete('/usuario/thinkific/{userid}', 'UserThinkificController@deleteUser');
 
+Route::post('/sync/usuario/', 'UserThinkificController@syncUser');
+
 Route::post('/usuario/login/', 'UserThinkificController@singleSignOn');
 
 

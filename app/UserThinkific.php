@@ -62,6 +62,40 @@ class UserThinkific
         return $request;
     }
 
+    public function transferUsers(){
+
+        $matchThese = ['role_id' => 13];
+        $orThose = ['role_id' => 5];
+
+        $results = User::where($matchThese)
+            ->orWhere($orThose)
+            ->get();
+
+        $i = 0;
+        foreach ($results as $obj) {
+
+            $user = $obj;
+            var_dump($user->name);
+            $request = Http::withHeaders([
+                'X-Auth-API-Key' => 'beba502b9c8590be264d106b18f49e6e',
+                'X-Auth-Subdomain' => 'dylan-s-school-2159',
+                'Content-Type' => 'application/json',
+            ])->post('https://api.thinkific.com/api/public/v1/users', [
+                'first_name' => $user->name,
+                'last_name' => $user->last_name,
+                'email' => $user->email
+            ]);
+
+            $inputuser =  $request->json();
+            $count = ++$i;
+        }
+        if(!empty($inputuser['errors'])){
+            return (["errors" => $inputuser['errors'], "usuarios" => $count]);
+        }else{
+            return (["user" => $inputuser, "usuarios" => $count]);
+        }
+    }
+
     // Create JWT single sign on Thikinfic
     public function singleSignOn(Request $request){
 

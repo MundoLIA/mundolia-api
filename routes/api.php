@@ -71,6 +71,9 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('lia-schools-sync', 'LiaSchoolController@sync');
 
     Route::post('importar/usuarios', 'UserImportController@store');
+
+    Route::post('sync/usuario/', 'UserThinkificController@syncUser');
+
 });
 
 
