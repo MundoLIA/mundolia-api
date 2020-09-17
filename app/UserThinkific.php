@@ -73,9 +73,8 @@ class UserThinkific
 
         $i = 0;
         foreach ($results as $obj) {
-
             $user = $obj;
-            var_dump($user->name);
+
             $request = Http::withHeaders([
                 'X-Auth-API-Key' => 'beba502b9c8590be264d106b18f49e6e',
                 'X-Auth-Subdomain' => 'dylan-s-school-2159',
@@ -87,7 +86,8 @@ class UserThinkific
             ]);
 
             $inputuser =  $request->json();
-            $count = ++$i;
+            $count[++$i]= (array) $inputuser ;
+
         }
         if(!empty($inputuser['errors'])){
             return (["errors" => $inputuser['errors'], "usuarios" => $count]);
