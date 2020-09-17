@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\API;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -7,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use mysql_xdevapi\Exception;
 use Validator;
 
-class UserController extends Controller
+class UserController extends Controller 
 {
     public $successStatus = 200;
     /**

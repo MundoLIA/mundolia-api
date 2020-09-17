@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendEmail;
+use App\Jobs\UserGenericRegister;
 use App\Mail\SendgridMail;
 use App\UserLIA;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\User;
@@ -58,8 +60,9 @@ class UserController extends Controller
 
         if($user->role_id == 3){
 
-            $users = \DB::select("Select
+            $users = DB::select("Select
                             users.id,
+
                             users.uuid,
                             users.username,
                             users.name,
@@ -193,7 +196,7 @@ class UserController extends Controller
 
             $userLIA = UserLIA::create($dataLIA);
 
-            $dataCreate['AppUserId'] = $userLIA->AppUserId;
+           $dataCreate['AppUserId'] = 239042;
 
             $user = User::create($dataCreate);
 
@@ -206,6 +209,14 @@ class UserController extends Controller
                 'password' => $password
             ]);
 
+            $dataThink = ([
+                'first_name' => $user->username,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'password' => $password
+            ]);
+
+            UserGenericRegister::dispatch($dataThink);
             SendEmail::dispatchNow($data);
 
             $success['message'] = 'Usuario creado';

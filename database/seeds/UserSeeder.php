@@ -12,8 +12,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-
-
         Role::create([
             'name' => 'Admin',
             'id' => 1,
@@ -85,10 +83,7 @@ class UserSeeder extends Seeder
             'role_id' => 1
         ]);
 
-
         //factory(App\User::class, 15)->create();
-
-
 
     }
 }

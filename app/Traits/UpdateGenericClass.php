@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Jobs\SendEmail;
+use App\Jobs\UserGenericRegister;
 use App\Mail\SendgridMail;
 use App\User;
 use App\UserLIA;
@@ -154,8 +155,15 @@ trait UpdateGenericClass{
                 'password' => $password
             ]);
 
-            SendEmail::dispatch($data);
-            //SendEmail::dispatchNow($data);
+            $dataThink = ([
+                'first_name' => $user->username,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'password' => $password
+            ]);
+
+            UserGenericRegister::dispatchAfterResponse($dataThink);
+            SendEmail::dispatchNow($data);
 
 //            if( env('MAIL_CONFIG', 'dev') == 'prod') {
 //                Mail::to($user->email)->queue(new SendgridMail($data));
