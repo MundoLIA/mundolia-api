@@ -4,15 +4,24 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class UserThinkific
 {
-    public function loadUsers(){
+    protected $key;
+    protected $subdomain;
 
+    function __construct() {
+        $this->key = Config::get('app.thinkific');
+        $this->subdomain = Config::get('app.subdomain_thinkific');
+    }
+
+    public function loadUsers(){
         $response = Http::withHeaders([
-            'X-Auth-API-Key' => 'beba502b9c8590be264d106b18f49e6e',
-            'X-Auth-Subdomain' => 'dylan-s-school-2159',
+            'X-Auth-API-Key' => $this->key,
+            'X-Auth-Subdomain' => $this->subdomain,
             'Content-Type' => 'application/json'
         ])->get('https://api.thinkific.com/api/public/v1/users')->json();
 
@@ -21,8 +30,8 @@ class UserThinkific
 
     public function createUser($inputData){
         $request = Http::withHeaders([
-            'X-Auth-API-Key' => 'beba502b9c8590be264d106b18f49e6e',
-            'X-Auth-Subdomain' => 'dylan-s-school-2159',
+            'X-Auth-API-Key' => $this->key,
+            'X-Auth-Subdomain' => $this->subdomain,
             'Content-Type' => 'application/json',
         ])->post('https://api.thinkific.com/api/public/v1/users', [
             'first_name' => $inputData["first_name"],
@@ -38,8 +47,8 @@ class UserThinkific
         $data = $inputData->all();
 
         $request = Http::withHeaders([
-            'X-Auth-API-Key' => 'beba502b9c8590be264d106b18f49e6e',
-            'X-Auth-Subdomain' => 'dylan-s-school-2159',
+            'X-Auth-API-Key' => $this->key,
+            'X-Auth-Subdomain' => $this->subdomain,
             'Content-Type' => 'application/json',
         ])->put('https://api.thinkific.com/api/public/v1/users/'. $userid, [
             'first_name' => $data["first_name"],
@@ -54,8 +63,8 @@ class UserThinkific
     public function deleteUser($userid){
 
         $request = Http::withHeaders([
-            'X-Auth-API-Key' => 'beba502b9c8590be264d106b18f49e6e',
-            'X-Auth-Subdomain' => 'dylan-s-school-2159',
+            'X-Auth-API-Key' => $this->key,
+            'X-Auth-Subdomain' => $this->subdomain,
             'Content-Type' => 'application/json',
         ])->delete('https://api.thinkific.com/api/public/v1/users/'. $userid);
 
@@ -72,12 +81,13 @@ class UserThinkific
             ->get();
 
         $i = 0;
+
         foreach ($results as $obj) {
             $user = $obj;
 
             $request = Http::withHeaders([
-                'X-Auth-API-Key' => 'beba502b9c8590be264d106b18f49e6e',
-                'X-Auth-Subdomain' => 'dylan-s-school-2159',
+                'X-Auth-API-Key' => $this->key,
+                'X-Auth-Subdomain' => $this->subdomain,
                 'Content-Type' => 'application/json',
             ])->post('https://api.thinkific.com/api/public/v1/users', [
                 'first_name' => $user->name,
@@ -86,12 +96,15 @@ class UserThinkific
             ]);
 
             $inputuser =  $request->json();
-            $count[++$i]= (array) $inputuser ;
+            $count[++$i]= (array) ["respuesta" => $inputuser,"id" => $user->id] ;
 
         }
+
         if(!empty($inputuser['errors'])){
+            Log::info(json_encode(["respuesta" => $inputuser['errors'], "usuarios" => $count]));
             return (["errors" => $inputuser['errors'], "usuarios" => $count]);
         }else{
+            Log::info(json_encode(["respuesta" => $inputuser, "usuarios" => $count]));
             return (["user" => $inputuser, "usuarios" => $count]);
         }
     }
@@ -99,17 +112,14 @@ class UserThinkific
     // Create JWT single sign on Thikinfic
     public function singleSignOn(Request $request){
 
-        $header = json_encode(['typ' => 'JWT', 'alg' => ' ']);
+        $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
 
         // Create token payload as a JSON string
         $payload = json_encode([
             'first_name' => $request->first_name,
             "last_name" => $request->last_name,
-            "email" => "dylan.lievano.cuevas@gmail.com",
+            "email" => "dlievanocuevas@outlook.com",
             "iat"=> time(),
-            "external_id" => "thinkific@thinkific.com",
-            "bio" => "Mostly harmless",
-            "company" => "Thinkific",
             "timezone" => "America/Los_Angeles"
         ]);
 
@@ -119,9 +129,13 @@ class UserThinkific
         // Encode Payload to Base64Url String
         $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
 
-        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, 'clublia!', true);
+        // Create Signature Hash
+        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $this->key, true);
+
+        // Encode Signature to Base64Url String
         $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
 
+        // Create JWT
         $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
 
         $baseUrl = "https://dylan-s-school-2159.thinkific.com/api/sso/v2/sso/jwt?jwt=";

@@ -26,7 +26,7 @@ Route::delete('/usuario/thinkific/{userid}', 'UserThinkificController@deleteUser
 
 Route::post('/sync/usuario/', 'UserThinkificController@syncUser');
 
-Route::post('/usuario/login/', 'UserThinkificController@singleSignOn');
+
 
 
 

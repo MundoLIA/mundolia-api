@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'thinkific' => env('THINKIFIC_API_KEY', 'e6474c9684efbd1e59aa07bd427ff9aa'),
+    'subdomain_thinkific' => env('THINKIFIC_SUBDOMAIN', 'dylan-s-school-2159'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

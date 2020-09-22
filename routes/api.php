@@ -72,7 +72,14 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::post('importar/usuarios', 'UserImportController@store');
 
+
+    //THINKIFIC ROUTES
+    Route::get('/usuario/thinkific', 'UserThinkificController@getUsers');
+
+
     Route::post('sync/usuario/', 'UserThinkificController@syncUser');
+
+    Route::post('/usuario/login/', 'UserThinkificController@singleSignThinkific');
 
 });
 
