@@ -82,7 +82,8 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::post('sync/usuario/', 'UserThinkificController@syncUser');
 
-    Route::post('/usuario/login/', 'UserThinkificController@singleSignThinkific');
+    Route::post('/usuario_t/login/', 'UserThinkificController@singleSignThinkific');
+    Route::post('/usuario_p/login/', 'UserPhpFoxController@singleSignPhpFox');
 
 });
 
