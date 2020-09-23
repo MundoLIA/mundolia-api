@@ -18,6 +18,12 @@ return [
     'thinkific' => env('THINKIFIC_API_KEY', 'e6474c9684efbd1e59aa07bd427ff9aa'),
     'subdomain_thinkific' => env('THINKIFIC_SUBDOMAIN', 'dylan-s-school-2159'),
 
+    'phpfox' => env('PHPFOX_CLIENT_ID', 'clublia'),
+    'secret_phpfox' => env('PHPFOX_CLIENT_SECRET', '44ac1a3dadc548e1abaa120c0235260de3d01b52'),
+    'url_phpfox' => env('PHPFOX_URL', 'http://comunidad.test/index.php/restful_api'),
+    'token_phpfox' => env('PHPFOX_ACCESS_TOKEN', null),
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

@@ -217,6 +217,7 @@ class UserController extends Controller
             ]);
 
             UserGenericRegister::dispatch($dataThink);
+            
             SendEmail::dispatchNow($data);
 
             $success['message'] = 'Usuario creado';

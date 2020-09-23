@@ -99,7 +99,6 @@ class UserThinkific
             $count[++$i]= (array) ["respuesta" => $inputuser,"id" => $user->id] ;
 
         }
-
         if(!empty($inputuser['errors'])){
             Log::info(json_encode(["respuesta" => $inputuser['errors'], "usuarios" => $count]));
             return (["errors" => $inputuser['errors'], "usuarios" => $count]);

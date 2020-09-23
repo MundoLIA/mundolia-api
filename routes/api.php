@@ -76,6 +76,9 @@ Route::group(['middleware' => 'auth:api'], function(){
     //THINKIFIC ROUTES
     Route::get('/usuario/thinkific', 'UserThinkificController@getUsers');
 
+    //Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
+    Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
+
 
     Route::post('sync/usuario/', 'UserThinkificController@syncUser');
 
