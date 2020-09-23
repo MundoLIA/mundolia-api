@@ -15,8 +15,7 @@ class UserPhpFox
     protected $url;
     protected $token;
 
-    function __construct()
-    {
+    function __construct() {
         $this->key = Config::get('app.phpfox');
         $this->secret = Config::get('app.secret_phpfox');
         $this->url = Config::get('app.url_phpfox');
@@ -46,23 +45,19 @@ class UserPhpFox
         return $token_phpfox;
     }
 
-    public function createUser($inputData)
-    {
+    public function createUser($data){
 
         $token = self::getAuthorization();
 
-        $request = Http::withHeaders([
-            'X-Auth-API-Key' => $this->key,
-            'X-Auth-Subdomain' => $this->subdomain,
-            'Content-Type' => 'application/json',
-        ])->post('https://api.thinkific.com/api/public/v1/users', [
-            'first_name' => $inputData["first_name"],
-            'last_name' => $inputData["last_name"],
-            'email' => $inputData["email"],
-            'password' => $inputData["password"]
+        $response = Http::withToken($token)->asForm()->post($this->url . '/' . 'user', [
+            'val[email]' => $data['email'],
+            'val[full_name]' => $data['full_name'],
+            'val[password]' => $data['password'],
+            'val[gender]' => $data['gender'],
+            'val[user_name]' => $data['user_name']
         ]);
 
-        return $request->json();
+        return $response->json();
     }
 
     public function singleSignOn($user)

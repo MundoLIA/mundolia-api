@@ -216,8 +216,15 @@ class UserController extends Controller
                 'password' => $password
             ]);
 
-            UserGenericRegister::dispatch($dataThink);
-            
+            $dataFox = ([
+                'email' => $user->email,
+                'full_name' => $user->name . $user->last_name,
+                'password' => $password,
+                'gender' => "1",
+                "user_name" => $user->username
+            ]);
+
+            UserGenericRegister::dispatch($dataThink, $dataFox);
             SendEmail::dispatchNow($data);
 
             $success['message'] = 'Usuario creado';
