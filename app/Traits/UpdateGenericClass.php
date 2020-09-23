@@ -162,7 +162,15 @@ trait UpdateGenericClass{
                 'password' => $password
             ]);
 
-            UserGenericRegister::dispatchAfterResponse($dataThink);
+            $dataFox = ([
+                'email' => $user->email,
+                'full_name' => $user->name . $user->last_name,
+                'password' => $password,
+                'gender' => "1",
+                "user_name" => $user->username
+            ]);
+
+            UserGenericRegister::dispatch($dataThink, $dataFox);
             SendEmail::dispatchNow($data);
 
 //            if( env('MAIL_CONFIG', 'dev') == 'prod') {

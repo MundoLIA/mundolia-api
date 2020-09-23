@@ -78,6 +78,7 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     //Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
     Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
+    Route::post('/comunidad/nuevo/usuario', 'UserPhpFoxController@storeUser');
 
 
     Route::post('sync/usuario/', 'UserThinkificController@syncUser');

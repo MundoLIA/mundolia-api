@@ -29,6 +29,7 @@ class UserThinkific
     }
 
     public function createUser($inputData){
+
         $request = Http::withHeaders([
             'X-Auth-API-Key' => $this->key,
             'X-Auth-Subdomain' => $this->subdomain,
