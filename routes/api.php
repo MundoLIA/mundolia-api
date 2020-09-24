@@ -17,6 +17,7 @@ Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
 
 Route::group(['middleware' => 'auth:api'], function(){
+    Route::post('logout', 'API\UserController@logout');
     Route::post('access-token', 'API\UserController@accessToken');
     Route::get('escuelas', 'SchoolController@index');
     Route::get('escuelas/{id}', 'SchoolController@show');

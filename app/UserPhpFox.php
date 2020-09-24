@@ -23,7 +23,7 @@ class UserPhpFox
 
     public function getAuthorization()
     {
-        include 'token_phpfox.php';
+        include public_path('token_phpfox.php');
         $validateToken = Http::withToken($token_phpfox)->get($this->url . "/restful_api/user");
         if (!$validateToken->ok()) {
             $response = Http::post($this->url . "/restful_api/token", [
@@ -36,7 +36,7 @@ class UserPhpFox
                 $val = $token['access_token'];
                 $var_str = var_export($val, true);
                 $var = "<?php\n\n\$token_phpfox = $var_str;\n\n?>";
-                file_put_contents('token_phpfox.php', $var);
+                file_put_contents(public_path('token_phpfox.php'), $var);
                 return $token['access_token'];
             } else {
                 return false;
@@ -49,7 +49,7 @@ class UserPhpFox
 
         $token = self::getAuthorization();
 
-        $response = Http::withToken($token)->asForm()->post($this->url . '/' . 'user', [
+        $response = Http::withToken($token)->asForm()->post($this->url . '/restful_api/user', [
             'val[email]' => $data['email'],
             'val[full_name]' => $data['full_name'],
             'val[password]' => $data['password'],
@@ -67,7 +67,7 @@ class UserPhpFox
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
 
         // Create token payload as a JSON string
-        $payload =  self::encrypt($user->email);
+        $payload =  self::encrypt($user->active_phpfox);
 
         // Encode Header to Base64Url String
         $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));

@@ -34,7 +34,7 @@ class UserPhpFoxController extends Controller
             return response( $url,200);
 
         } catch (Exception $e) {
-            return ('Error Login user.');
+            return response('Error Login user.', 500);
         }
 
     }

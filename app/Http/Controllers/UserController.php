@@ -218,7 +218,7 @@ class UserController extends Controller
 
             $dataFox = ([
                 'email' => $user->email,
-                'full_name' => $user->name . $user->last_name,
+                'full_name' => $user->name .' '. $user->last_name,
                 'password' => $password,
                 'gender' => "1",
                 "user_name" => $user->username

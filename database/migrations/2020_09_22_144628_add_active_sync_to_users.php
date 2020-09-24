@@ -14,8 +14,8 @@ class AddActiveSyncToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('active_thinkific')->default(false);
-            $table->boolean('active_phpfox')->default( false);
+            $table->bigInteger('active_thinkific')->default(0);
+            $table->bigInteger('active_phpfox')->default( 0);
         });
     }
 

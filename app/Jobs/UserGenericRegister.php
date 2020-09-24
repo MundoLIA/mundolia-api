@@ -40,7 +40,7 @@ class UserGenericRegister implements ShouldQueue
         $userFox = new UserPhpFox();
         $userFox = $userFox->createUser($this->dataFox);
 
-        $userSync = Arr::collapse(['schooling' => $user, 'comunidad' => $userFox]);
+        $userSync = Arr::collapse(['comunidad' => $userFox]);
 
         Log::info(json_encode(["respuesta" => $userSync]));
     }
