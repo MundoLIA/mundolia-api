@@ -61,7 +61,7 @@ class UserThinkific
         return $request;
     }
 
-    public function deleteUser($userid){
+    public function deleteUserSchooling($userid){
 
         $request = Http::withHeaders([
             'X-Auth-API-Key' => $this->key,
@@ -118,7 +118,7 @@ class UserThinkific
         $payload = json_encode([
             'first_name' => $request->first_name,
             "last_name" => $request->last_name,
-            "email" => "dlievanocuevas@outlook.com",
+            "email" =>$request->email,
             "iat"=> time(),
             "timezone" => "America/Los_Angeles"
         ]);

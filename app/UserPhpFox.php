@@ -20,7 +20,7 @@ class UserPhpFox
     }
 
     public function getAuthorization(){
-        $response = Http::post($this->url . '/' . 'token', [
+        $response = Http::post($this->url .'/restful_api/token', [
                 'grant_type' => 'client_credentials',
                 'client_id' => $this->key,
                 'client_secret' => $this->secret,
@@ -31,17 +31,27 @@ class UserPhpFox
 
     public function createUser($data){
 
-        $token = $this->getAuthorization();
+        $token = self::getAuthorization();
 
-        $response = Http::withToken($token['access_token'])->asForm()->post($this->url . '/' . 'user', [
+        $response = Http::withToken($token['access_token'])->asForm()->post($this->url . '/restful_api/user', [
             'val[email]' => $data['email'],
             'val[full_name]' => $data['full_name'],
-            'val[password]' => $data['password'],
-            'val[gender]' => $data['gender'],
-            'val[user_name]' => $data['user_name']
+            'val[user_name]' => $data['user_name'],
+            'val[password]' => '1234567'
         ]);
 
         return $response->json();
     }
-    //
+
+    public function deleteUserCommunity($data){
+
+        $token = self::getAuthorization();
+
+        $response = Http::withToken($token['access_token'])->asForm()->delete($this->url . '/restful_api/user/', [
+            'val[id]' => $data['id'],
+        ]);
+
+        return $response->json();
+    }
+
 }

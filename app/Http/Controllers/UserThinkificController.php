@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SyncUserPlatforms;
+use App\SyncUser;
 use App\User;
 use App\UserThinkific;
 use Illuminate\Http\Request;
@@ -43,6 +45,13 @@ class UserThinkificController extends Controller
     public function singleSignThinkific(Request $request){
         $user = new UserThinkific();
         $user = $user->singleSignOn($request);
+        return $user;
+    }
+
+
+    public function syncUserplatform(){
+        $user = new SyncUser();
+        $user = $user->transferUsers();
         return $user;
     }
 

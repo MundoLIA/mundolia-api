@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\UserPhpFox;
 use App\UserThinkific;
-use http\Client\Curl\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,9 +11,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
-use function Symfony\Component\String\u;
 
-class UserGenericRegister implements ShouldQueue
+class DeleteGenericUserJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -35,14 +33,13 @@ class UserGenericRegister implements ShouldQueue
     public function handle()
     {
         $user = new UserThinkific();
-        $user = $user->createUser($this->data);
+        $user = $user->deleteUserSchooling($this->data);
 
         $userFox = new UserPhpFox();
-        $userFox = $userFox->createUser($this->dataFox);
+        $userFox = $userFox->deleteUserCommunity($this->dataFox);
 
         $userSync = Arr::collapse(['schooling' => $user, 'comunidad' => $userFox]);
 
         Log::info(json_encode(["respuesta" => $userSync]));
-        return;
     }
 }
