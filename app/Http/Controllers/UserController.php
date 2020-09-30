@@ -6,6 +6,7 @@ use App\Jobs\SendEmail;
 use App\Jobs\UserGenericRegister;
 use App\Mail\SendgridMail;
 use App\UserLIA;
+use App\UserThinkific;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ use mysql_xdevapi\Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\Input;
 use Validator;
+use function MongoDB\BSON\toJSON;
 
 
 class UserController extends Controller
@@ -375,16 +377,18 @@ class UserController extends Controller
     public function destroy($uuid)
     {
         $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-        $userLIA = UserLIA::find($user->AppUserId);
-        $userLIA->delete();
+        //$userLIA = UserLIA::find($user->AppUserId);
+        //$userLIA->delete();
         $user->delete();
 
+        //$deleteSchooling = new UserThinkific();
+        $deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
 
-        return response()->json([
-            $userLIA,
+        return response()([
+            $user,
+            $deleteSchooling,
             "message" => "El usuario ha sido eliminado existosamente",
         ], 200);
-
 
     }
 

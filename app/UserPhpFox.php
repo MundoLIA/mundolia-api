@@ -49,12 +49,22 @@ class UserPhpFox
 
         $token = self::getAuthorization();
 
-        $response = Http::withToken($token)->asForm()->post($this->url . '/restful_api/user', [
+        $response = Http::withToken($token['access_token'])->asForm()->post($this->url . '/restful_api/user', [
             'val[email]' => $data['email'],
             'val[full_name]' => $data['full_name'],
-            'val[password]' => $data['password'],
-            'val[gender]' => $data['gender'],
-            'val[user_name]' => $data['user_name']
+            'val[user_name]' => $data['user_name'],
+            'val[password]' => '1234567'
+        ]);
+
+        return $response->json();
+    }
+
+    public function deleteUserCommunity($data){
+
+        $token = self::getAuthorization();
+
+        $response = Http::withToken($token['access_token'])->asForm()->delete($this->url . '/restful_api/user/', [
+            'val[id]' => $data['id'],
         ]);
 
         return $response->json();

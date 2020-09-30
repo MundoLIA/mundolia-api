@@ -61,7 +61,7 @@ class UserThinkific
         return $request;
     }
 
-    public function deleteUser($userid){
+    public function deleteUserSchooling($userid){
 
         $request = Http::withHeaders([
             'X-Auth-API-Key' => $this->key,

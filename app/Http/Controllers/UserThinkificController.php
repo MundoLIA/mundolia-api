@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SyncUserPlatforms;
+use App\SyncUser;
 use App\User;
 use App\UserThinkific;
 use Illuminate\Http\Request;
@@ -51,6 +53,13 @@ class UserThinkificController extends Controller
          } catch (Exception $e) {
             return response('Error Login user.', 500);
         }
+    }
+
+
+    public function syncUserplatform(){
+        $user = new SyncUser();
+        $user = $user->transferUsers();
+        return $user;
     }
 
 
