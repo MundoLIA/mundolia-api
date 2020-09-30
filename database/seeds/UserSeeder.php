@@ -12,8 +12,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-
-
         Role::create([
             'name' => 'Admin',
             'id' => 1,
@@ -72,6 +70,9 @@ class UserSeeder extends Seeder
             'this_order' => 9,
         ]);
 
+        $password = bcrypt('Admin123456');
+        $password = str_replace("$2y$", "$2a$", $password);
+
         App\User::create([
             'username' => 'admin',
             'name' => 'Administrador',
@@ -80,15 +81,12 @@ class UserSeeder extends Seeder
             'second_last_name' => '',
             'email' => 'lcruz@arkusnexus.com',
             'avatar' => '',
-            'password' => "Admin123456",
+            'password' => $password,
             'verified_email' => true,
             'role_id' => 1
         ]);
 
-
         //factory(App\User::class, 15)->create();
-
-
 
     }
 }

@@ -17,6 +17,7 @@ Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
 
 Route::group(['middleware' => 'auth:api'], function(){
+    Route::post('logout', 'API\UserController@logout');
     Route::post('access-token', 'API\UserController@accessToken');
     Route::get('escuelas', 'SchoolController@index');
     Route::get('escuelas/{id}', 'SchoolController@show');
@@ -71,6 +72,21 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('lia-schools-sync', 'LiaSchoolController@sync');
 
     Route::post('importar/usuarios', 'UserImportController@store');
+
+
+    //THINKIFIC ROUTES
+    Route::get('/usuario/thinkific', 'UserThinkificController@getUsers');
+
+    //Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
+    Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
+    Route::post('/comunidad/nuevo/usuario', 'UserPhpFoxController@storeUser');
+
+
+    Route::post('sync/usuario/', 'UserThinkificController@syncUser');
+
+    Route::post('/usuario_t/login/', 'UserThinkificController@singleSignThinkific');
+    Route::post('/usuario_p/login/', 'UserPhpFoxController@singleSignPhpFox');
+
 });
 
 

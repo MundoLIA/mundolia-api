@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\API;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -17,6 +18,20 @@ class UserController extends Controller
      */
     public function username()
     {
+        return 'username';
+    }
+    public function logout()
+    {
+        try {
+            $user = Auth::user()->token();
+            $user->revoke();
+            return response()->json($user, $this->successStatus);
+        }catch (Exception $e){
+            $error["code"] = 'INVALID_USER';
+            $error["message"] = "NOT User.";
+
+            return response()->json(['error' => $error], 500);
+            }
         return 'username';
     }
     public function login(){
