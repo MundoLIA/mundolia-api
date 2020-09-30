@@ -189,7 +189,7 @@
                                                                     </div>
 
                                                                 </td>
-                                                            </tr>jgh
+                                                            </tr>
                                                             </tbody>
                                                         </table>
                                                         <table class="module" role="module" data-type="text" border="0"
