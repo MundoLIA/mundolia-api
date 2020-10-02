@@ -79,6 +79,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     //Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
     Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
     Route::post('/comunidad/nuevo/usuario', 'UserPhpFoxController@storeUser');
+    Route::post('/comunidad/{user_id}', 'UserPhpFoxController@destroy');
 
 
     Route::post('sync/usuario/', 'UserThinkificController@syncUser');
@@ -86,6 +87,9 @@ Route::group(['middleware' => 'auth:api'], function(){
 
 
     Route::post('/usuario/login/', 'UserThinkificController@singleSignThinkific');
+
+
+
 
 });
 

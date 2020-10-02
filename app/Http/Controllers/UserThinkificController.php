@@ -39,6 +39,10 @@ class UserThinkificController extends Controller
 
     public function deleteUser($userid){
 
+        $user = new UserThinkific();
+        $user = $user->deleteUserSchooling($userid);
+        return $user;
+
     }
 
     // Create JWT single sign on Thikinfic

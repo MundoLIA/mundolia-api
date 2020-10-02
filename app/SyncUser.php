@@ -32,70 +32,75 @@ class SyncUser
 
         $i = 0;
 
-        foreach ($results as $obj) {
-            $syncUser = $obj;
+        if($results->isEmpty()){
+           return ['message' => 'No hay usuarios por sincronizar'];
+        }
+        else{
+            foreach ($results as $obj) {
+                $syncUser = $obj;
 
-            $request = Http::withHeaders([
-                'X-Auth-API-Key' => $this->key,
-                'X-Auth-Subdomain' => $this->subdomain,
-                'Content-Type' => 'application/json',
-            ])->post('https://api.thinkific.com/api/public/v1/users', [
-                'first_name' =>$syncUser->name,
-                'last_name' => $syncUser->last_name,
-                'email' => $syncUser->email
-            ]);
+                $request = Http::withHeaders([
+                    'X-Auth-API-Key' => $this->key,
+                    'X-Auth-Subdomain' => $this->subdomain,
+                    'Content-Type' => 'application/json',
+                ])->post('https://api.thinkific.com/api/public/v1/users', [
+                    'first_name' =>$syncUser->name,
+                    'last_name' => $syncUser->last_name,
+                    'email' => $syncUser->email
+                ]);
 
+                $dataFox = ([
+                    'email' => $syncUser->email,
+                    'full_name' => $syncUser->name . ' ' .$syncUser->last_name,
+                    "user_name" => $syncUser->username,
+                    "password" => '1234567'
+                ]);
 
-            $dataFox = ([
-                'email' => $syncUser->email,
-                'full_name' => $syncUser->name . ' ' .$syncUser->last_name,
-                "user_name" => $syncUser->username,
-                "password" => '1234567'
-            ]);
+                $requestFox =  new UserPhpFox();
+                $requestFox = $requestFox->createUser($dataFox);
 
-            $requestFox =  new UserPhpFox();
-            $requestFox = $requestFox->createUser($dataFox);
+                $inputuser =  $request->json();
+                $inputuserFox =  $requestFox;
 
-            $inputuser =  $request->json();
-            $inputuserFox =  $requestFox;
+                if(array_key_exists("id", $inputuser) && !empty($inputuserFox['data']) ){
+                    var_dump('Entro 1');
 
+                    $affected = User::find($syncUser->id);
+                    $affected->active_thinkific = $inputuser['id'];
+                    $affected->active_phpfox = $inputuserFox['data']['user_id'];
+                    $affected->save();
 
-            if (array_key_exists("id", $inputuser) && !empty($inputuserFox['data']) ){
+                    $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id];
 
-                $affected = User::find($syncUser->id);
-                $affected->active_thinkific = $inputuser['id'];
-                $affected->active_phpfox = $inputuserFox['data']['user_id'];
-                $affected->save();
-
-                $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id];
-
-            }elseif (array_key_exists("id", $inputuser) && empty($inputuserFox['data'])){
-
-                $affected = User::find($syncUser->id);
-                $affected->active_thinkific = $inputuser['id'];
-                $affected->save();
-
-                $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id];
-
-            }elseif (!array_key_exists("id", $inputuser) && !empty($inputuserFox['data'])){
-
-                $affected = User::find($syncUser->id);
-                $affected->active_phpfox = $inputuserFox['data']['user_id'];
-                $affected->save();
-
-                $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id];
-            }
-            else{
-                if(!empty($inputuser['errors']) && $inputuserFox["status"] === 'failed'){
-
-                    $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id] ;
                 }
+                if(array_key_exists("id", $inputuser) && empty($inputuserFox['data'])) {
+                    var_dump('Entro 2');
+
+                    $affected = User::find($syncUser->id);
+                    $affected->active_thinkific = $inputuser['id'];
+                    $affected->save();
+
+                    $count[++$i] = (array)["schooling" => $inputuser, "comunidad" => $inputuserFox, "id" => $syncUser->id];
+                }
+                if(!array_key_exists("id", $inputuser) && !empty($inputuserFox['data'])){
+                    var_dump('Entro 3');
+
+                    $affected = User::find($syncUser->id);
+                    $affected->active_phpfox = $inputuserFox['data']['user_id'];
+                    $affected->save();
+
+                    $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id];
+                }
+                else{
+                    if(!empty($inputuser['errors']) && $inputuserFox["status"] === 'failed'){
+                        $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id] ;
+                    }
+                }
+
             }
         }
-
         Log::info(json_encode(["usuarios" => $count]));
         return (["usuarios" => $count]);
-
     }
 
 
@@ -108,7 +113,7 @@ class SyncUser
         $userLIA = UserLIA::find($user->AppUserId);
         $userLIA->delete();
         $user->delete();
-        
+
         return response()([
             $user,
             $deleteSchooling,

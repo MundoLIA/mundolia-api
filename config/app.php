@@ -21,7 +21,8 @@ return [
     'phpfox' => env('PHPFOX_CLIENT_ID', 'clublia'),
     'secret_phpfox' => env('PHPFOX_CLIENT_SECRET', '44ac1a3dadc548e1abaa120c0235260de3d01b52'),
     'url_phpfox' => env('PHPFOX_URL', 'http://comunidad.test/index.php/restful_api'),
-    'token_phpfox' => env('PHPFOX_ACCESS_TOKEN', null),
+    'username_comunidad' => env('COMUNIDAD_USERNAME', null),
+    'pass_comunidad' => env('COMUNIDAD_PASSWORD', null),
 
 
     /*
