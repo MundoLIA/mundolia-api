@@ -28,7 +28,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('usuarios/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'UserController@show']);
     Route::post('usuarios', 'UserController@store');
     Route::put('usuarios/{uuid}', 'UserController@update');
-    Route::delete('usuarios/{uuid}', 'UserController@destroy');
+    Route::delete('usuarios/{id}', 'UserController@destroy');
 
     Route::get('tipolicencias', 'LicenseTypeController@index');
     Route::get('tipolicencias/{id}', 'LicenseTypeController@show');
@@ -81,16 +81,11 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('/comunidad/nuevo/usuario', 'UserPhpFoxController@storeUser');
     Route::post('/comunidad/{user_id}', 'UserPhpFoxController@destroy');
 
-
-    Route::post('sync/usuario/', 'UserThinkificController@syncUser');
-    Route::post('platform/usuario/', 'UserThinkificController@syncUserplatform');
-
+    Route::post('/sincronizar/usuario/', 'SyncUserPlatformController@syncUserplatform');
 
     Route::post('/usuario/login/', 'UserThinkificController@singleSignThinkific');
 
-
-
-
+    Route::put('/actualizar/usuarios/{uuid}', 'SyncUserPlatformController@updateUser');
 });
 
 

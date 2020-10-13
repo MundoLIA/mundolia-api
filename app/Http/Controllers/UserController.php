@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DeleteGenericUserJob;
 use App\Jobs\SendEmail;
 use App\Jobs\UserGenericRegister;
 use App\Mail\SendgridMail;
@@ -346,8 +347,8 @@ class UserController extends Controller
             }
 
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-            UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()
-                ->update($dataLIA);
+            /*UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()
+                ->update($dataLIA);*/
 
             User::where('uuid','like','%'.$uuid.'%')->firstOrFail()
                 ->update($dataCreate);
@@ -374,22 +375,14 @@ class UserController extends Controller
      * @param uuid $uuid
      * @return \Illuminate\Http\Response
      */
-    public function destroy($uuid)
+    public function destroy($id)
     {
-        $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
+        $user = User::find($id);
+        DeleteGenericUserJob::dispatch($user->active_thinkific,$user->active_phpfox);
         //$userLIA = UserLIA::find($user->AppUserId);
         //$userLIA->delete();
-        $user->delete();
+        //$user->delete();
 
-        //$deleteSchooling = new UserThinkific();
-        $deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
-
-        return response()([
-            $user,
-            $deleteSchooling,
-            "message" => "El usuario ha sido eliminado existosamente",
-        ], 200);
-
+        return $user;
     }
-
 }

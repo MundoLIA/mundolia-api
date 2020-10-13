@@ -31,11 +31,7 @@ class UserThinkificController extends Controller
         return $user;
     }
 
-    public function syncUser(){
-        $user = new UserThinkific();
-        $user = $user->transferUsers();
-        return $user;
-    }
+
 
     public function deleteUser($userid){
 

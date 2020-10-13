@@ -20,7 +20,8 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.1",
         "predis/predis": "^1.1",
-        "webpatser/laravel-uuid": "^3.0"
+        "webpatser/laravel-uuid": "^3.0",
+        "ext-http": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

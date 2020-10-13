@@ -70,19 +70,16 @@ class UserPhpFox
         return $response->json();
     }
 
-    public function updateUser($data){
+    public function updateUser($inputData,$userId){
 
         $token = self::getAuthorization();
 
-        $response = Http::withToken($token['access_token'])->asForm()->post($this->url . '/restful_api/user/' . $data, [
-            'val[email]' => $data['email'],
-            'val[full_name]' => $data['full_name'],
-            'val[user_name]' => $data['user_name'],
-            'val[password]' => '1234567'
+        $response = Http::withToken($token['access_token'])->asForm()->put($this->url . '/restful_api/user/' . $userId, [
+            'val[email]' => $inputData['email'],
+            'val[full_name]' => $inputData['name'].' '.$inputData['last_name'],
+            'val[password]' => $inputData['name'],
         ]);
 
         return $response->json();
     }
-
-
 }

@@ -8,68 +8,27 @@ use Illuminate\Http\Request;
 class SyncUserPlatformController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Sync users in all the platforms
      */
-    public function index()
-    {
-        //
+    public function syncUserplatform(){
+        $user = new SyncUser();
+        $user = $user->transferUsers();
+        return $user;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\SyncUser  $syncUser
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SyncUser $syncUser)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\SyncUser  $syncUser
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(SyncUser $syncUser)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage in all platforms.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\SyncUser  $syncUser
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, SyncUser $syncUser)
+    public function updateUser($id)
     {
-        //
+        $user = new SyncUser;
+        $res = $user->update($id);
+        return $res;
     }
 
     /**

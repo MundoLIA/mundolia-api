@@ -3,10 +3,14 @@
 namespace App;
 
 use App\Jobs\DeleteGenericUserJob;
+use http\Env\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use mysql_xdevapi\Exception;
 
 class SyncUser
 {
@@ -63,7 +67,7 @@ class SyncUser
                 $inputuserFox =  $requestFox;
 
                 if(array_key_exists("id", $inputuser) && !empty($inputuserFox['data']) ){
-                    var_dump('Entro 1');
+
 
                     $affected = User::find($syncUser->id);
                     $affected->active_thinkific = $inputuser['id'];
@@ -74,7 +78,7 @@ class SyncUser
 
                 }
                 if(array_key_exists("id", $inputuser) && empty($inputuserFox['data'])) {
-                    var_dump('Entro 2');
+
 
                     $affected = User::find($syncUser->id);
                     $affected->active_thinkific = $inputuser['id'];
@@ -83,7 +87,6 @@ class SyncUser
                     $count[++$i] = (array)["schooling" => $inputuser, "comunidad" => $inputuserFox, "id" => $syncUser->id];
                 }
                 if(!array_key_exists("id", $inputuser) && !empty($inputuserFox['data'])){
-                    var_dump('Entro 3');
 
                     $affected = User::find($syncUser->id);
                     $affected->active_phpfox = $inputuserFox['data']['user_id'];
@@ -103,24 +106,111 @@ class SyncUser
         return (["usuarios" => $count]);
     }
 
-
-    public function destroyUser($uuid)
+    public function destroyUser($id)
     {
-        $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
+        $user = User::find($id);
+        var_dump($user->active_thinkific,$user->active_phpfox);
+        DeleteGenericUserJob::dispatch($user->active_thinkific,$user->active_phpfox);
 
-        $deleteSchooling = DeleteGenericUserJob::dispatch($user->active_thikific, $user->active_phpfox);
+        //$userLIA = UserLIA::find($user->AppUserId);
+        //$userLIA->delete();
+        //$user->delete();
 
-        $userLIA = UserLIA::find($user->AppUserId);
-        $userLIA->delete();
-        $user->delete();
-
-        return response()([
-            $user,
-            $deleteSchooling,
-            "message" => "El usuario ha sido eliminado existosamente",
-        ], 200);
+        return $user;
 
     }
 
+    public function update($id)
+    {
+        $request = request()->all();
+        try {
 
+            $user = Auth::user();
+            $input = $request;
+
+            if($user->role_id == 1 || $user->role_id == 2){
+                $dataCreate['role_id'] = $input['role_id'];
+                $dataCreate['school_id'] = $input['school_id'];
+            }else{
+                if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 13 ){
+                    $dataCreate['role_id'] = $input['role_id'];
+                }else{
+                    $dataCreate['role_id'] = 4;
+                }
+                $dataCreate['school_id'] = $user->school_id;
+            }
+
+            $dataCreate['name'] = $input['first_name'];
+            $dataCreate['last_name'] = $input['last_name'];
+            $dataCreate['grade'] = $input['grade'];
+            $dataCreate['email'] = $input['email'];
+
+            if (array_key_exists('password', $input)) {
+
+                $password  = $input['password'];
+                $passwordEncode = bcrypt($password);
+                $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
+                $dataCreate['password'] = $passwordEncode;
+
+                $dataLIA = ([
+                    'Names' =>  $dataCreate['name'],
+                    'LastNames' => $dataCreate['last_name'],
+                    'Email' =>  $dataCreate['email'],
+                    'Grade' =>  $dataCreate['grade'],
+                    'Password' => $dataCreate['password'],
+                    'RoleId' =>  $dataCreate['role_id'],
+                    'SchoolId' => $dataCreate['school_id']
+                ]);
+            }else{
+                $dataLIA = ([
+                    'Names' =>  $dataCreate['name'],
+                    'LastNames' => $dataCreate['last_name'],
+                    'Email' =>  $dataCreate['email'],
+                    'Grade' =>  $dataCreate['grade'],
+                    'RoleId' =>  $dataCreate['role_id'],
+                    'SchoolId' => $dataCreate['school_id']
+                ]);
+            }
+
+            //UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()->update($dataLIA);
+
+            $results = User::find($id);
+
+            if($results['active_thinkific'] !== 0 && $results['active_phpfox'] !== 0){
+                $userAcademy = new UserThinkific();
+                $userAcademy = $userAcademy->updateUser($dataCreate, $results['active_thinkific']);
+
+                $userComunidad = new UserPhpFox();
+                $userComunidad = $userComunidad->updateUser($dataCreate,$results['active_phpfox'] );
+
+                var_dump("Entre 1");
+
+            }
+            if ($results['active_thinkific'] !== 0 && $results['active_phpfox'] == 0){
+                $userAcademy = new UserThinkific();
+                $userAcademy = $userAcademy->updateUser($dataCreate, $results['active_thinkific']);
+                var_dump("Entre 1");
+            }
+            if ($results['active_thinkific'] == 0 && $results['active_phpfox'] !== 0){
+                $userComunidad = new UserPhpFox();
+                $userComunidad = $userComunidad->updateUser($dataCreate,$results['active_phpfox'] );
+                var_dump("Entre 1");
+            }
+
+            $results->update($dataCreate);
+
+            $success['message'] = 'Usuario Actualizado';
+            $success['code'] = 200;
+            return response()->json($success,200);
+
+        } catch (Exception $e) {
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "Error al crear el usuario";
+            $errors["username"] = "Error al crear el usuario.";
+
+            $error["errors"] =[$errors];
+
+            return response()->json(['error' => $error], 500);
+        }
+    }
 }
