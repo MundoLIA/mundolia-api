@@ -3,7 +3,12 @@
 namespace App;
 
 use App\Jobs\DeleteGenericUserJob;
+use App\Jobs\SendEmail;
+use App\Mail\PasswordChangeMail;
+use App\Mail\SendgridMail;
 use http\Env\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -123,8 +128,8 @@ class SyncUser
     public function update($id)
     {
         $request = request()->all();
-        try {
 
+        try {
             $user = Auth::user();
             $input = $request;
 
@@ -152,7 +157,7 @@ class SyncUser
                 $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
                 $dataCreate['password'] = $passwordEncode;
 
-                $dataLIA = ([
+                 $dataLIA = ([
                     'Names' =>  $dataCreate['name'],
                     'LastNames' => $dataCreate['last_name'],
                     'Email' =>  $dataCreate['email'],
@@ -174,7 +179,9 @@ class SyncUser
 
             //UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()->update($dataLIA);
 
-            $results = User::find($id);
+            $results = User::findOrFail($id);
+
+            $change = $results->updated_at->toDateTimeString();
 
             if($results['active_thinkific'] !== 0 && $results['active_phpfox'] !== 0){
                 $userAcademy = new UserThinkific();
@@ -183,34 +190,40 @@ class SyncUser
                 $userComunidad = new UserPhpFox();
                 $userComunidad = $userComunidad->updateUser($dataCreate,$results['active_phpfox'] );
 
-                var_dump("Entre 1");
-
             }
             if ($results['active_thinkific'] !== 0 && $results['active_phpfox'] == 0){
                 $userAcademy = new UserThinkific();
                 $userAcademy = $userAcademy->updateUser($dataCreate, $results['active_thinkific']);
-                var_dump("Entre 1");
             }
             if ($results['active_thinkific'] == 0 && $results['active_phpfox'] !== 0){
                 $userComunidad = new UserPhpFox();
                 $userComunidad = $userComunidad->updateUser($dataCreate,$results['active_phpfox'] );
-                var_dump("Entre 1");
             }
 
             $results->update($dataCreate);
+            $results->save();
+            $updt = $results->updated_at->toDateTimeString();
+
+            if($updt !== $change && isset($password) !== false){
+                $dataUpdt['username'] = $results->username;
+                $dataUpdt['password'] = $password;
+                $dataUpdt['email'] = $results->email;
+
+                SendEmail::dispatchNow($dataUpdt);
+            }
 
             $success['message'] = 'Usuario Actualizado';
             $success['code'] = 200;
+
             return response()->json($success,200);
 
-        } catch (Exception $e) {
+        } catch (ModelNotFoundException $exception) {
+
             $error["code"] = 'INVALID_DATA';
-            $error["message"] = "Error al crear el usuario";
-            $errors["username"] = "Error al crear el usuario.";
-
-            $error["errors"] =[$errors];
-
-            return response()->json(['error' => $error], 500);
+            $error["message"] = "Usuario no encontrado";
+            $error["errors"] =[$exception->getMessage()];
+            //return back()->withError($exception->getMessage())->withInput();
+            return response()->json(['error' => $error], 404);
         }
     }
 }

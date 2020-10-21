@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use mysql_xdevapi\Exception;
 
 class UserPhpFox
 {
@@ -16,7 +17,8 @@ class UserPhpFox
     protected $username;
     protected $password;
 
-    function __construct() {
+    function __construct()
+    {
         $this->key = Config::get('app.phpfox');
         $this->secret = Config::get('app.secret_phpfox');
         $this->url = Config::get('app.url_phpfox');
@@ -24,8 +26,9 @@ class UserPhpFox
         $this->password = Config::get('app.pass_comunidad');
     }
 
-    public function getCredentialToken(){
-        $response = Http::post($this->url .'/restful_api/token', [
+    public function getCredentialToken()
+    {
+        $response = Http::post($this->url . '/restful_api/token', [
             'grant_type' => 'client_credentials',
             'client_id' => $this->key,
             'client_secret' => $this->secret,
@@ -34,20 +37,22 @@ class UserPhpFox
         return $response;
     }
 
-    public function getAuthorization(){
-        $response = Http::post($this->url .'/restful_api/token', [
-                'grant_type' => 'password',
-                'username' => $this->username,
-                'password' => $this->password,
-                'client_id' => $this->key,
-                'client_secret' => $this->secret,
+    public function getAuthorization()
+    {
+        $response = Http::post($this->url . '/restful_api/token', [
+            'grant_type' => 'password',
+            'username' => $this->username,
+            'password' => $this->password,
+            'client_id' => $this->key,
+            'client_secret' => $this->secret,
         ])->json();
 
         return $response;
     }
 
 
-    public function createUser($data){
+    public function createUser($data)
+    {
 
         $token = self::getCredentialToken();
 
@@ -61,7 +66,8 @@ class UserPhpFox
         return $response->json();
     }
 
-    public function deleteUserCommunity($userId){
+    public function deleteUserCommunity($userId)
+    {
 
         $token = self::getAuthorization();
 
@@ -70,16 +76,27 @@ class UserPhpFox
         return $response->json();
     }
 
-    public function updateUser($inputData,$userId){
+    public function updateUser($inputData, $userId)
+    {
 
-        $token = self::getAuthorization();
+        try {
+            $token = self::getAuthorization();
+            $response = Http::withToken($token['access_token'])->asForm()->put($this->url . '/restful_api/user/' . $userId, [
+                'val[email]' => $inputData['email'],
+                'val[full_name]' => $inputData['name'] . ' ' . $inputData['last_name'],
+                'val[password]' => $inputData['name'],
+            ]);
 
-        $response = Http::withToken($token['access_token'])->asForm()->put($this->url . '/restful_api/user/' . $userId, [
-            'val[email]' => $inputData['email'],
-            'val[full_name]' => $inputData['name'].' '.$inputData['last_name'],
-            'val[password]' => $inputData['name'],
-        ]);
+            return $response->json();
 
-        return $response->json();
+        } catch (\Exception $e) {
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "Error al crear el usuario";
+            $errors["username"] = "Error al crear el usuario.";
+
+            $error["errors"] = [$errors];
+
+            return response()->json(['error' => $error], 500);
+        }
     }
 }

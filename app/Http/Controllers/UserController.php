@@ -65,9 +65,9 @@ class UserController extends Controller
 
             $users = DB::select("Select
                             users.id,
-
                             users.uuid,
                             users.username,
+                            0
                             users.name,
                             users.second_name,
                             users.last_name,

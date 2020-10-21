@@ -85,7 +85,7 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::post('/usuario/login/', 'UserThinkificController@singleSignThinkific');
 
-    Route::put('/actualizar/usuarios/{uuid}', 'SyncUserPlatformController@updateUser');
+    Route::put('/actualizar/usuarios/{id}', 'SyncUserPlatformController@updateUser');
 });
 
 
