@@ -20,6 +20,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\Input;
 use Validator;
 use function MongoDB\BSON\toJSON;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class UserController extends Controller
@@ -340,12 +341,9 @@ class UserController extends Controller
             $success['code'] = 200;
             return response()->json($success,200);
 
-        } catch (Exception $e) {
-            $error["code"] = 'INVALID_DATA';
+        } catch (ModelNotFoundException $exception) {
+            $error["code"] = '500';
             $error["message"] = "Error al actualizar el usuario";
-            $errors["username"] = "Error al actualizar el usuario.";
-
-            $error["errors"] =[$errors];
 
             return response()->json(['error' => $error], 500);
         }
