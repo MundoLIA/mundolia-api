@@ -31,6 +31,8 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('usuarios/{uuid}', 'UserController@update');
     Route::delete('usuarios/{uuid}', 'UserController@destroy');
 
+    Route::put('usuariosgroup', 'UserController@updateGroup');
+
     Route::get('tipolicencias', 'LicenseTypeController@index');
     Route::get('tipolicencias/{id}', 'LicenseTypeController@show');
     Route::post('tipolicencias', 'LicenseTypeController@store');
@@ -73,7 +75,6 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::post('importar/usuarios', 'UserImportController@store');
 
-
     //THINKIFIC ROUTES
     Route::get('/usuario/thinkific', 'UserThinkificController@getUsers');
 
@@ -81,14 +82,11 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
     Route::post('/comunidad/nuevo/usuario', 'UserPhpFoxController@storeUser');
 
-
     Route::post('sync/usuario/', 'UserThinkificController@syncUser');
     Route::post('platform/usuario/', 'UserThinkificController@syncUserplatform');
 
-
     Route::post('/usuario_t/login/', 'UserThinkificController@singleSignThinkific');
     Route::post('/usuario_p/login/', 'UserPhpFoxController@singleSignPhpFox');
-
 });
 
 

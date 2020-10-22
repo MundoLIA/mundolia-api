@@ -36,13 +36,15 @@ class LiaSchoolController extends Controller
         $user = Auth::user();
 
         if($user->role_id == 1 || $user->role_id == 2) {
-            $schools = \DB::select('Select  id, id as SchoolId,name as School,description as Description,is_active as IsActive, current_user as CurrentUsers
-                            FROM schools ORDER BY name');
+            $schools = \DB::select('Select  s.id, s.id as SchoolId, s.name as School, s.description as Description, s.is_active as IsActive, s.current_user as CurrentUsers,
+(Select COUNT(u.id) from users u WHERE u.school_id = s.id) as Usuarios
+FROM schools s ORDER BY s.name');
         }else{
-            $schools = \DB::select('Select  id, id as SchoolId,name as School,description as Description,is_active as IsActive, current_user as CurrentUsers
-                            FROM schools
-                            WHERE id = '. $user->school_id.'
-                            ORDER BY name');
+            $schools = \DB::select('Select  s.id, s.id as SchoolId, s.name as School, s.description as Description, s.is_active as IsActive, s.current_user as CurrentUsers,
+(Select COUNT(u.id) from users u WHERE u.school_id = s.id) as Usuarios
+FROM schools s
+                            WHERE s.id = '. $user->school_id.'
+                            ORDER BY s.name');
         }
 
         return response()->json($schools, 200);
