@@ -13,13 +13,8 @@ class PasswordChangeMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    protected $data;
+    public $data;
 
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
     public function __construct($data)
     {
         $this->data = $data;
@@ -32,6 +27,7 @@ class PasswordChangeMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
+
         $address = 'noreply@clublia.com';
         $subject = 'Actualización de contraseña';
         $name = 'Club LIA';
@@ -39,6 +35,6 @@ class PasswordChangeMail extends Mailable implements ShouldQueue
         return $this->markdown('email.password-change')
             ->from($address, $name)
             ->subject($subject)
-            ->with([ 'user_info' =>  $this->data]);
+            ->with([ 'info_user' => $this->data]);
     }
 }

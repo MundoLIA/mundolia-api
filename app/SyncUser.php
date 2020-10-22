@@ -114,7 +114,7 @@ class SyncUser
     public function destroyUser($id)
     {
         $user = User::find($id);
-        var_dump($user->active_thinkific,$user->active_phpfox);
+
         DeleteGenericUserJob::dispatch($user->active_thinkific,$user->active_phpfox);
 
         //$userLIA = UserLIA::find($user->AppUserId);
@@ -205,11 +205,12 @@ class SyncUser
             $updt = $results->updated_at->toDateTimeString();
 
             if($updt !== $change && isset($password) !== false){
+                var_dump('entre');
                 $dataUpdt['username'] = $results->username;
                 $dataUpdt['password'] = $password;
                 $dataUpdt['email'] = $results->email;
 
-                SendEmail::dispatchNow($dataUpdt);
+                Mail::to($results->email)->send(new PasswordChangeMail($dataUpdt));
             }
 
             $success['message'] = 'Usuario Actualizado';
