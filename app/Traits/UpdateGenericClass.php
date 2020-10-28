@@ -30,55 +30,55 @@ trait UpdateGenericClass{
     }
 
     public static function getGrade($grade, $role, $seccion){
-        $grades["Preescolar - Primer Grado"] = 1;
-        $grades["Preescolar - Segundo Grado"] = 2;
-        $grades["Preescolar - Tercer Grado"] = 3;
-        $grades["Primaria - Primer Grado"] = 1;
-        $grades["Primaria - Segundo Grado"] = 2;
-        $grades["Primaria - Tercer Grado"] = 3;
-        $grades["Primaria - Cuarto Grado"] = 4;
-        $grades["Primaria - Quinto Grado"] = 5;
-        $grades["Primaria - Sexto Grado"] = 6;
+        $grades["PREESCOLAR - PRIMER GRADO"] = 1;
+        $grades["PREESCOLAR - SEGUNDO GRADO"] = 2;
+        $grades["PREESCOLAR - TERCER GRADO"] = 3;
+        $grades["PRIMARIA - PRIMER GRADO"] = 1;
+        $grades["PRIMARIA - SEGUNDO GRADO"] = 2;
+        $grades["PRIMARIA - TERCER GRADO"] = 3;
+        $grades["PRIMARIA - CUARTO GRADO"] = 4;
+        $grades["PRIMARIA - QUINTO GRADO"] = 5;
+        $grades["PRIMARIA - SEXTO GRADO"] = 6;
 
         if (array_key_exists($grade, $grades)) {
             $role_result = $grades[$grade];
         }else{
             return 0;
         }
-        if($seccion == "Preescolar" && $role == "Alumno" && $role_result > 3){
+        if($seccion == "PREESCOLAR" && $role == "ALUMNO" && $role_result > 3){
             return 0;
         }
         return $role_result;
     }
     public static function getRole($role, $seccion){
-        if($role == "Maestro"){
+        if($role == "MAESTRO"){
             $rol = 4;
         }
-        if($role == "Administrador Escuela LIA"){
+        if($role == "ADMINISTRADOR ESCUELA LIA"){
             $rol = 3;
         }
-        if($seccion == "Preescolar" && $role == "Alumno"){
+        if($seccion == "PREESCOLAR" && $role == "ALUMNO"){
             $rol= 13;
         }
-        if($seccion == "Primaria" && $role == "Alumno"){
+        if($seccion == "PRIMARIA" && $role == "ALUMNO"){
             $rol = 5;
         }
         return $rol;
 
     }
     public static function createPassword( $seccion){
-        if ($seccion == 'Preescolar'){
+        if ($seccion == 'PREESCOLAR'){
             $password = Str::random(4);
 
         }else{
-            if ($seccion == 'Primaria'){
+            if ($seccion == 'PRIMARIA'){
                 $password = Str::random(6);
 
             }
         }
         return $password;
     }
-    public static function dataUser($input, $school_id)
+    public static function dataUser($input, $school_id, $passwordSource = null)
     {
         try {
             $user = Auth::user();
@@ -100,7 +100,7 @@ trait UpdateGenericClass{
             $dataCreate['grade'] = self::getGrade($input['grado'], $input['tipo_usuario'],$input['seccion']);
             $dataCreate['email'] = $input['email'];
 
-            $password  = self::createPassword($input['seccion']);
+            $password  = $passwordSource ? $passwordSource : self::createPassword($input['seccion']);
             $passwordEncode = bcrypt($password);
             $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
             $dataCreate['password'] = $passwordEncode;

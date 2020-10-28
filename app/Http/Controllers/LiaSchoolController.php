@@ -20,10 +20,10 @@ class LiaSchoolController extends Controller
 
         if($user->role_id == 1 || $user->role_id == 2) {
             $schools = \DB::connection('sqlsrv')
-                ->select('Select SchoolId as id, SchoolId,School,Description,IsActive,CurrentUsers FROM dbo.Schools ORDER BY School');
+                ->select('Select SchoolId as id, SchoolId, SchoolId as "value",School as title,School,Description,IsActive,CurrentUsers FROM dbo.Schools ORDER BY School');
         }else{
             $schools = \DB::connection('sqlsrv')
-                ->select('Select SchoolId as id, SchoolId,School,Description,IsActive,CurrentUsers
+                ->select('Select SchoolId as id, SchoolId,SchoolId as "value",School as title,School,Description,IsActive,CurrentUsers
                             FROM dbo.Schools
                             WHERE SchoolId = '. $user->school_id.'
                             ORDER BY School');
@@ -36,11 +36,11 @@ class LiaSchoolController extends Controller
         $user = Auth::user();
 
         if($user->role_id == 1 || $user->role_id == 2) {
-            $schools = \DB::select('Select  s.id, s.id as SchoolId, s.name as School, s.description as Description, s.is_active as IsActive, s.current_user as CurrentUsers,
+            $schools = \DB::select('Select  s.id, s.id as SchoolId, s.id as "value",s.name as title, s.name as School, s.description as Description, s.is_active as IsActive, s.current_user as CurrentUsers,
 (Select COUNT(u.id) from users u WHERE u.school_id = s.id) as Usuarios
 FROM schools s ORDER BY s.name');
         }else{
-            $schools = \DB::select('Select  s.id, s.id as SchoolId, s.name as School, s.description as Description, s.is_active as IsActive, s.current_user as CurrentUsers,
+            $schools = \DB::select('Select  s.id, s.id as SchoolId,s.id as "value",s.name as title, s.name as School, s.description as Description, s.is_active as IsActive, s.current_user as CurrentUsers,
 (Select COUNT(u.id) from users u WHERE u.school_id = s.id) as Usuarios
 FROM schools s
                             WHERE s.id = '. $user->school_id.'

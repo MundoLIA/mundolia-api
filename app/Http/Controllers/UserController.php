@@ -331,11 +331,9 @@ class UserController extends Controller
             }
 
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-            UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()
-                ->update($dataLIA);
+            UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()->update($dataLIA);
 
-            User::where('uuid','like','%'.$uuid.'%')->firstOrFail()
-                ->update($dataCreate);
+            User::where('uuid','like','%'.$uuid.'%')->firstOrFail()->update($dataCreate);
 
             $success['message'] = 'Usuario Actualizado';
             $success['code'] = 200;
@@ -428,13 +426,13 @@ class UserController extends Controller
 
             return response()->json($success,200);
 
-        } catch (Exception $e) {
-            $error["code"] = 'INVALID_DATA';
+        } catch (ModelNotFoundException $exception) {
+            $error["code"] = '500';
             $error["message"] = "Error al actualizar los usuarios";
-            $errors["username"] = "Error al actualizar los usuarios.";
-            $error["errors"] =[$errors];
+
             return response()->json(['error' => $error], 500);
         }
+
     }
 
     /**
@@ -446,20 +444,24 @@ class UserController extends Controller
      */
     public function destroy($uuid)
     {
-        $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-        //$userLIA = UserLIA::find($user->AppUserId);
-        //$userLIA->delete();
-        $user->delete();
+        try {
+            $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
+            $userLIA = UserLIA::find($user->AppUserId);
+            $userLIA->delete();
+            $user->delete();
 
-        //$deleteSchooling = new UserThinkific();
-        $deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
+            //$deleteSchooling = new UserThinkific();
+            $deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
 
-        return response()([
-            $user,
-            $deleteSchooling,
-            "message" => "El usuario ha sido eliminado existosamente",
-        ], 200);
+            $success['message'] = 'El usuario ha sido eliminado existosamente';
+            $success['code'] = 200;
+            return response()->json($success,200);
+        } catch (ModelNotFoundException $exception) {
+            $error["code"] = '500';
+            $error["message"] = "Error al eliminar el usuario";
 
+            return response()->json(['error' => $error], 500);
+        }
     }
 
 }

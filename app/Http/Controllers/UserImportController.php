@@ -43,8 +43,14 @@ class UserImportController extends Controller
         try {
             $user = Auth::user();
             $school_id =  $user->school_id;
+            $password = null;
+            $input = request()->all();
+
             if($user->role_id == 1 || $user->role_id == 2){
                 $school_id = $request->input('school_id');
+            }
+            if (array_key_exists('password', $input)) {
+                $password  = $input['password'];
             }
             $data = $request->input('data');
             $i = -1;
@@ -55,7 +61,7 @@ class UserImportController extends Controller
                 }
 
                 $resp = $obj;
-                $respCreate = User::dataUser($insertArr,$school_id);
+                $respCreate = User::dataUser($insertArr, $school_id, $password);
                 $resp ['result'] = $respCreate["message"];
                 $resp ['username'] = $respCreate["username"];
                 $result [++$i] = (array) $resp;
