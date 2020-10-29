@@ -408,7 +408,7 @@ class UserController extends Controller
             }
             if($dataUpdate){
                 $dataUpdateResult = \DB::table('users')->whereIn('uuid', $input['users'])->update($dataUpdate);
-                $dataLIAResult    = \DB::connection('sqlsrv')->table('users')->whereIn('AppUserId', $appUsersIds)->update($dataLIA);
+                $dataLIAResult    = \DB::connection('sqlsrv')->table('dbo.AppUsers')->whereIn('AppUserId', $appUsersIds)->update($dataLIA);
 
                 $success['message'] = $dataUpdateResult.' usuario(s) actualizado(s)';
                 $success['code'] = 200;
