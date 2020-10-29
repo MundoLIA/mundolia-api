@@ -421,8 +421,6 @@ class UserController extends Controller
                 $success['message'] = '0 usuarios actualizados';
                 $success['code'] = 200;
             }
-
-
             return response()->json($success,200);
 
         } catch (ModelNotFoundException $exception) {
