@@ -183,7 +183,7 @@ class UserController extends Controller
 
             $userLIA = UserLIA::create($dataLIA);
 
-           $dataCreate['AppUserId'] = 239042;
+            $dataCreate['AppUserId'] = $userLIA->AppUserId;
 
             $user = User::create($dataCreate);
 
