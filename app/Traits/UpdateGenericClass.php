@@ -179,14 +179,9 @@ trait UpdateGenericClass{
                 "user_name" => $user->username
             ]);
 
-            UserGenericRegister::dispatch($dataThink, $dataFox);
+            //UserGenericRegister::dispatch($dataThink, $dataFox);
             SendEmail::dispatchNow($data);
 
-//            if( env('MAIL_CONFIG', 'dev') == 'prod') {
-//                Mail::to($user->email)->queue(new SendgridMail($data));
-//            }else{
-//                Mail::to(env('MAIL_CONFIG', 'dylan.lievano.cuevas@gmail.com'))->queue(new SendgridMail($data));
-//            }
             return (["message" => "Usuario creado", "username" => $username]);
 
 
