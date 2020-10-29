@@ -443,7 +443,7 @@ class UserController extends Controller
             $user->delete();
 
             //$deleteSchooling = new UserThinkific();
-            $deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
+            //$deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
 
             $success['message'] = 'El usuario ha sido eliminado existosamente';
             $success['code'] = 200;
