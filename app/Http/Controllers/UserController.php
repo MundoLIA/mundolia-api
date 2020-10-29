@@ -404,7 +404,7 @@ class UserController extends Controller
                     'AppUserId',
                     'id'
                    )
-                ->get()->whereIn('id', $input['users'])->toArray();
+                ->get()->whereIn('uuid', $input['users'])->toArray();
 
             foreach ($users as $obj) {
                 if($obj->AppUserId){
@@ -413,8 +413,8 @@ class UserController extends Controller
 
             }
             if($dataUpdate){
-                $dataUpdateResult = \DB::table('users')->whereIn('id', $input['users'])->update($dataUpdate);
-                //$dataLIAResult    = \DB::connection('sqlsrv')->table('users')->whereIn('AppUserId', $appUsersIds)->update($dataLIA);
+                $dataUpdateResult = \DB::table('users')->whereIn('uuid', $input['users'])->update($dataUpdate);
+                $dataLIAResult    = \DB::connection('sqlsrv')->table('users')->whereIn('AppUserId', $appUsersIds)->update($dataLIA);
 
                 $success['message'] = $dataUpdateResult.' usuario(s) actualizado(s)';
                 $success['code'] = 200;
