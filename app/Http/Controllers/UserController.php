@@ -410,7 +410,6 @@ class UserController extends Controller
                 if($obj->AppUserId){
                     $appUsersIds[] = $obj->AppUserId;
                 }
-
             }
             if($dataUpdate){
                 $dataUpdateResult = \DB::table('users')->whereIn('uuid', $input['users'])->update($dataUpdate);
