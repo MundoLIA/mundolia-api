@@ -399,12 +399,7 @@ class UserController extends Controller
                 $dataUpdate['password'] = $passwordEncode;
                 $dataLIA['Password'] = $dataUpdate['password'];
             }
-            $users = \DB::table('users')
-                ->select(
-                    'AppUserId',
-                    'id'
-                   )
-                ->get()->whereIn('uuid', $input['users'])->toArray();
+            $users = \DB::table('users')->whereIn('uuid', $input['users'])->get()->toArray();
 
             foreach ($users as $obj) {
                 if($obj->AppUserId){
