@@ -181,7 +181,7 @@ class UserController extends Controller
                 'Avatar' => null,
             ]);
 
-            //$userLIA = UserLIA::create($dataLIA);
+            $userLIA = UserLIA::create($dataLIA);
 
            $dataCreate['AppUserId'] = 239042;
 
@@ -211,7 +211,7 @@ class UserController extends Controller
                 "user_name" => $user->username
             ]);
 
-            UserGenericRegister::dispatch($dataThink, $dataFox);
+            //UserGenericRegister::dispatch($dataThink, $dataFox);
             SendEmail::dispatchNow($data);
 
             $success['message'] = 'Usuario creado';
