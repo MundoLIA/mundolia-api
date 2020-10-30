@@ -9,6 +9,7 @@ use App\UserLIA;
 use App\UserThinkific;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -180,11 +181,10 @@ class UserController extends Controller
                 'EditorId' => 68,
                 'Avatar' => null,
             ]);
-
-            $userLIA = UserLIA::create($dataLIA);
-
-            $dataCreate['AppUserId'] = $userLIA->AppUserId;
-
+            if(Config::get('app.sync_lia')) {
+                $userLIA = UserLIA::create($dataLIA);
+                $dataCreate['AppUserId'] = $userLIA->AppUserId;
+            }
             $user = User::create($dataCreate);
 
             $data = ([
@@ -210,8 +210,10 @@ class UserController extends Controller
                 'gender' => "1",
                 "user_name" => $user->username
             ]);
+            if(Config::get('app.sync_thinkific')) {
+                UserGenericRegister::dispatch($dataThink, $dataFox);
+            }
 
-            //UserGenericRegister::dispatch($dataThink, $dataFox);
             SendEmail::dispatchNow($data);
 
             $success['message'] = 'Usuario creado';
@@ -331,7 +333,10 @@ class UserController extends Controller
             }
 
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-            UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()->update($dataLIA);
+
+            if(Config::get('app.sync_lia')) {
+                UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()->update($dataLIA);
+            }
 
             User::where('uuid','like','%'.$uuid.'%')->firstOrFail()->update($dataCreate);
 
@@ -408,7 +413,10 @@ class UserController extends Controller
             }
             if($dataUpdate){
                 $dataUpdateResult = \DB::table('users')->whereIn('uuid', $input['users'])->update($dataUpdate);
-                $dataLIAResult    = \DB::connection('sqlsrv')->table('dbo.AppUsers')->whereIn('AppUserId', $appUsersIds)->update($dataLIA);
+
+                if(Config::get('app.sync_lia')) {
+                    $dataLIAResult = \DB::connection('sqlsrv')->table('dbo.AppUsers')->whereIn('AppUserId', $appUsersIds)->update($dataLIA);
+                }
 
                 $success['message'] = $dataUpdateResult.' usuario(s) actualizado(s)';
                 $success['code'] = 200;
@@ -438,12 +446,18 @@ class UserController extends Controller
     {
         try {
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-            $userLIA = UserLIA::find($user->AppUserId);
-            $userLIA->delete();
+
+            if(Config::get('app.sync_lia')){
+                $userLIA = UserLIA::find($user->AppUserId);
+                $userLIA->delete();
+            }
+
             $user->delete();
 
-            //$deleteSchooling = new UserThinkific();
-            //$deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
+            if(Config::get('app.sync_thinkific')){
+                $deleteSchooling = new UserThinkific();
+                $deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
+            }
 
             $success['message'] = 'El usuario ha sido eliminado existosamente';
             $success['code'] = 200;

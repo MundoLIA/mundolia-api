@@ -11,6 +11,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -149,9 +150,10 @@ trait UpdateGenericClass{
                 'EditorId' => 68,
                 'Avatar' => null,
             ]);
-
-            $userLIA = UserLIA::create($dataLIA);
-            $dataCreate['AppUserId'] = $userLIA->AppUserId;
+            if(Config::get('app.sync_lia')){
+                $userLIA = UserLIA::create($dataLIA);
+                $dataCreate['AppUserId'] = $userLIA->AppUserId;
+            }
 
             $user = self::create($dataCreate);
 
@@ -179,7 +181,9 @@ trait UpdateGenericClass{
                 "user_name" => $user->username
             ]);
 
-            //UserGenericRegister::dispatch($dataThink, $dataFox);
+            if(Config::get('app.sync_thinkific')) {
+                UserGenericRegister::dispatch($dataThink, $dataFox);
+            }
             SendEmail::dispatchNow($data);
 
             return (["message" => "Usuario creado", "username" => $username]);
