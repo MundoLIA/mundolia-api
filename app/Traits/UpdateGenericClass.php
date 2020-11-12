@@ -11,6 +11,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -29,47 +30,56 @@ trait UpdateGenericClass{
             ->update(request()->all());
     }
 
-    public static function getGrade($grade){
-        $grades["Preescolar - Primer Grado"] = 1;
-        $grades["Preescolar - Segundo Grado"] = 2;
-        $grades["Preescolar - Tercer Grado"] = 3;
-        $grades["Primaria - Primer Grado"] = 1;
-        $grades["Primaria - Segundo Grado"] = 2;
-        $grades["Primaria - Tercer Grado"] = 2;
-        $grades["Primaria - Cuarto Grado"] = 3;
-        $grades["Primaria - Quinto Grado"] = 4;
-        $grades["Primaria - Sexto Grado"] = 5;
-        return $grades[$grade];
+    public static function getGrade($grade, $role, $seccion){
+        $grades["PREESCOLAR - PRIMER GRADO"] = 1;
+        $grades["PREESCOLAR - SEGUNDO GRADO"] = 2;
+        $grades["PREESCOLAR - TERCER GRADO"] = 3;
+        $grades["PRIMARIA - PRIMER GRADO"] = 1;
+        $grades["PRIMARIA - SEGUNDO GRADO"] = 2;
+        $grades["PRIMARIA - TERCER GRADO"] = 3;
+        $grades["PRIMARIA - CUARTO GRADO"] = 4;
+        $grades["PRIMARIA - QUINTO GRADO"] = 5;
+        $grades["PRIMARIA - SEXTO GRADO"] = 6;
+
+        if (array_key_exists($grade, $grades)) {
+            $role_result = $grades[$grade];
+        }else{
+            return 0;
+        }
+        if($seccion == "PREESCOLAR" && $role == "ALUMNO" && $role_result > 3){
+            return 0;
+        }
+        return $role_result;
     }
     public static function getRole($role, $seccion){
-        if($role == "Maestro"){
+        if($role == "MAESTRO"){
             $rol = 4;
         }
-        if($role == "Administrador Escuela LIA"){
+        if($role == "ADMINISTRADOR ESCUELA LIA"){
             $rol = 3;
         }
-        if($seccion == "Preescolar" && $role == "Alumno"){
+        if($seccion == "PREESCOLAR" && $role == "ALUMNO"){
             $rol= 13;
         }
-        if($seccion == "Primaria" && $role == "Alumno"){
+        if($seccion == "PRIMARIA" && $role == "ALUMNO"){
             $rol = 5;
         }
         return $rol;
 
     }
     public static function createPassword( $seccion){
-        if ($seccion == 'Preescolar'){
+        if ($seccion == 'PREESCOLAR'){
             $password = Str::random(4);
 
         }else{
-            if ($seccion == 'Primaria'){
+            if ($seccion == 'PRIMARIA'){
                 $password = Str::random(6);
 
             }
         }
         return $password;
     }
-    public static function dataUser($input, $school_id)
+    public static function dataUser($input, $school_id, $passwordSource = null)
     {
         try {
             $user = Auth::user();
@@ -88,10 +98,10 @@ trait UpdateGenericClass{
             }
             $dataCreate['name'] = $input['nombre'].' '.$input['segundo_nombre'];
             $dataCreate['last_name'] = $input['apellido_paterno'].' '.$input['apellido_materno'];
-            $dataCreate['grade'] = self::getGrade($input['grado']);
+            $dataCreate['grade'] = self::getGrade($input['grado'], $input['tipo_usuario'],$input['seccion']);
             $dataCreate['email'] = $input['email'];
 
-            $password  = self::createPassword($input['seccion']);
+            $password  = $passwordSource ? $passwordSource : self::createPassword($input['seccion']);
             $passwordEncode = bcrypt($password);
             $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
             $dataCreate['password'] = $passwordEncode;
@@ -140,9 +150,10 @@ trait UpdateGenericClass{
                 'EditorId' => 68,
                 'Avatar' => null,
             ]);
-
-            $userLIA = UserLIA::create($dataLIA);
-            $dataCreate['AppUserId'] = $userLIA->AppUserId;
+            if(Config::get('app.sync_lia')){
+                $userLIA = UserLIA::create($dataLIA);
+                $dataCreate['AppUserId'] = $userLIA->AppUserId;
+            }
 
             $user = self::create($dataCreate);
 
@@ -170,14 +181,11 @@ trait UpdateGenericClass{
                 "user_name" => $user->username
             ]);
 
-            UserGenericRegister::dispatch($dataThink, $dataFox);
+            if(Config::get('app.sync_thinkific')) {
+                UserGenericRegister::dispatch($dataThink, $dataFox);
+            }
             SendEmail::dispatchNow($data);
 
-//            if( env('MAIL_CONFIG', 'dev') == 'prod') {
-//                Mail::to($user->email)->queue(new SendgridMail($data));
-//            }else{
-//                Mail::to(env('MAIL_CONFIG', 'dylan.lievano.cuevas@gmail.com'))->queue(new SendgridMail($data));
-//            }
             return (["message" => "Usuario creado", "username" => $username]);
 
 

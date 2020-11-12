@@ -47,7 +47,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime', 'member_since' =>'datetime', 'last_login' => 'datetime',
+        'email_verified_at' => 'datetime', 'member_since' =>'datetime', 'last_login' => 'datetime'
     ];
 
     public function getRouteKeyName()

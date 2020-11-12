@@ -71,15 +71,15 @@ class UserThinkific
     }
 
     // Create JWT single sign on Thikinfic
-    public function singleSignOn(Request $request){
+    public function singleSignOn($user){
 
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
 
         // Create token payload as a JSON string
         $payload = json_encode([
-            'first_name' => $request->first_name,
-            "last_name" => $request->last_name,
-            "email" =>$request->email,
+            'first_name' =>$user->first_name,
+            "last_name" => $user->last_name,
+            "email" => $user->email,
             "iat"=> time(),
             "timezone" => "America/Los_Angeles"
         ]);

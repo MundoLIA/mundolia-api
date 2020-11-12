@@ -10,6 +10,7 @@ use App\UserLIA;
 use App\UserThinkific;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -21,6 +22,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\Input;
 use Validator;
 use function MongoDB\BSON\toJSON;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class UserController extends Controller
@@ -32,9 +34,25 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
 
-        if($user->role_id == 1 || $user->role_id == 2){
+            $user = Auth::user();
+            $request = request()->all();
+            $filter = [];
+            $i = -1;
+            $filter[++$i] = ['users.role_id', '<>', 1];
+            if (array_key_exists('school_id', $request) && $request['school_id'] != null) {
+                $filter[++$i] = array('users.school_id', '=',$request['school_id']);
+            }
+            if (array_key_exists('grade', $request) && $request['grade'] != null) {
+                $filter[++$i] = array('users.grade', '=',$request['grade']);
+            }
+            if (array_key_exists('role_id', $request) && $request['role_id'] != null) {
+                $filter[++$i] = array('users.role_id', '=',$request['role_id']);
+            }
+            if($user->role_id > 2){
+                $filter[++$i] = array('users.school_id', '=', $user->school_id);
+            }
+
 
             $users = \DB::table('users')
                 ->leftJoin('schools', 'users.school_id', '=', 'schools.id')
@@ -56,40 +74,8 @@ class UserController extends Controller
                     'users.avatar',
                     'users.is_active',
                     'users.verified_email')
-                ->get()->where('role_id','<>', 1)->toJson(JSON_PRETTY_PRINT);
-
+                ->where($filter)->get();
             return response($users, 200);
-        }
-
-        if($user->role_id == 3){
-
-            $users = DB::select("Select
-                            users.id,
-                            users.uuid,
-                            users.username,
-                            0
-                            users.name,
-                            users.second_name,
-                            users.last_name,
-                            users.second_last_name,
-                            users.school_id,
-                            schools.name as school_name,
-                            roles.name as role_name,
-                            users.role_id,
-                            users.email,
-                            users.grade,
-                            users.avatar,
-                            users.is_active,
-                            users.verified_email
-
-                            FROM users
-                            LEFT JOIN schools ON users.school_id = schools.id
-                            LEFT JOIN roles  ON users.role_id = roles.id
-                            WHERE users.role_id <> 1 and school_id = ". $user->school_id);
-
-            return response($users, 200);
-        }
-        return response([], 200);
     }
 
 
@@ -196,11 +182,10 @@ class UserController extends Controller
                 'EditorId' => 68,
                 'Avatar' => null,
             ]);
-
-            //$userLIA = UserLIA::create($dataLIA);
-
-           $dataCreate['AppUserId'] = 239042;
-
+            if(Config::get('app.sync_lia')) {
+                $userLIA = UserLIA::create($dataLIA);
+                $dataCreate['AppUserId'] = $userLIA->AppUserId;
+            }
             $user = User::create($dataCreate);
 
             $data = ([
@@ -221,13 +206,15 @@ class UserController extends Controller
 
             $dataFox = ([
                 'email' => $user->email,
-                'full_name' => $user->name . $user->last_name,
+                'full_name' => $user->name .' '. $user->last_name,
                 'password' => $password,
                 'gender' => "1",
                 "user_name" => $user->username
             ]);
+            if(Config::get('app.sync_thinkific')) {
+                UserGenericRegister::dispatch($dataThink, $dataFox);
+            }
 
-            UserGenericRegister::dispatch($dataThink, $dataFox);
             SendEmail::dispatchNow($data);
 
             $success['message'] = 'Usuario creado';
@@ -347,25 +334,106 @@ class UserController extends Controller
             }
 
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
-            /*UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()
-                ->update($dataLIA);*/
 
-            User::where('uuid','like','%'.$uuid.'%')->firstOrFail()
-                ->update($dataCreate);
+            if(Config::get('app.sync_lia')) {
+                UserLIA::where('AppUserId','=',$user->AppUserId)->firstOrFail()->update($dataLIA);
+            }
+
+            User::where('uuid','like','%'.$uuid.'%')->firstOrFail()->update($dataCreate);
 
             $success['message'] = 'Usuario Actualizado';
             $success['code'] = 200;
             return response()->json($success,200);
 
-        } catch (Exception $e) {
-            $error["code"] = 'INVALID_DATA';
-            $error["message"] = "Error al crear el usuario";
-            $errors["username"] = "Error al crear el usuario.";
-
-            $error["errors"] =[$errors];
+        } catch (ModelNotFoundException $exception) {
+            $error["code"] = '500';
+            $error["message"] = "Error al actualizar el usuario";
 
             return response()->json(['error' => $error], 500);
         }
+    }
+
+    public function updateGroup()
+    {
+        $request = request()->all();
+        $dataUpdate = null;
+        try {
+            $validator = Validator::make($request, [
+                'users' => 'required'
+            ]);
+            if ($validator->fails()) {
+                $error["code"] = 'INVALID_DATA';
+                $error["message"] = "Información Invalida.";
+                $error["errors"] =$validator->errors();
+                return response()->json(['error' => $error], 200);
+            }
+
+            $user = Auth::user();
+            $input = $request;
+
+            if (array_key_exists('role_id', $input)) {
+                if($user->role_id == 1 || $user->role_id == 2){
+                    $dataUpdate['role_id'] = $input['role_id'];
+                }else{
+                    if ( $input['role_id'] == 4 ||  $input['role_id'] == 5 ||  $input['role_id'] == 13 ){
+                        $dataUpdate['role_id'] = $input['role_id'];
+                    }else{
+                        $dataUpdate['role_id'] = 4;
+                    }
+                }
+                $dataLIA['RoleId'] = $dataUpdate['role_id'];
+            }
+
+            if (array_key_exists('school_id', $input)) {
+                if($user->role_id == 1 || $user->role_id == 2){
+                    $dataUpdate['school_id'] = $input['school_id'];
+                }else{
+                    $dataUpdate['school_id'] = $user->school_id;
+                }
+                $dataLIA['SchoolId'] = $dataUpdate['school_id'];
+            }
+
+            if (array_key_exists('grade', $input)) {
+                $dataUpdate['grade'] = $input['grade'];
+                $dataLIA['Grade'] = $dataUpdate['grade'];
+            }
+
+            if (array_key_exists('password', $input)) {
+                $password  = $input['password'];
+                $passwordEncode = bcrypt($password);
+                $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
+                $dataUpdate['password'] = $passwordEncode;
+                $dataLIA['Password'] = $dataUpdate['password'];
+            }
+            $users = \DB::table('users')->whereIn('uuid', $input['users'])->get()->toArray();
+
+            foreach ($users as $obj) {
+                if($obj->AppUserId){
+                    $appUsersIds[] = $obj->AppUserId;
+                }
+            }
+            if($dataUpdate){
+                $dataUpdateResult = \DB::table('users')->whereIn('uuid', $input['users'])->update($dataUpdate);
+
+                if(Config::get('app.sync_lia')) {
+                    $dataLIAResult = \DB::connection('sqlsrv')->table('dbo.AppUsers')->whereIn('AppUserId', $appUsersIds)->update($dataLIA);
+                }
+
+                $success['message'] = $dataUpdateResult.' usuario(s) actualizado(s)';
+                $success['code'] = 200;
+            }else{
+                $success['message'] = '0 usuarios actualizados';
+                $success['code'] = 200;
+            }
+            return response()->json($success,200);
+
+        } catch (ModelNotFoundException $exception) {
+            $error["code"] = '500';
+            $error["message"] = "Error al actualizar los usuarios";
+
+            return response()->json(['error' => $error], 500);
+        }
+
     }
 
     /**
@@ -375,14 +443,33 @@ class UserController extends Controller
      * @param uuid $uuid
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($uuid)
     {
-        $user = User::find($id);
-        DeleteGenericUserJob::dispatch($user->active_thinkific,$user->active_phpfox);
-        //$userLIA = UserLIA::find($user->AppUserId);
-        //$userLIA->delete();
-        //$user->delete();
+        try {
 
-        return $user;
+            $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
+
+            if(Config::get('app.sync_lia')){
+                $userLIA = UserLIA::find($user->AppUserId);
+                $userLIA->delete();
+            }
+
+            $user->delete();
+
+            if(Config::get('app.sync_thinkific')){
+                $deleteSchooling = new UserThinkific();
+                $deleteSchooling = (new \App\UserThinkific)->deleteUser($user->active_thikific);
+            }
+
+            $success['message'] = 'El usuario ha sido eliminado existosamente';
+            $success['code'] = 200;
+            return response()->json($success,200);
+        } catch (Exception  $exception) {
+            $error["code"] = '500';
+            $error["message"] = "Error al eliminar el usuario";
+            $error["getMessage"] = $exception->getMessage();
+
+            return response()->json(['error' => $error], 500);
+        }
     }
 }

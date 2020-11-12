@@ -17,18 +17,24 @@ Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
 
 Route::group(['middleware' => 'auth:api'], function(){
+    Route::post('logout', 'API\UserController@logout');
     Route::post('access-token', 'API\UserController@accessToken');
+
     Route::get('escuelas', 'SchoolController@index');
     Route::get('escuelas/{id}', 'SchoolController@show');
     Route::post('escuelas', 'SchoolController@store');
     Route::put('escuelas/{id}', 'SchoolController@update');
     Route::delete('escuelas/{id}', 'SchoolController@destroy');
 
+    Route::get('periodos', 'PeriodoController@index');
+
     Route::get('usuarios', 'UserController@index');
     Route::get('usuarios/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'UserController@show']);
     Route::post('usuarios', 'UserController@store');
     Route::put('usuarios/{uuid}', 'UserController@update');
-    Route::delete('usuarios/{id}', 'UserController@destroy');
+    Route::delete('usuarios/{uuid}', 'UserController@destroy');
+
+    Route::put('usuariosgroup', 'UserController@updateGroup');
 
     Route::get('tipolicencias', 'LicenseTypeController@index');
     Route::get('tipolicencias/{id}', 'LicenseTypeController@show');
@@ -72,7 +78,6 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::post('importar/usuarios', 'UserImportController@store');
 
-
     //THINKIFIC ROUTES
     Route::get('/usuario/thinkific', 'UserThinkificController@getUsers');
 
@@ -86,6 +91,12 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('/usuario/login/', 'UserThinkificController@singleSignThinkific');
 
     Route::put('/actualizar/usuarios/{id}', 'SyncUserPlatformController@updateUser');
+
+    Route::post('sync/usuario/', 'UserThinkificController@syncUser');
+    Route::post('platform/usuario/', 'UserThinkificController@syncUserplatform');
+
+    Route::post('/usuario_t/login/', 'UserThinkificController@singleSignThinkific');
+    Route::post('/usuario_p/login/', 'UserPhpFoxController@singleSignPhpFox');
 });
 
 

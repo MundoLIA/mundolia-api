@@ -7,7 +7,9 @@ use App\SyncUser;
 use App\User;
 use App\UserThinkific;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use mysql_xdevapi\Exception;
 
 class UserThinkificController extends Controller
 {
@@ -43,9 +45,14 @@ class UserThinkificController extends Controller
 
     // Create JWT single sign on Thikinfic
     public function singleSignThinkific(Request $request){
-        $user = new UserThinkific();
-        $user = $user->singleSignOn($request);
-        return $user;
+        try {
+            $user = Auth::user();
+            $userThinkific = new UserThinkific();
+            $userThinkific = $userThinkific->singleSignOn($user);
+            return response($userThinkific,200);
+         } catch (Exception $e) {
+            return response('Error Login user.', 500);
+        }
     }
 
 
