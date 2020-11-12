@@ -48,6 +48,9 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('licencias/{id}', 'LicenseController@update');
     Route::delete('licencias/{id}', 'LicenseController@destroy');
 
+    //Asignar Licencias
+    Route::post('asignar/licencias', 'UserController@assignLicense');
+
     Route::get('key/licencias', 'LicenseKeyController@index');
     Route::get('key/licencias/{id}', 'LicenseKeyController@show');
     Route::post('key/licencias', 'LicenseKeyController@store');
@@ -80,6 +83,9 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     //THINKIFIC ROUTES
     Route::get('/usuario/thinkific', 'UserThinkificController@getUsers');
+
+    //Enrollment
+    Route::post('/inscripciones/{id}', 'UserThinkificController@enrollment');
 
     //Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
     Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');

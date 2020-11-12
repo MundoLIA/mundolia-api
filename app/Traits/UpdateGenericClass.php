@@ -23,7 +23,6 @@ trait UpdateGenericClass{
         return self::where('uuid','like','%'.$uuid.'%')->firstOrFail()
             ->update(request()->all());
     }
-
     public static function updateDataId($id)
     {
         return self::where('id','like','%'.$id.'%')->firstOrFail()

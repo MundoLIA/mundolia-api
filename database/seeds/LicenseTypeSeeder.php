@@ -1,5 +1,6 @@
 <?php
 
+use App\LicenseType;
 use Illuminate\Database\Seeder;
 
 class LicenseTypeSeeder extends Seeder
@@ -11,6 +12,8 @@ class LicenseTypeSeeder extends Seeder
      */
     public function run()
     {
-        //factory(App\LicenseType::class, 5)->create();
+        LicenseType::create([
+            'description_license_type' => 'General',
+        ]);
     }
 }

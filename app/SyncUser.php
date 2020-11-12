@@ -79,6 +79,8 @@ class SyncUser
                     $affected->active_phpfox = $inputuserFox['data']['user_id'];
                     $affected->save();
 
+
+
                     $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id];
 
                 }

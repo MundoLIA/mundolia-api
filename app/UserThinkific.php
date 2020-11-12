@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -106,4 +107,51 @@ class UserThinkific
 
         echo $url;
     }
+
+    //Group request list, creation, update, delete.
+    public function listSchool(){
+
+        $request = Http::withHeaders([
+            'X-Auth-API-Key' => $this->key,
+            'X-Auth-Subdomain' => $this->subdomain,
+            'Content-Type' => 'application/json',
+        ])->get('https://api.thinkific.com/api/public/v1/groups/');
+
+        return $request;
+    }
+
+    public function createSchool($data){
+
+        $request = Http::withHeaders([
+            'X-Auth-API-Key' => $this->key,
+            'X-Auth-Subdomain' => $this->subdomain,
+            'Content-Type' => 'application/json',
+        ])->post('https://api.thinkific.com/api/public/v1/groups/', [
+            'name' => $data["name"],
+        ]);
+
+        return $request;
+    }
+
+    public function enrollmentStudent($bundleId, $data){
+
+        $activeDay = Carbon::now();
+        $expiryDate = '';
+
+        var_dump($activeDay);
+        die();
+        $request = Http::withHeaders([
+            'X-Auth-API-Key' => $this->key,
+            'X-Auth-Subdomain' => $this->subdomain,
+            'Content-Type' => 'application/json',
+        ])->post('https://api.thinkific.com/api/public/v1/bundles/'. $bundleId .'/enrollments', [
+            'user_id   ' => $data["id"],
+            'activated_at' => $activeDay,
+            'expiry_date' => $expiryDate
+        ]);
+
+        return $request;
+    }
+
+
 }
