@@ -445,6 +445,7 @@ class UserController extends Controller
     public function destroy($uuid)
     {
         try {
+
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
 
             if(Config::get('app.sync_lia')){
@@ -462,9 +463,10 @@ class UserController extends Controller
             $success['message'] = 'El usuario ha sido eliminado existosamente';
             $success['code'] = 200;
             return response()->json($success,200);
-        } catch (ModelNotFoundException $exception) {
+        } catch (Exception  $exception) {
             $error["code"] = '500';
             $error["message"] = "Error al eliminar el usuario";
+            $error["getMessage"] = $exception->getMessage();
 
             return response()->json(['error' => $error], 500);
         }

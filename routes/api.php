@@ -19,11 +19,14 @@ Route::post('register', 'API\UserController@register');
 Route::group(['middleware' => 'auth:api'], function(){
     Route::post('logout', 'API\UserController@logout');
     Route::post('access-token', 'API\UserController@accessToken');
+
     Route::get('escuelas', 'SchoolController@index');
     Route::get('escuelas/{id}', 'SchoolController@show');
     Route::post('escuelas', 'SchoolController@store');
     Route::put('escuelas/{id}', 'SchoolController@update');
     Route::delete('escuelas/{id}', 'SchoolController@destroy');
+
+    Route::get('periodos', 'PeriodoController@index');
 
     Route::get('usuarios', 'UserController@index');
     Route::get('usuarios/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'UserController@show']);
