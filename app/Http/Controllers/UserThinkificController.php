@@ -55,6 +55,13 @@ class UserThinkificController extends Controller
         return $user;
     }
 
+    public function enrollment($id, $data)
+    {
+        $user = new UserThinkific();
+        $user->enrollmentStudent($id, $data);
+        return $user;
+    }
+
 
 
 

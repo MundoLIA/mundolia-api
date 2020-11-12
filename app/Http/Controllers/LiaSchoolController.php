@@ -72,7 +72,6 @@ class LiaSchoolController extends Controller
                     'updated_at'=> date('Y-m-d H:i:s')
                 );
                 array_push($schoolsInsert, $a);
-
             }
             School::insert($schoolsInsert);
 
