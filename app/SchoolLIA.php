@@ -13,5 +13,8 @@ class SchoolLIA extends Model
     protected $connection= 'sqlsrv';
 
     protected $table = 'dbo.Schools';
-    protected $fillable = ['SchoolId','School','Description','IsActive','CurrentUsers','HasKinder','HasH2D','HasCLPlus'];
+    protected $fillable = ['SchoolId','School','Description','IsActive','CurrentUsers','HasKinder','HasH2D','HasCLPlus','CreatorId','EditorId', ];
+
+    protected $primaryKey = 'SchoolId';
+    public $timestamps = false;
 }

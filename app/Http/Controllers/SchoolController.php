@@ -35,10 +35,14 @@ class SchoolController extends ApiController
 
         $schoolName = $request->name;
         $schoolDescription = $request->description;
+        $schoolEditor = 68;
+        $schoolCreator = 68;
 
         $dataLia = ([
             'School' => $schoolName,
-            'Description' => $schoolDescription
+            'Description' => $schoolDescription,
+            'CreatorId' => $schoolCreator,
+            'EditorId' => $schoolEditor
         ]);
 
         $schoolLia = SchoolLIA::create($dataLia);
@@ -52,7 +56,7 @@ class SchoolController extends ApiController
         ]);
 
         $school = School::create($data);
-        $schoolArray[] = array($schoolLia, $school);
+        $schoolArray[] = array(['Sistema Lia',$schoolLia], ['Sistema de licencias', $school]);
 
         return $this->successResponse($schoolArray,'Se ha creado la escuela con exito', 201);
     }
@@ -89,7 +93,8 @@ class SchoolController extends ApiController
     public function update(Request $request,$id)
     {
         try {
-            School::findOrFail($id);
+            $school = School::findOrFail($id);
+            $schoolLia = SchoolLIA::findOrFail($id);
 
             $schoolName = $request->name;
             $schoolDescription = $request->description;
@@ -100,9 +105,9 @@ class SchoolController extends ApiController
                 'IsActive' => $request->is_active,
             ]);
 
-            $schoolLia = SchoolLIA::where('SchoolId','like','%'.$id.'%')->firstOrFail()->update($dataLia);;
-            $school = School::updateDataId($id);
-            $schoolArray[] = array($schoolLia, $school);
+            $schoolLiaUpt = $schoolLia->update($dataLia);;
+            $schoolUpt = School::updateDataId($id);
+            $schoolArray[] = array($schoolLiaUpt, $schoolUpt);
 
             return $this->successResponse($schoolArray, 'La escuela ha sido actualizada', 200);
 
