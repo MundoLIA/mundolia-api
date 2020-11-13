@@ -123,18 +123,17 @@ class SchoolController extends ApiController
     public function destroy($id)
     {
         try {
-            $data = SchoolLIA::findOrFail($id);
+            $dataLia = SchoolLIA::findOrFail($id);
+            $data = School::findOrFail($id);
 
-            if(User::where('school_id', $data->school_id)->get()){
-                return $this->errorResponse('La escuela tiene estudiantes relacionados', 401);
-            }
 
             $schoolLIA = SchoolLIA::destroy($id);
             $school = School::destroy($id);
+            $schoolArray[] = array($schoolLIA, $school);
 
-            return $this->successResponse($data, 'A sido eliminada con exito');
+            return $this->successResponse($schoolArray, 'Se ha eliminado la escuela con exito');
         }catch (ModelNotFoundException $e){
-            return $this->errorResponse($e->getMessage(),404);
+            return $this->errorResponse('No hay elementos que coincidan',404);
         }
     }
 
