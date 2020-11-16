@@ -3,106 +3,89 @@
 namespace App\Http\Controllers;
 
 use App\LicenseKey;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class LicenseKeyController extends Controller
+class LicenseKeyController extends ApiController
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $licenses = LicenseKey::get()->toJson(JSON_PRETTY_PRINT);
-        return response($licenses, 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $licenses = LicenseKey::all();
+        return $this->successResponse($licenses);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'license_id' => 'required',
-            'user_id' => 'required',
-        ]);
-
-        $license = LicenseKey::create($request->all());
-
-        return response()->json([
-            $license,
-            "message" => "Nueva llave creada",
-        ], 201);
+        try {
+            $license = LicenseKey::create($request->all());
+            return $this->successResponse($license, "Se ha asignado la llave", 201);
+        }catch (Exception $e){
+            return $this->errorResponse('Algo salio mal, no se ha asignado la llave',  500);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\LicenseKey  $licenseKey
-     * @param  uuid $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $licenseKey = LicenseKey::find($id);
-        return response($licenseKey, 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\LicenseKey  $licenseKey
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(LicenseKey $licenseKey)
-    {
-        //
+        try {
+            $licenseKey = LicenseKey::findOrfail($id);
+            return $this->successResponse($licenseKey);
+        }catch (ModelNotFoundException $exception){
+            return $this->errorResponse('Llave invalida no hay elemento sque coincidan');
+        }
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\LicenseKey  $licenseKey
-     * @param  uuid $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        LicenseKey::updateDataId($id);
-
-        return response()->json([
-            "message" => "Se ha actualizado la licencia existosamente",
-        ], 200);
+        try {
+            LicenseKey::findOrFail($id);
+            $key = LicenseKey::updateDataId($id);
+            return $this->successResponse($key, "Se ha actualizado la licencia existosamente", 201);
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('Llave invalida: No hay elementos que coincidan', 422);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\LicenseKey  $licenseKey
-     * @return \Illuminate\Http\Response
+     * Remove the specified Key License from storage.
      */
-    public function destroy(LicenseKey $licenseKey, $id)
+    public function destroy($id)
     {
-        $licenseKey::destroy($id);
+        try {
+            LicenseKey::findOrFail($id);
+            $keyDlt = LicenseKey::destroy($id);
 
-        return response()->json([
-            $licenseKey,
-            "message" => "Se ha eliminado la licencia",
-        ], 200);
+            return $this->successResponse($keyDlt, "Se ha eliminado la licencia", 200);
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('Llave invalida: No hay elementos que coincidan', 422);
+        }
+    }
+
+    public function validateKeyLicense(){
+        $messages = [
+            'license_id.required' => 'Necesita asignar una licencia',
+            'user_id.required' => 'Es necesario asignar un usuario valido'
+        ];
+
+        return Validator::make(request()->all(), [
+            'license_id' => 'required',
+            'user_id' => 'required',
+        ], $messages);
     }
 }

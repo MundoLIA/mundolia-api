@@ -59,9 +59,8 @@ class LicenseController extends ApiController
     {
         try {
             License::firstOrFail($id);
-
-            License::updateDataId($id);
-            return $this->successResponse('Se ha actualizado la licencia', 201);
+            $license = License::updateDataId($id);
+            return $this->successResponse($license,'Se ha actualizado la licencia', 201);
         }catch (ModelNotFoundException $e){
             return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
         }
@@ -96,6 +95,6 @@ class LicenseController extends ApiController
             'email_admin' => 'required|email',
             'license_type_id' =>'required',
             'studens_limit' => 'required',
-        ]);
+        ], $messages);
     }
 }

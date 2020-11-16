@@ -134,8 +134,7 @@ class SchoolController extends ApiController
             'required' => 'El campo :nombre es requirido.',
         ];
 
-        return Validator::make(request()->all(),
-            [
+        return Validator::make(request()->all(), [
                 'name' => 'required|max:255',
                 'description' => 'string|max:255',
             ], $messages);

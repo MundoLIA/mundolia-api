@@ -56,8 +56,8 @@ class LicenseTypeController extends ApiController
         try {
             LicenseType::firstOrFail($id);
 
-            LicenseType::updateDataId($id);
-            return $this->successResponse('Se ha actualizado el tipo de licencia', 201);
+            $type = LicenseType::updateDataId($id);
+            return $this->successResponse($type,'Se ha actualizado el tipo de licencia', 201);
 
         }catch(ModelNotFoundException $e){
             return $this->errorResponse('Tipo de lincencia invalido', 422);
@@ -70,12 +70,12 @@ class LicenseTypeController extends ApiController
     public function destroy($id)
     {
         try {
-            $type = LicenseType::firstOrFail($id);
-            $type::destroy();
+            LicenseType::firstOrFail($id);
+            $type = LicenseType::destroy($id);
 
-            return $this->successResponse('Se ha eliminado correctamente');
-        }catch (ModelNotFoundException $e){
-
+            return $this->successResponse($type, 'Se ha eliminado correctamente', 201);
+        }catch(ModelNotFoundException $e){
+            return $this->errorResponse('Tipo de lincencia invalido', 422);
         }
     }
 
@@ -86,6 +86,6 @@ class LicenseTypeController extends ApiController
 
         return Validator::make(request()->all(), [
             'description_license_type' => 'required',
-        ]);
+        ], $messages);
     }
 }
