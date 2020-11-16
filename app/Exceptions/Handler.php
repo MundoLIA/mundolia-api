@@ -81,7 +81,7 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof ModelNotFoundException) {
-            return $this->errorResponse('No ha sido encontrado el objeto', 404);
+            return $this->errorResponse('Entry for '.str_replace('App\\', '', $exception->getModel()).' not found', 404);
         }
 
         return $this->errorResponse('Unexpected Exception. Try later', 500);

@@ -45,10 +45,9 @@ class LicenseController extends ApiController
     {
         try {
             $licenseType = License::find($id);
-            return response($licenseType, 200);
+            return $this->successResponse($licenseType);
         } catch (ModelNotFoundException $e) {
-            $e->getMessage();
-            return $this->errorResponse($e,404);
+            return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
         }
 
     }
@@ -64,45 +63,37 @@ class LicenseController extends ApiController
             License::updateDataId($id);
             return $this->successResponse('Se ha actualizado la licencia', 201);
         }catch (ModelNotFoundException $e){
-            return $this->errorResponse($e->getMessage(), 404);
+            return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
         }
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\License  $license
-     * @param  uuid $id
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(License $license, $id)
+    public function destroy($id)
     {
         try {
-            License::firstOrFail($id);
+            License::findOrFail($id);
+            $licenseDlt = License::destroy($id);
 
-        $license::destroy($id);
+        return $this->successResponse($licenseDlt, 'Se ha eliminado con exito la licencia');
 
-        return response()->json([
-            $license,
-            "message" => "Se ha eliminado la licencia",
-        ], 200);
-        }catch (ModelNotFoundException $e){
-            return $this->errorResponse('No existe la licencia buscada',404);
-
+        } catch (ModelNotFoundException $ex) { // User not found
+            return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
         }
 
     }
 
     public function validateLicense(){
         $messages = [
-            'titular:required' => 'El campo titular es requerido.',
-            'email:required' => 'El correo electronico es requerido.',
-            'license_type_id:required' => 'Es necesario selecionar un tipo de licencia',
+            'titular.required' => 'El campo titular es requerido.',
+            'email.required' => 'El correo electronico es requerido.',
+            'license_type_id.required' => 'Es necesario seleccionar un tipo de licencia',
         ];
 
         return Validator::make(request()->all(), [
             'titular' => 'required',
-            'email_admin' => 'required',
+            'email_admin' => 'required|email',
             'license_type_id' =>'required',
             'studens_limit' => 'required',
         ]);

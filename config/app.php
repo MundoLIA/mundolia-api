@@ -15,11 +15,11 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
-    'thinkific' => env('THINKIFIC_API_KEY', 'e6474c9684efbd1e59aa07bd427ff9aa'),
-    'subdomain_thinkific' => env('THINKIFIC_SUBDOMAIN', 'dylan-s-school-2159'),
+    'thinkific' => env('THINKIFIC_API_KEY'),
+    'subdomain_thinkific' => env('THINKIFIC_SUBDOMAIN'),
 
     'phpfox' => env('PHPFOX_CLIENT_ID', 'clublia'),
-    'secret_phpfox' => env('PHPFOX_CLIENT_SECRET', '44ac1a3dadc548e1abaa120c0235260de3d01b52'),
+    'secret_phpfox' => env('PHPFOX_CLIENT_SECRET'),
     'url_phpfox' => env('PHPFOX_URL', 'http://comunidad.test/index.php/restful_api'),
     'username_comunidad' => env('COMUNIDAD_USERNAME', null),
     'pass_comunidad' => env('COMUNIDAD_PASSWORD', null),

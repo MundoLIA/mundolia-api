@@ -69,28 +69,20 @@ class SchoolController extends ApiController
      */
     public function show($id)
     {
-        $school = School::find($id);
+        try {
+        $school = School::findOrFail($id);
         return $this->successResponse($school);
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('Tipo de licencia invalido', 422);
+        }
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\School  $school
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(School $school)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param  int $id
      */
-    public function update(Request $request,$id)
+    public function update($id)
     {
         try {
             $school = School::findOrFail($id);
@@ -112,7 +104,7 @@ class SchoolController extends ApiController
             return $this->successResponse($schoolArray, 'La escuela ha sido actualizada', 200);
 
         }catch (ModelNotFoundException $e){
-            return $this->errorResponse($e->getMessage(), 404);
+            return $this->errorResponse('No hay elementos que coincidan', 404);
         }
     }
 

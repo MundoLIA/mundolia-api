@@ -36,11 +36,11 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::put('usuariosgroup', 'UserController@updateGroup');
 
-    Route::get('tipolicencias', 'LicenseTypeController@index');
-    Route::get('tipolicencias/{id}', 'LicenseTypeController@show');
-    Route::post('tipolicencias', 'LicenseTypeController@store');
-    Route::put('tipolicencias/{id}', 'LicenseTypeController@update');
-    Route::delete('tipolicencias/{id}', 'LicenseTypeController@destroy');
+    Route::get('tipos/licencia', 'LicenseTypeController@index');
+    Route::get('tipos/licencia/{id}', 'LicenseTypeController@show');
+    Route::post('tipos/licencia', 'LicenseTypeController@store');
+    Route::put('tipos/licencia/{id}', 'LicenseTypeController@update');
+    Route::delete('tipos/licencia/{id}', 'LicenseTypeController@destroy');
 
     Route::get('licencias', 'LicenseController@index');
     Route::get('licencias/{id}', 'LicenseController@show');
