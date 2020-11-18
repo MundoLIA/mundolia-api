@@ -6,9 +6,9 @@ use App\School;
 use App\SchoolLIA;
 use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\ApiController;
 
 class SchoolController extends ApiController
 {
@@ -24,7 +24,8 @@ class SchoolController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
@@ -81,10 +82,13 @@ class SchoolController extends ApiController
 
     /**
      * Update the specified resource in storage.
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
         try {
+
             $school = School::findOrFail($id);
             $schoolLia = SchoolLIA::findOrFail($id);
 
@@ -110,7 +114,7 @@ class SchoolController extends ApiController
 
     /**
      * Remove the specified resource from storage.
-
+     * @return JsonResponse
      */
     public function destroy($id)
     {

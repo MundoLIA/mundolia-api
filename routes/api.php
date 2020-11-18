@@ -27,6 +27,16 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::delete('escuelas/{id}', 'SchoolController@destroy');
 
     Route::get('periodos', 'PeriodoController@index');
+    Route::get('periodos/{id}', 'PeriodoController@show');
+    Route::post('periodos', 'PeriodoController@store');
+    Route::put('periodos/{id}', 'PeriodoController@update');
+    Route::delete('periodos/{id}', 'PeriodoController@destroy');
+
+    Route::get('inscripciones', 'EnrollmentController@index');
+    Route::get('inscripciones/{id}', 'EnrollmentController@show');
+    Route::post('inscripciones', 'EnrollmentController@store');
+    Route::put('inscripciones/{id}', 'EnrollmentController@update');
+    Route::delete('inscripciones/{id}', 'EnrollmentController@destroy');
 
     Route::get('usuarios', 'UserController@index');
     Route::get('usuarios/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'UserController@show']);
@@ -62,6 +72,12 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('tipos/contacto', 'ContactTypeController@store');
     Route::put('tipos/contacto/{id}', 'ContactTypeController@update');
     Route::delete('tipos/contacto/{id}', 'ContactTypeController@destroy');
+
+    Route::get('grados', 'GradeController@index');
+    Route::get('grados/{id}', 'GradeController@show');
+    Route::post('grados', 'GradeController@store');
+    Route::put('grados/{id}', 'GradeController@update');
+    Route::delete('grados/{id}', 'GradeController@destroy');
 
     Route::get('contacto', 'ContactController@index');
     Route::get('contacto/{id}', 'ContactController@show');

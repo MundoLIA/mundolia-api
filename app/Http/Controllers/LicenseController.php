@@ -25,14 +25,19 @@ class LicenseController extends ApiController
      */
     public function store(Request $request)
     {
-        $validator = $this->validateLicense();
-        if($validator->fails()){
-            return $this->errorResponse($validator->messages(), 422);
+        try {
+            $validator = $this->validateLicense();
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+
+            $license = License::create($request->all());
+
+            return $this->successResponse($license,'Se ha creado una nueva licencia', 201);
+
+        }catch (Exception $exception){
+            return $this->errorResponse('Hubo problemas para crear la licencia', 422);
         }
-
-        $license = License::create($request->all());
-
-        return $this->successResponse($license,'Se ha creado una nueva licencia', 201);
     }
 
     /**
@@ -49,7 +54,6 @@ class LicenseController extends ApiController
         } catch (ModelNotFoundException $e) {
             return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
         }
-
     }
 
     /**

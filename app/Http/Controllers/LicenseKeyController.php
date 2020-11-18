@@ -27,10 +27,15 @@ class LicenseKeyController extends ApiController
     public function store(Request $request)
     {
         try {
+            $validator = $this->validateKeyLicense();
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+
             $license = LicenseKey::create($request->all());
             return $this->successResponse($license, "Se ha asignado la llave", 201);
-        }catch (Exception $e){
-            return $this->errorResponse('Algo salio mal, no se ha asignado la llave',  500);
+        }catch (Exception $exception){
+            return $this->errorResponse('Hubo problemas para crear la licencia', 422);
         }
     }
 
