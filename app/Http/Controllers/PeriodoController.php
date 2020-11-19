@@ -76,9 +76,9 @@ class PeriodoController extends ApiController
     {
         try {
             Periodo::findOrFail($id);
-            $keyDlt = Periodo::destroy($id);
+            $periodDlt = Periodo::destroy($id);
 
-            return $this->successResponse($keyDlt, "Se ha eliminado el periodo", 200);
+            return $this->successResponse($periodDlt, "Se ha eliminado el periodo", 200);
         }catch (ModelNotFoundException $e){
             return $this->errorResponse('Periodo inválido: No hay elementos que coincidan', 422);
         }

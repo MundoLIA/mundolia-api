@@ -27,7 +27,7 @@ class EnrollmentController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return JsonResponse
      */
     public function store(Request $request)
@@ -37,48 +37,46 @@ class EnrollmentController extends ApiController
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
             }
-
             $enrollment = Enrollment::create($request->all());
             return $this->successResponse($enrollment, "Se ha matriculado al usuario exitosamente", 201);
         }catch (QueryException $exception){
             return $this->errorResponse('Verifica que los datos sean correctos', 422 );
         }catch (Exception $e){
-            return $this->errorResponse('No se ha matriculado al usuario debido a un problema', 422);
+            return $this->errorResponse('Registro inválido', 422);
         }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Enrollment  $enrollment
-     * @return \Illuminate\Http\Response
+     * @param  int $id
+     * @return JsonResponse
      */
-    public function show(Enrollment $enrollment)
+    public function show($id)
     {
-        //
+        try {
+            $enroll = Enrollment::find($id);
+            return $this->successResponse($enroll);
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('Registro inválido: No hay elementos que coincidan', 422);
+        }
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Enrollment  $enrollment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Enrollment $enrollment)
-    {
-        //
-    }
-
+    
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Enrollment  $enrollment
-     * @return \Illuminate\Http\Response
+     * @param  int $id
+     * @return JsonResponse
      */
-    public function update(Request $request, Enrollment $enrollment)
+    public function update($id)
     {
-        //
+        try {
+            Enrollment::findOrFail($id);
+            $enroll = Enrollment::updateDataId($id);
+            return $this->successResponse($enroll, "Se actualizado el registro", 201);
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('Registro inválido: No hay elementos que coincidan', 422);
+        }
     }
 
     /**
@@ -93,9 +91,9 @@ class EnrollmentController extends ApiController
             Enrollment::findOrFail($id);
             $enrollDlt = Enrollment::destroy($id);
 
-            return $this->successResponse($enrollDlt, "Se ha eliminado el grado exitosamente", 200);
+            return $this->successResponse($enrollDlt, "Se ha eliminado el registro exitosamente", 200);
         }catch (ModelNotFoundException $e){
-            return $this->errorResponse('Grado inválido: No hay elementos que coincidan', 422);
+            return $this->errorResponse('Registro inválido: No hay elementos que coincidan', 422);
         }
     }
 
