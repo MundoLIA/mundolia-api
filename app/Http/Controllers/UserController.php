@@ -214,7 +214,9 @@ class UserController extends Controller
                 UserGenericRegister::dispatch($dataThink, $dataFox);
             }
 
-            SendEmail::dispatchNow($data);
+            if(Config::get('app.send_email')) {
+                SendEmail::dispatchNow($data);
+            }
 
             $success['message'] = 'Usuario creado';
             $success['code'] = 200;

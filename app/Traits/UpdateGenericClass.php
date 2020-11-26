@@ -184,7 +184,10 @@ trait UpdateGenericClass{
             if(Config::get('app.sync_thinkific')) {
                 UserGenericRegister::dispatch($dataThink, $dataFox);
             }
-            SendEmail::dispatchNow($data);
+
+            if(Config::get('app.send_email')) {
+                SendEmail::dispatchNow($data);
+            }
 
             return (["message" => "Usuario creado", "username" => $username]);
 
