@@ -35,7 +35,7 @@ class MassiveEmailController extends ApiController
 
         Mail::send(new MassiveEmail($input));
 
-        return $this->successResponse('Email sended');
+        return $this->successResponse(null,'Email sended');
     }
 
     public function validateMail(){
