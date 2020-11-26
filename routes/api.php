@@ -58,6 +58,8 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('licencias/{id}', 'LicenseController@update');
     Route::delete('licencias/{id}', 'LicenseController@destroy');
 
+    Route::post('emails', 'MassiveEmailController@send');
+
     //Asignar Licencias
     Route::post('asignar/licencias', 'UserController@assignLicense');
 
