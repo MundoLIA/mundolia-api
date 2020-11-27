@@ -29,11 +29,14 @@ class MassiveEmailController extends ApiController
 
         $input = request()->all();
 
-        $users = \DB::table('users')->whereIn('uuid', $input['uuids'])->get('email')->pluck('email')->toArray();
-
-        $input['email'] = $users;
-
-        Mail::send(new MassiveEmail($input));
+        $emails = array_chunk($input['uuids'],1000);
+        
+        foreach ($emails as $mail) {
+            $users = \DB::table('users')->whereIn('uuid', $mail)->get('email')->pluck('email')->toArray();
+            $input['email'] = $users;
+            
+            Mail::send(new MassiveEmail($input));
+        }
 
         return $this->successResponse(null,'Email sended');
     }
@@ -48,7 +51,7 @@ class MassiveEmailController extends ApiController
         return Validator::make(request()->all(), [
                 'subject' => 'string|required',
                 'message' => 'string|required',
-                'uuids' => 'array|required|max:500',
+                'uuids' => 'array|required',
             ], $messages);
     }
 }
