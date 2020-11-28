@@ -54,6 +54,9 @@ trait UpdateGenericClass{
         if($role == "MAESTRO"){
             $rol = 4;
         }
+        if($role == "PADRE"){
+            $rol = 10;
+        }
         if($role == "ADMINISTRADOR ESCUELA LIA"){
             $rol = 3;
         }
@@ -88,7 +91,7 @@ trait UpdateGenericClass{
                 $dataCreate['school_id'] = $school_id;
                 $dataCreate['role_id'] = $role_id;
             }else{
-                if ( $role_id == 4 || $role_id == 5 ||  $role_id == 13 ){
+                if ( $role_id == 4 || $role_id == 5 ||  $role_id == 13 || $role_id == 6 ){
                     $dataCreate['role_id'] = $role_id;
                 }else{
                     $dataCreate['role_id'] = 4;

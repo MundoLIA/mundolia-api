@@ -59,6 +59,38 @@ class UserImportController extends Controller
 
                     $insertArr[Str::slug($key, '_')] = $value;
                 }
+                if($insertArr['nombre_padre_madre_o_tutor'] && $insertArr['mail_padre']){
+                    $tutorId = \DB::table('users')->whereIn('email', [$insertArr['mail_padre']])->get('id')->pluck('id');
+                    
+                    if(sizeof($tutorId) == 0){
+
+                        $tutorName = explode(' ',$insertArr['nombre_padre_madre_o_tutor']);
+
+                        $tutor['tipo_usuario'] = 'PADRE';
+                        $tutor['nombre'] = $tutorName[0];
+                        $tutor['username'] = null;
+                        $tutor['apellido_paterno'] = implode(' ',array_slice($tutorName, 1));
+                        $tutor['segundo_nombre'] = null;
+                        $tutor['apellido_materno'] = null;
+                        $tutor['email'] = $insertArr['mail_padre'];
+                        $tutor['seccion'] = $insertArr['seccion'];
+                        $tutor['grado'] = $insertArr['grado'];
+                        $tutor['school_id'] = null;
+                        $tutor['nombre_padre_madre_o_tutor'] = null;
+                        $tutor['mail_padre'] = null;
+                        $tutor['result'] = $insertArr['result'];
+                        
+                        $resp = $tutor;
+                        $respCreate = User::dataUser($tutor, $school_id, $password);
+                        $resp ['result'] = $respCreate["message"];
+                        $resp ['username'] = $respCreate["username"];
+                        $result [++$i] = (array) $resp;
+
+                    }
+                    return response((array) $result,200);
+                }
+                return json_encode($insertArr);
+                exit();
 
                 $resp = $obj;
                 $respCreate = User::dataUser($insertArr, $school_id, $password);
