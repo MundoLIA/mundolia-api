@@ -81,7 +81,7 @@ trait UpdateGenericClass{
         }
         return $password;
     }
-    public static function dataUser($input, $school_id, $passwordSource = null)
+    public static function dataUser($input, $school_id, $passwordSource = null, $tutorId = null)
     {
         try {
             $user = Auth::user();
@@ -102,6 +102,7 @@ trait UpdateGenericClass{
             $dataCreate['last_name'] = $input['apellido_paterno'].' '.$input['apellido_materno'];
             $dataCreate['grade'] = self::getGrade($input['grado'], $input['tipo_usuario'],$input['seccion']);
             $dataCreate['email'] = $input['email'];
+            $dataCreate['tutor_id'] = $tutorId;
 
             $password  = $passwordSource ? $passwordSource : self::createPassword($input['seccion']);
             $passwordEncode = bcrypt($password);
@@ -118,13 +119,18 @@ trait UpdateGenericClass{
                             users.username,
                             users.name,
                             users.last_name,
-                            users.email
+                            users.email,
+                            users.tutor_id
                             FROM users
                             WHERE users.email = "'.$email.'" and username = "'.$username.'"
                             LIMIT 1');
 
             if ($reuser) {
-                    return (["message" => "El usuario ya existe", "username" => $username]);
+                if(!(array)$reuser[0]->tutor_id){
+                    \DB::table('users')->where('username', $username)->update(['tutor_id' => $tutorId]);
+                    return (["message" => "Usuario actualizado", "username" => $username]);
+                } 
+                return (["message" => "El usuario ya existe", "username" => $username]);
             } else {
                 $i = 0;
                 while (self::whereUsername($username)->exists()) {

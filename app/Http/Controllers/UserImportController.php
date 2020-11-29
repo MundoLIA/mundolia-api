@@ -44,6 +44,7 @@ class UserImportController extends Controller
             $user = Auth::user();
             $school_id =  $user->school_id;
             $password = null;
+            $tutor_id = null;
             $input = request()->all();
 
             if($user->role_id == 1 || $user->role_id == 2){
@@ -60,9 +61,9 @@ class UserImportController extends Controller
                     $insertArr[Str::slug($key, '_')] = $value;
                 }
                 if($insertArr['nombre_padre_madre_o_tutor'] && $insertArr['mail_padre']){
-                    $tutorId = \DB::table('users')->whereIn('email', [$insertArr['mail_padre']])->get('id')->pluck('id');
-                    
-                    if(sizeof($tutorId) == 0){
+                    $tutorId = \DB::table('users')->where('email', [$insertArr['mail_padre']])->where('role_id', 10)->get('id')->first();
+
+                    if(!$tutorId){
 
                         $tutorName = explode(' ',$insertArr['nombre_padre_madre_o_tutor']);
 
@@ -86,14 +87,14 @@ class UserImportController extends Controller
                         $resp ['username'] = $respCreate["username"];
                         $result [++$i] = (array) $resp;
 
+                        $tutorId = \DB::table('users')->where('email', [$insertArr['mail_padre']])->where('role_id', 10)->get('id')->first();
                     }
-                    return response((array) $result,200);
+                    $tutor_id = $tutorId->id;
                 }
-                return json_encode($insertArr);
-                exit();
 
                 $resp = $obj;
-                $respCreate = User::dataUser($insertArr, $school_id, $password);
+                $respCreate = User::dataUser($insertArr, $school_id, $password, $tutor_id);
+                //\DB::table('users')->where('username', $respCreate["username"])->update(['tutor_id' => $tutorId->id]);
                 $resp ['result'] = $respCreate["message"];
                 $resp ['username'] = $respCreate["username"];
                 $result [++$i] = (array) $resp;
