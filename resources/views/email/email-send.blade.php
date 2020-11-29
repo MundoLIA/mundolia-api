@@ -1,11 +1,13 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE>
+<html lang="es">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <!--[if !mso]><!-->
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="{{ asset('js/login.js') }}"></script>
     <!--<![endif]-->
     <!--[if (gte mso 9)|(IE)]>
     <xml>
@@ -14,396 +16,111 @@
             <o:PixelsPerInch>96</o:PixelsPerInch>
         </o:OfficeDocumentSettings>
     </xml>
-    <style type="text/css">
-        body {
-            width: 600px;
-            margin: 0 auto;
-        }
-
-        table {
-            border-collapse: collapse;
-        }
-
-        table, td {
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
-        }
-
-        img {
-            -ms-interpolation-mode: bicubic;
-        }
-    </style>
     <![endif]-->
     <style type="text/css">
-        body, p, div {
-            font-family: 'Lato', sans-serif;
-            font-size: 14px;
-        }
 
-        body {
-            color: #FFFFFF;
-        }
-
-        body a {
-            color: #117bfe;
-            text-decoration: none;
-        }
-
-        p {
+        body, html {
+            height: 100%;
             margin: 0;
-            padding: 0;
         }
 
-        table.wrapper {
-            width: 100% !important;
-            table-layout: fixed;
-            -webkit-font-smoothing: antialiased;
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
+        .main-image {
+            background-image: url({{asset("/images/Home-Lia.jpg")}});
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 85vh;
+            width: 100%;
         }
 
-        img.max-width {
-            max-width: 100% !important;
-        }
-
-        .column.of-2 {
-            width: 50%;
-        }
-
-        .column.of-3 {
-            width: 33.333%;
-        }
-
-        .column.of-4 {
-            width: 25%;
-        }
-
-        @media screen and (max-width: 480px) {
-            .preheader .rightColumnContent,
-            .footer .rightColumnContent {
-                text-align: left !important;
-            }
-
-            .preheader .rightColumnContent div,
-            .preheader .rightColumnContent span,
-            .footer .rightColumnContent div,
-            .footer .rightColumnContent span {
-                text-align: left !important;
-            }
-
-            .preheader .rightColumnContent,
-            .preheader .leftColumnContent {
-                font-size: 80% !important;
-                padding: 5px 0;
-            }
-
-            table.wrapper-mobile {
-                width: 100% !important;
-                table-layout: fixed;
-            }
-
-            img.max-width {
-                height: auto !important;
-                max-width: 100% !important;
-            }
-
-            a.bulletproof-button {
-                display: block !important;
-                width: auto !important;
-                font-size: 80%;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-            }
-
-            .columns {
-                width: 100% !important;
-            }
-
-            .column {
-                display: block !important;
-                width: 100% !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-        }
     </style>
     <!--user entered Head Start-->
 
     <!--End Head user entered-->
 </head>
 <body>
-<center class="wrapper" data-link-color="#fe5d61"
-        data-body-style="font-size:16px; font-family:courier, monospace; color:#FFFFFF; background-color:#f2f4fb;">
-    <div class="webkit">
-        <table cellpadding="0" cellspacing="0" border="0" width="100%" class="wrapper" bgcolor="#f2f4fb">
-            <tbody>
-            <tr>
-                <td valign="top" bgcolor="#f2f4fb" width="100%">
-                    <table width="100%" role="content-container" class="outer" align="center" cellpadding="0"
-                           cellspacing="0" border="0">
-                        <tbody>
-                        <tr>
-                            <td width="100%">
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <!--[if mso]>
-                                            <center>
-                                                <table>
-                                                    <tr>
-                                                        <td width="600">
-                                            <![endif]-->
-                                            <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                                                   style="width:100%; max-width:600px;" align="center">
-                                                <tbody>
-                                                <tr>
-                                                    <td role="modules-container"
-                                                        style="padding:0px 0px 0px 0px; color:#FFFFFF; text-align:left;"
-                                                        bgcolor="#f2f4fb" width="100%" align="left">
-                                                        <table class="wrapper" role="module" data-type="image"
-                                                               border="0" cellpadding="0" cellspacing="0" width="100%"
-                                                               style="table-layout: fixed;"
-                                                               data-muid="98ndJyAY9BSGjoVqrr6FYx">
-                                                            <tbody style="background-color:#ffffff">
-                                                            <tr>
-                                                                <td style="font-size:6px; line-height:10px; padding:30px 0px 30px 0px;"
-                                                                    valign="top" align="left">
-                                                                    <img class="max-width" border="0"
-                                                                         style=" display:block; color:#000000; text-decoration:none; font-family:'Poppins', sans-serif; font-size:16px; max-width:40% !important; width:40%; height:auto !important; "
-                                                                         src="https://clublia.com/wp-content/uploads/2020/02/clublia.png"
-                                                                         alt="Off Grid Adventures" width="240"
-                                                                         data-responsive="true"
-                                                                         data-proportionally-constrained="false">
-                                                                </td>
-                                                                <td style=" font-size:6px; line-height:10px; color: #000000; padding:30px 0px 30px 0px;"
-                                                                    valign="top" align="left">
-                                                                    <div>
-                                                                        <h2>Bienvenido</h2>
-                                                                        <p>Usuario:asdfg </p>
-                                                                        &nbsp;
-                                                                        <p>Contrasena: asdf </p>
-                                                                    </div>
+    <div class="sticky-bar">
+        <div class="sticky-bar-inner h-6">
 
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <table class="module" role="module" data-type="text" border="0"
-                                                               cellpadding="0" cellspacing="0" width="100%"
-                                                               style="table-layout: fixed;"
-                                                               data-muid="7pyDCmyDaGcm5WsBBSaEgv">
-                                                            <tbody>
-                                                            <tr>
-                                                                <td style="background-color:#093E80; padding:50px 50px 30px 50px; line-height:22px; text-align:inherit;"
-                                                                    height="100%" valign="top" bgcolor="#FE5D61">
-                                                                    <div>
-                                                                        <div
-                                                                            style="color:#ffffff; font-family: inherit; text-align: justify">
-                                                                            Tu acceso a LA NUEVA COMUNIDAD DE CLUB LIA
-                                                                            ha sido creada con éxito.
-                                                                        </div>
-                                                                        <div></div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <table class="module" role="module" data-type="text" border="0"
-                                                               cellpadding="0" cellspacing="0" width="100%"
-                                                               style="table-layout: fixed;"
-                                                               data-muid="nSVYnVzPLnGZ4wUdynLiKo">
-                                                            <tbody style="color: #ffffff !important;">
-                                                            <tr>
-                                                                <td style="background-color:#093E80; padding:0px 50px 30px 50px; line-height:22px; text-align:inherit;"
-                                                                    height="100%" valign="top" bgcolor="#fe5d61">
-                                                                    <div>
-                                                                        <div
-                                                                            style="font-family: inherit; text-align: justify">
-                                                                            ¡Te tenemos una sorpresa!
-                                                                        </div>
-                                                                        <div
-                                                                            style="font-family: inherit; text-align: justify">
-                                                                            &nbsp;
-                                                                        </div>
-                                                                        <div
-                                                                            style="font-family: inherit; text-align: justify; font-size: 14px;">
-                                                                            Espera las instrucciones de tus maestr@s
-                                                                            para acceder a la comunidad de Club Lia
-                                                                            a las actividades de la plataforma, para
-                                                                            hacerlo todos juntos, como comunidad.
-                                                                            <br/><br/>
-                                                                            ¡ Juntos viviremos una nueva aventura
-                                                                            colaborativa de aprendizaje !
-                                                                        </div>
-                                                                        <div
-                                                                            style="font-family: inherit; text-align: justify">
-                                                                            &nbsp;
-                                                                        </div>
-                                                                        <div
-                                                                            style="font-family: inherit; text-align: justify">
-                                                                            Gracias por ser parte de la COMUNIDAD
-                                                                            LÍDERES INNOVADORES EN APRENDIZAJE .
-                                                                        </div>
-                                                                        <div></div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <table class="module" role="module" data-type="spacer"
-                                                               border="0" cellpadding="0" cellspacing="0" width="100%"
-                                                               style="table-layout: fixed;"
-                                                               data-muid="iYySZ4rAB78PLoW7vU13Bb">
-                                                            <tbody>
-                                                            <tr>
-                                                                <td style="padding:0px 0px 30px 0px;"
-                                                                    role="module-content" bgcolor="">
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <table class="module" role="module" data-type="divider"
-                                                               border="0" cellpadding="0" cellspacing="0" width="100%"
-                                                               style="table-layout: fixed;"
-                                                               data-muid="mVyZz43HETwfwb72TGh4iy">
-                                                            <tbody>
-                                                            <tr>
-                                                                <td style="padding:0px 0px 0px 0px;"
-                                                                    role="module-content" height="100%" valign="top"
-                                                                    bgcolor="">
-                                                                    <table border="0" cellpadding="0" cellspacing="0"
-                                                                           align="center" width="100%" height="3px"
-                                                                           style="line-height:3px; font-size:3px;">
-                                                                        <tbody>
-                                                                        <tr>
-                                                                            <td style="padding:0px 0px 3px 0px;"
-                                                                                bgcolor="#ffffff"></td>
-                                                                        </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <table class="module" role="module" data-type="spacer"
-                                                               border="0" cellpadding="0" cellspacing="0" width="100%"
-                                                               style="table-layout: fixed;"
-                                                               data-muid="sfek66tVLi5d2iy5jmSawj">
-                                                            <tbody>
-                                                            <tr>
-                                                                <td style="text-align: center; padding: 20px 0px;"
-                                                                    role="module-content" bgcolor="">
-                                                                    <div>
-                                                                        <p style="display:inline-block;margin:auto;font-size:15px;color:#2a73cc;line-height:22px;background-color:#ffffff;font-weight:bold;border:1px solid #117bfe;border-radius:2px;font-family:'Open Sans',Arial,sans-serif"
-                                                                           align="center"><a style="padding:10px 25px;display:block;text-decoration:none;"
-                                                                                             href="http://comunidad.clublia.com/" style="text-decoration:none;color:#0abe51"
-                                                                                             target="_blank">Ir a la comunidad</a></p>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <table class="module" role="module" data-type="social"
-                                                               align="center" border="0" cellpadding="0" cellspacing="0"
-                                                               width="100%" style="table-layout: fixed;"
-                                                               data-muid="kTqJe3Ke2movtrLxSjKW3C">
-                                                            <tbody>
-                                                            <tr>
-                                                                <td valign="top"
-                                                                    style="padding:0px 0px 0px 0px; font-size:6px; line-height:10px;"
-                                                                    align="center">
-                                                                    <table align="center">
-                                                                        <tbody>
-                                                                        <tr>
-                                                                            <td style="padding: 0px 5px;">
-                                                                                <a role="social-icon-link"
-                                                                                   href="https://www.facebook.com/ClubLIA/"
-                                                                                   target="_blank" alt="Facebook"
-                                                                                   title="Facebook"
-                                                                                   style="display:inline-block; background-color:#fa272b; height:30px; width:30px; border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;">
-                                                                                    <img role="social-icon"
-                                                                                         alt="Facebook" title="Facebook"
-                                                                                         src="https://marketing-image-production.s3.amazonaws.com/social/white/facebook.png"
-                                                                                         style="height:30px; width:30px;"
-                                                                                         height="30" width="30">
-                                                                                </a>
-                                                                            </td>
-                                                                            <td style="padding: 0px 5px;">
-                                                                                <a role="social-icon-link"
-                                                                                   href="https://twitter.com/clublia"
-                                                                                   target="_blank" alt="Twitter"
-                                                                                   title="Twitter"
-                                                                                   style="display:inline-block; background-color:#fa272b; height:30px; width:30px; border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;">
-                                                                                    <img role="social-icon"
-                                                                                         alt="Twitter" title="Twitter"
-                                                                                         src="https://marketing-image-production.s3.amazonaws.com/social/white/twitter.png"
-                                                                                         style="height:30px; width:30px;"
-                                                                                         height="30" width="30">
-                                                                                </a>
-                                                                            </td>
-                                                                            <td style="padding: 0px 5px;">
-                                                                                <a role="social-icon-link"
-                                                                                   href="https://www.linkedin.com/company/sistema-educativo-lia"
-                                                                                   target="_blank" alt="Instagram"
-                                                                                   title="Instagram"
-                                                                                   style="display:inline-block; background-color:#fa272b; height:30px; width:30px; border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;">
-                                                                                    <img role="social-icon"
-                                                                                         alt="Instagram"
-                                                                                         title="Instagram"
-                                                                                         src="https://marketing-image-production.s3.amazonaws.com/social/white/linkedin.png"
-                                                                                         style="height:30px; width:30px;"
-                                                                                         height="30" width="30">
-                                                                                </a>
-                                                                            </td>
-                                                                            <td style="padding: 0px 5px;">
-                                                                                <a role="social-icon-link"
-                                                                                   href="https://www.instagram.com/club_lia/"
-                                                                                   target="_blank" alt="Pinterest"
-                                                                                   title="Pinterest"
-                                                                                   style="display:inline-block; background-color:#fa272b; height:30px; width:30px; border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;">
-                                                                                    <img role="social-icon"
-                                                                                         alt="Pinterest"
-                                                                                         title="Pinterest"
-                                                                                         src="https://marketing-image-production.s3.amazonaws.com/social/white/instagram.png"
-                                                                                         style="height:30px; width:30px;"
-                                                                                         height="30" width="30">
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                            <!--[if mso]>
-                                            </td>
-                                            </tr>
-                                            </table>
-                                            </center>
-                                            <![endif]-->
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+            <div class="site-logo-container">
+                <div class="site-logo">
+                    <img class="lg-image" border="0"
+                         src="{{asset('/images/clublia.png')}}"
+                         alt="Off Grid Adventures" width="140"
+                         data-responsive="true"
+                         data-proportionally-constrained="false">
+                </div>
+            </div>
+
+            <div id="search-panel" class="search-panel mr-7">
+                <div class="js_temp_friend_search_form"></div>
+                <form method="get" action="http://comunidad.test/index.php/search/" class="header_search_form" id="header_search_form">
+                    <div class="form-group has-feedback">
+                        <span class="ico ico-arrow-left btn-globalsearch-return"></span>
+                        <div style="position: relative;" class="clear_input_div">
+                            <input type="text" name="q" placeholder="Search..." autocomplete="off" class="form-control input-sm in_focus" id="header_sub_menu_search_input">
+                            <a style="position: absolute; cursor: pointer; display: none;" class="clear_input">
+                                <span class="ico ico-close"></span>
+                            </a>
+                        </div>
+                        <span class="ico ico-search-o form-control-feedback" data-action="submit_search_form"></span>
+                        <span class="ico ico-search-o form-control-feedback btn-mask-action"></span>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="guest-login-small" data-component="guest-actions">
+                <a class="btn btn-sm btn-default popup" rel="hide_box_title visitor_form" role="link" href="http://comunidad.test/index.php/user/register/">
+                    Sign Up    </a>
+                <a class="btn btn-sm btn-success btn-gradient popup" rel="hide_box_title visitor_form" role="link" href="http://comunidad.test/index.php/login/">
+                    Sign in    </a>
+            </div>
+
+        </div>
     </div>
-</center>
+
+    <div class="main-image">
+
+        <div class="circle-img-container wh-container">
+            <div class="banner">
+                <img class="circle-img" border="0"
+                     src="{{asset('/images/lia-style.png')}}"
+                     alt="Off Grid Adventures"
+                     data-responsive="true"
+                     data-proportionally-constrained="false">
+            </div>
+        </div>
+
+        <div class="signin-main-container wh-container">
+        
+            <div class="signin-container">
+                <div>
+                    <h1>Alumnos</h1>
+                </div>
+                <div class="tab">
+                    <button class="tablinks second-link" onclick="openCity(event, 'up')">Sign In</button>
+                    <button class="tablinks firts-link" onclick="openCity(event, 'in')">Sign Up</button>
+                </div>
+
+                <div id="up" class="tabcontent">
+                    <input type="email" name="email" placeholder="email">
+                    <input type="password" name="password" placeholder="Password">
+                    <input type="checkbox"> Remember me
+                    <input type="submit" value="Login" name="login">
+                </div>
+
+                <div id="in" class="tabcontent">
+                    <form method="POST" action="">
+                        <input type="text" placeholder="Full Name">
+                        <input type="text" placeholder="Choose a Username">
+                        <input type="email" name="email" placeholder="Email">
+                        <input type="password" name="password" placeholder="Password">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 
 </body>

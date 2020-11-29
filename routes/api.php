@@ -119,6 +119,14 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::post('/usuario_t/login/', 'UserThinkificController@singleSignThinkific');
     Route::post('/usuario_p/login/', 'UserPhpFoxController@singleSignPhpFox');
+
+    Route::get('/sync/escuelas', 'SyncSchoolController@store');
+
+    Route::get('/sync/grupos/comunidad', 'SyncGroupComunnityController@syncSchool');
+
+    Route::get('usuario/grupos/comunidad', 'LikeUserGroupController@list');
+
+    Route::get('sync/usuario/comunidad/', 'SyncUserPlatformController@syncUserCommunity');
 });
 
 

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\School;
 use App\SchoolLIA;
+use App\SyncGroupComunnity;
 use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class SchoolController extends ApiController
@@ -47,8 +49,37 @@ class SchoolController extends ApiController
         ]);
 
         $schoolLia = SchoolLIA::create($dataLia);
-
         $schoolId = $schoolLia->SchoolId;
+
+        $dataGroup = ([
+            'app_id' => 0,
+            'view_id' => 0,
+            'type_id' => 6,
+            "category_id" => 0,
+            "user_id" => 20,
+            "title" => $schoolName,
+            "reg_method" => 1,
+            "landing_page" => null,
+            "time_stamp" => Carbon::now()->timestamp,
+            "image_path" => null,
+            "is_featured" => 0,
+            "is_sponsor" => 0,
+            "image_server_id" => 0,
+            "total_like" => 1,
+            "total_dislike" => 0,
+            "total_comment" => 0,
+            "privacy" => 0,
+            "designer_style_id" => 0,
+            "cover_photo_id" => null,
+            "cover_photo_position" => null,
+            "location_latitude" => null,
+            "location_longitude" => null,
+            "location_name" => null,
+            "use_timeline" => 0,
+            "item_type" => 1
+        ]);
+
+        $group = SyncGroupComunnity::create($dataGroup);
 
         $data = ([
            'id' => $schoolId,
@@ -57,7 +88,7 @@ class SchoolController extends ApiController
         ]);
 
         $school = School::create($data);
-        $schoolArray[] = array(['Sistema Lia',$schoolLia], ['Sistema de licencias', $school]);
+        $schoolArray[] = array(['Sistema Lia',$schoolLia], ['Sistema de licencias', $school], ['Comunidad', $group]);
 
         return $this->successResponse($schoolArray,'Se ha creado la escuela con exito', 201);
     }
@@ -78,7 +109,6 @@ class SchoolController extends ApiController
         }
 
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -135,7 +165,7 @@ class SchoolController extends ApiController
 
     public function validateSchool(){
         $messages = [
-            'required' => 'El campo :nombre es requirido.',
+            'required.name' => 'El campo :nombre es requirido.',
         ];
 
         return Validator::make(request()->all(), [
