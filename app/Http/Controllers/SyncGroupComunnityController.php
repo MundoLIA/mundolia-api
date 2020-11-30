@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\LikeUserGroup;
+use App\PhpFoxPageText;
+use App\UserCommunity;
 use App\School;
 use App\SyncGroupComunnity;
 use App\SyncModels\GroupUserEnrollment;
@@ -22,7 +24,7 @@ class SyncGroupComunnityController extends ApiController
         $i = 0;
 
 
-
+        // ***********************  Sync Schools -> School Group
         if($results->isEmpty()){
             return $this->errorResponse('No hay escuelas por sincronizar', 422);
         }else {
@@ -30,6 +32,7 @@ class SyncGroupComunnityController extends ApiController
 
                 $syncSchool = $obj;
 
+                // DATA PHPFOX_PAGES TABLE
                 $data = ([
                     'app_id' => 0,
                     'view_id' => 0,
@@ -60,10 +63,26 @@ class SyncGroupComunnityController extends ApiController
 
                 $group = SyncGroupComunnity::create($data);
 
-                $count[$i++] = $group;
+                // DATA PHPFOX_PAGES TABLE
+                $dataText = [
+                    'page_id' => $group->page_id,
+                    'text' => null,
+                    'text_parsed' => null
+                    ];
 
-                $lastGroup = SyncGroupComunnity::all()->last();
+                $pageText = PhpFoxPageText::create($dataText);
 
+                $dataUserCommunity = ([
+                    'profile_page_id' => $group->page_id,
+                    'user_group_id' => 2,
+                    'view_id' => 7,
+                    'full_name' => $group->name . ' ' . $group->last_name,
+                    'joined' => Carbon::now()->timestamp
+                ]);
+
+                $userCommunity = UserCommunity::create($dataUserCommunity);
+
+                // List all user of school to register on group phpfox
                 $userList = User::where([
                     ['school_id' ,'=' ,$syncSchool->id],
                     ['active_phpfox' ,'!=', 0 ]
@@ -75,28 +94,29 @@ class SyncGroupComunnityController extends ApiController
 
                     $userId = $user->id;
 
+                    // DATA PHPFOX_LIKE TABLE
                     $dataLike = ([
-                        "like_id" => 1,
                         "type_id" => "groups",
-                        "item_id" => $lastGroup->page_id,
+                        "item_id" => $group->page_id,
                         "user_id" => $userId,
                         "feed_table" => "feed",
                         "time_stamp" => Carbon::now()->timestamp
                     ]);
 
+                    $userLike = LikeUserGroup::create($dataLike);
+
                     $dataGroup = ([
                         'user_id' => $userId,
                         'school_id' => $syncSchool->id,
-                        'group_id_community' =>  $lastGroup->page_id,
+                        'group_id_community' =>  $group->page_id,
                         'group_id_academy' => 0
                    ]);
 
                     $groupCreated = GroupUserEnrollment::create($dataGroup);
-
-                    $userLike = LikeUserGroup::create($dataLike);
-
-                    $count[$t++] = [$userLike, $groupCreated];
+                    $t++;
+                    //$count[$t++] = [$userLike, $groupCreated];
                 }
+                $count[$i++] = array("Grupo"=>$group->title, "PageText"=>$pageText->page_id, "UserCommunity" =>$userCommunity->full_name, "UsersEnroller" => $t);
             }
         }
         return $this->successResponse($count);

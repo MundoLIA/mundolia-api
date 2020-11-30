@@ -8,6 +8,7 @@ class SyncGroupComunnity extends Model
 {
     protected $connection= 'mysql2';
     protected $table ='phpfox_pages';
+    protected $primaryKey = 'page_id';
 
     protected $fillable = [
         'page_id',
