@@ -21,9 +21,9 @@ class UserGenericRegister implements ShouldQueue
     protected $data;
     protected $dataFox;
 
-    public function __construct($data, $dataFox)
+    public function __construct($dataFox)
     {
-        $this->data = $data;
+       // $this->data = $data;
         $this->dataFox = $dataFox;
     }
 
@@ -34,8 +34,8 @@ class UserGenericRegister implements ShouldQueue
      */
     public function handle()
     {
-        $user = new UserThinkific();
-        $user = $user->createUser($this->data);
+        //$user = new UserThinkific();
+        //$user = $user->createUser($this->data);
 
         $userFox = new UserPhpFox();
         $userFox = $userFox->createUser($this->dataFox);
@@ -43,6 +43,5 @@ class UserGenericRegister implements ShouldQueue
         $userSync = Arr::collapse(['comunidad' => $userFox]);
 
         Log::info(json_encode(["respuesta" => $userSync]));
-        return;
     }
 }

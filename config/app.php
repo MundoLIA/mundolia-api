@@ -53,7 +53,7 @@ return [
 
 
     'sync_lia' => (bool) env('SYNC_LIA', false),
-    'sync_phpfox' => (bool) env('SYNC_PHPFOX', false),
+    'sync_phpfox' => (bool) env('SYNC_PHPFOX', true),
     'sync_thinkific' => (bool) env('SYNC_THINKIFIC', false),
 
     /*

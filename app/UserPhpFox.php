@@ -39,7 +39,7 @@ class UserPhpFox
             ]);
             if ($response->ok()) {
                 $token = json_decode($response, true);
-                $val = $token['access_token'];
+                $val = $token;
                 $var_str = var_export($val, true);
                 $var = "<?php\n\n\$token_phpfox = $var_str;\n\n?>";
                 file_put_contents(public_path('token_phpfox.php'), $var);
@@ -55,11 +55,11 @@ class UserPhpFox
 
         $token = self::getAuthorization();
 
-        $response = Http::withToken($token['access_token'])->asForm()->post($this->url . '/restful_api/user', [
+        $response = Http::withToken($token)->asForm()->post($this->url . '/restful_api/user', [
             'val[email]' => $data['email'],
             'val[full_name]' => $data['full_name'],
             'val[user_name]' => $data['user_name'],
-            'val[password]' => '1234567'
+            'val[password]' => 'ClubLia'
         ]);
 
         return $response->json();

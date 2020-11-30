@@ -10,6 +10,7 @@ use App\LicenseKey;
 use App\School;
 use App\UserCommunity;
 use App\UserLIA;
+use App\UserPhpFox;
 use App\UserThinkific;
 use Carbon\Carbon;
 use DateTime;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
 use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 use Ramsey\Uuid\Uuid;
@@ -115,8 +117,9 @@ class UserController extends ApiController
             $dataCreate['email'] = $input['email'];
 
             $password  = $input['password'];
-            $passwordEncode = bcrypt($password);
-            $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
+            $passwordBcrypt = bcrypt($password);
+
+            $passwordEncode = str_replace("$2y$", "$2a$", $passwordBcrypt);
             $dataCreate['password'] = $passwordEncode;
 
             $email = $input['email'];
@@ -158,7 +161,7 @@ class UserController extends ApiController
             }
             $user = User::create($dataCreate);
 
-            $data = ([
+            $dataEmail = ([
                 'username' => $user->username,
                 'name' => $user->name,
                 'last_name' => $user->last_name,
@@ -174,30 +177,29 @@ class UserController extends ApiController
                 'password' => $password
             ]);*/
 
+
             $dataFox = ([
-                'user_id' =>  $dataCreate['AppUserId'],
                 'email' => $user->email,
                 'full_name' => $user->name .' '. $user->last_name,
-                'password' => $password,
                 "user_name" => $user->username,
-                "joined" => Carbon::now()->timestamp
+                'password' => $password,
             ]);
 
-            $userCommunity = UserCommunity::create($dataFox);
+            //$userCommunity = UserCommunity::create($dataFox);
+
+            //$lastUserGroup = UserCommunity::all()->last();
+
+            $userFox = new UserPhpFox();
+            $userFox = $userFox->createUser($dataFox);
 
             $lastUserGroup = UserCommunity::all()->last();
-
             $user->active_phpfox = $lastUserGroup->user_id;
             $user->save();
 
-            /*if(Config::get('app.sync_thinkific')) {
-                UserGenericRegister::dispatch($dataThink, $dataFox);
-            }*/
-
-            SendEmail::dispatchNow($data);
+            SendEmail::dispatchNow($dataEmail);
 
             $success['message'] = 'Usuario creado';
-            $success['code'] = 200;
+            $success['data'] = $userFox;
             return $this->successResponse($success,200);
 
         } catch (ModelNotFoundException $e) {

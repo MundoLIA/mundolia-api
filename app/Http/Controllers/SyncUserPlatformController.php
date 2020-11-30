@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\SyncUser;
 use App\User;
 use App\UserCommunity;
+use App\UserPhpFox;
 use Carbon\Carbon;
 use Facade\FlareClient\Api;
 use Illuminate\Http\Request;
@@ -16,13 +17,15 @@ class SyncUserPlatformController extends ApiController
     /**
      * Sync users in all the platforms
      */
-    public function syncUserplatform(){
+    public function syncUserplatform()
+    {
         $user = new SyncUser();
         $user = $user->transferUsers();
         return $user;
     }
 
-    public function syncUserCommunity(){
+    public function syncUserCommunity()
+    {
         $inactive = 0;
 
         $results = User::where([
@@ -41,41 +44,37 @@ class SyncUserPlatformController extends ApiController
             foreach ($results as $obj) {
                 $syncUser = $obj;
 
-                if(UserCommunity::where([['email', '=', $syncUser->email]])->exists()){
+                $dataFox = ([
+                    'email' => $syncUser->email,
+                    'full_name' => $syncUser->name . ' ' . $syncUser->last_name,
+                    "user_name" => $syncUser->username,
+                    "password" => 'ClubLia'
+                ]);
 
-                    $error['error'] = 'Datos invalidos';
-                    $error['message'] = "El correo electronico ya a sido asignado";
-                    $count[++$i] = (array)["comunidad" => $error, "id" => $syncUser->id];
+                $user = new UserPhpFox();
+                $userCommunity = $user->createUser($dataFox);
 
-                    Log::info(json_encode($error));
-                }else {
-
-                    $dataFox = ([
-                        'user_group_id' => 2,
-                        'email' => $syncUser->email,
-                        'full_name' => $syncUser->name . ' ' . $syncUser->last_name,
-                        "user_name" => $syncUser->username,
-                        'joined' => Carbon::now()->timestamp
-                    ]);
-
-                    $userCommunity = UserCommunity::create($dataFox);
-                    $lastUser = UserCommunity::all()->last();
-
-                    $syncUser->active_phpfox = $lastUser->user_id;
-                    $syncUser->save();
+                if (!empty($userCommunity['data'])) {
+                    $affected = User::find($syncUser->id);
+                    $affected->active_phpfox = $userCommunity['data']['user_id'];
+                    $affected->save();
                     $count[++$i] = (array)["comunidad" => $userCommunity, "id" => $syncUser->id];
+                } else {
+                    if ($userCommunity["status"] === 'failed') {
+                        $count[++$i] = (array)["comunidad" => $userCommunity, "id" => $syncUser->id];
+                    }
                 }
+                //$userCommunity = UserCommunity::create($dataFox);
             }
             return $this->successResponse(["usuarios" => $count]);
         }
     }
 
-
     /**
      * Update the specified resource in storage in all platforms.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\SyncUser  $syncUser
+     * @param \Illuminate\Http\Request $request
+     * @param \App\SyncUser $syncUser
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateUser($id)
@@ -88,7 +87,7 @@ class SyncUserPlatformController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\SyncUser  $syncUser
+     * @param \App\SyncUser $syncUser
      * @return \Illuminate\Http\Response
      */
     public function destroy(SyncUser $syncUser)
@@ -96,7 +95,8 @@ class SyncUserPlatformController extends ApiController
         //
     }
 
-    public function validateUserCommunity(){
+    public function validateUserCommunity()
+    {
         $messages = [
             'unique.email' => 'El correo electrónico ya esta asignado',
         ];

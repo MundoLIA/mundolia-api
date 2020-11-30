@@ -23,7 +23,6 @@ class SyncGroupComunnityController extends ApiController
 
         $i = 0;
 
-
         // ***********************  Sync Schools -> School Group
         if($results->isEmpty()){
             return $this->errorResponse('No hay escuelas por sincronizar', 422);
@@ -40,7 +39,7 @@ class SyncGroupComunnityController extends ApiController
                     "category_id" => 0,
                     "user_id" => 20,
                     "title" => $syncSchool->name,
-                    "reg_method" => 1,
+                    "reg_method" => 2,
                     "landing_page" => null,
                     "time_stamp" => Carbon::now()->timestamp,
                     "image_path" => null,
@@ -86,7 +85,7 @@ class SyncGroupComunnityController extends ApiController
                 $userList = User::where([
                     ['school_id' ,'=' ,$syncSchool->id],
                     ['active_phpfox' ,'!=', 0 ]
-                ]);
+                ])->get();
 
                 $t = 0;
 
@@ -98,7 +97,7 @@ class SyncGroupComunnityController extends ApiController
                     $dataLike = ([
                         "type_id" => "groups",
                         "item_id" => $group->page_id,
-                        "user_id" => $userId,
+                        "user_id" => $user->active_phpfox,
                         "feed_table" => "feed",
                         "time_stamp" => Carbon::now()->timestamp
                     ]);
