@@ -76,7 +76,7 @@ class SyncGroupComunnityController extends ApiController
                     'profile_page_id' => $group->page_id,
                     'user_group_id' => 2,
                     'view_id' => 7,
-                    'full_name' => $group->name . ' ' . $group->last_name,
+                    'full_name' => $group->title,
                     'joined' => Carbon::now()->timestamp
                 ]);
 
