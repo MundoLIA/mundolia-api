@@ -3,10 +3,12 @@
 namespace App;
 
 use GuzzleHttp\Client;
+//use GuzzleHttp\Psr7\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use mysql_xdevapi\Exception;
 
 class UserPhpFox
 {
@@ -14,11 +16,15 @@ class UserPhpFox
     protected $secret;
     protected $url;
     protected $token;
+    protected $username;
+    protected $password;
 
     function __construct() {
         $this->key = Config::get('app.phpfox');
         $this->secret = Config::get('app.secret_phpfox');
         $this->url = Config::get('app.url_phpfox');
+        $this->username = Config::get('app.username_comunidad');
+        $this->password = Config::get('app.pass_comunidad');
     }
 
     public function getAuthorization()
@@ -59,15 +65,38 @@ class UserPhpFox
         return $response->json();
     }
 
-    public function deleteUserCommunity($data){
+    public function deleteUserCommunity($userId)
+    {
 
         $token = self::getAuthorization();
 
-        $response = Http::withToken($token['access_token'])->asForm()->delete($this->url . '/restful_api/user/', [
-            'val[id]' => $data['id'],
-        ]);
+        $response = Http::withToken($token['access_token'])->delete($this->url . '/restful_api/user/' . $userId);
 
         return $response->json();
+    }
+
+    public function updateUser($inputData, $userId)
+    {
+
+        try {
+            $token = self::getAuthorization();
+            $response = Http::withToken($token['access_token'])->asForm()->put($this->url . '/restful_api/user/' . $userId, [
+                'val[email]' => $inputData['email'],
+                'val[full_name]' => $inputData['name'] . ' ' . $inputData['last_name'],
+                'val[password]' => $inputData['name'],
+            ]);
+
+            return $response->json();
+
+        } catch (\Exception $e) {
+            $error["code"] = 'INVALID_DATA';
+            $error["message"] = "Error al crear el usuario";
+            $errors["username"] = "Error al crear el usuario.";
+
+            $error["errors"] = [$errors];
+
+            return response()->json(['error' => $error], 500);
+        }
     }
 
     public function singleSignOn($user)

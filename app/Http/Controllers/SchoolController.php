@@ -3,48 +3,63 @@
 namespace App\Http\Controllers;
 
 use App\School;
+use App\SchoolLIA;
+use App\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class SchoolController extends Controller
+class SchoolController extends ApiController
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $schools = School::get()->toJson(JSON_PRETTY_PRINT);
-        return response($schools, 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
+        $schools = School::all();
+        return $this->successResponse($schools);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
+        $validator = $this->validateSchool();
+        if($validator->fails()){
+            return $this->errorResponse($validator->messages(), 422);
+        }
+
+        $schoolName = $request->name;
+        $schoolDescription = $request->description;
+        $schoolEditor = 68;
+        $schoolCreator = 68;
+
+        $dataLia = ([
+            'School' => $schoolName,
+            'Description' => $schoolDescription,
+            'CreatorId' => $schoolCreator,
+            'EditorId' => $schoolEditor
         ]);
 
-        $school = School::create($request->all());
+        $schoolLia = SchoolLIA::create($dataLia);
 
-        return response()->json([
-            $school,
-            "message" => "Escuela creada existosamente",
-        ], 201);
+        $schoolId = $schoolLia->SchoolId;
+
+        $data = ([
+           'id' => $schoolId,
+           'name' => $schoolName,
+           'description' => $schoolDescription
+        ]);
+
+        $school = School::create($data);
+        $schoolArray[] = array(['Sistema Lia',$schoolLia], ['Sistema de licencias', $school]);
+
+        return $this->successResponse($schoolArray,'Se ha creado la escuela con exito', 201);
     }
 
     /**
@@ -52,52 +67,80 @@ class SchoolController extends Controller
      *
      * @param  \App\School  $school
      * @param  int $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $school = School::find($id);
-        return response($school, 200);
+        try {
+        $school = School::findOrFail($id);
+        return $this->successResponse($school);
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('Tipo de licencia invalido', 422);
+        }
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\School  $school
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(School $school)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
-        School::updateDataId($id);
+        try {
 
-        return response()->json([
-            "message" => "Se ha actualizado la escuela existosamente",
-        ], 200);
+            $school = School::findOrFail($id);
+            $schoolLia = SchoolLIA::findOrFail($id);
+
+            $schoolName = $request->name;
+            $schoolDescription = $request->description;
+
+            $dataLia = ([
+                'School' => $schoolName,
+                'Description' => $schoolDescription,
+                'IsActive' => $request->is_active,
+            ]);
+
+            $schoolLiaUpt = $schoolLia->update($dataLia);;
+            $schoolUpt = School::updateDataId($id);
+            $schoolArray[] = array($schoolLiaUpt, $schoolUpt);
+
+            return $this->successResponse($schoolArray, 'La escuela ha sido actualizada', 200);
+
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('No hay elementos que coincidan', 404);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\School  $school
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function destroy(School $school, $id)
+    public function destroy($id)
     {
-        $school::destroy($id);
+        try {
+            $dataLia = SchoolLIA::findOrFail($id);
+            $data = School::findOrFail($id);
 
-        return response()->json(null, 204);
+
+            $schoolLIA = SchoolLIA::destroy($id);
+            $school = School::destroy($id);
+            $schoolArray[] = array($schoolLIA, $school);
+
+            return $this->successResponse($schoolArray, 'Se ha eliminado la escuela con exito');
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('No hay elementos que coincidan',404);
+        }
+    }
+
+    public function validateSchool(){
+        $messages = [
+            'required' => 'El campo :nombre es requirido.',
+        ];
+
+        return Validator::make(request()->all(), [
+                'name' => 'required|max:255',
+                'description' => 'string|max:255',
+            ], $messages);
     }
 }

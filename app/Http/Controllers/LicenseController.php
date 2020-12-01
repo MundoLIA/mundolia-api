@@ -3,54 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\License;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class LicenseController extends Controller
+class LicenseController extends ApiController
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $licenses = License::get()->toJson(JSON_PRETTY_PRINT);
-        return response($licenses, 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
+        $licenses = License::all();
+        return  $this->successResponse($licenses);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'titular' => 'required',
-            'email_admin' => 'required',
-            'school_id' => 'required',
-            'license_type_id' =>'required',
-            'user_id' => 'required',
-            'studens_limit' => 'required',
-        ]);
+        try {
+            $validator = $this->validateLicense();
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
 
-        $license = License::create($request->all());
+            $license = License::create($request->all());
 
-        return response()->json([
-            $license,
-            "message" => "Nueva licencia creada existosamente",
-        ], 201);
+            return $this->successResponse($license,'Se ha creado una nueva licencia', 201);
+
+        }catch (Exception $exception){
+            return $this->errorResponse('Hubo problemas para crear la licencia', 422);
+        }
     }
 
     /**
@@ -58,57 +45,60 @@ class LicenseController extends Controller
      *
      * @param  \App\License  $license
      * @param  uuid $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $licenseType = License::find($id);
-        return response($licenseType, 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\License  $license
-     * @param  uuid $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-
+        try {
+            $licenseType = License::find($id);
+            return $this->successResponse($licenseType);
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
+        }
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\License  $license
-     * @param uuid $id
-     * @return \Illuminate\Http\Response
      */
     public function update($id)
     {
-        License::updateDataId($id);
-
-        return response()->json([
-            "message" => "Se ha actualizado la licencia existosamente",
-        ], 200);
+        try {
+            License::firstOrFail($id);
+            $license = License::updateDataId($id);
+            return $this->successResponse($license,'Se ha actualizado la licencia', 201);
+        }catch (ModelNotFoundException $e){
+            return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\License  $license
-     * @param  uuid $id
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(License $license, $id)
+    public function destroy($id)
     {
-        $license::destroy($id);
+        try {
+            License::findOrFail($id);
+            $licenseDlt = License::destroy($id);
 
-        return response()->json([
-            $license,
-            "message" => "Se ha eliminado la licencia",
-        ], 200);
+        return $this->successResponse($licenseDlt, 'Se ha eliminado con exito la licencia');
+
+        } catch (ModelNotFoundException $ex) { // User not found
+            return $this->errorResponse('Licencia invalida: No hay elementos que coincidan', 422);
+        }
+
+    }
+
+    public function validateLicense(){
+        $messages = [
+            'titular.required' => 'El campo titular es requerido.',
+            'email.required' => 'El correo electronico es requerido.',
+            'license_type_id.required' => 'Es necesario seleccionar un tipo de licencia',
+        ];
+
+        return Validator::make(request()->all(), [
+            'titular' => 'required',
+            'email_admin' => 'required|email',
+            'license_type_id' =>'required',
+            'studens_limit' => 'required',
+        ], $messages);
     }
 }

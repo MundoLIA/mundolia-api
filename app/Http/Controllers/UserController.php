@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DeleteGenericUserJob;
 use App\Jobs\SendEmail;
 use App\Jobs\UserGenericRegister;
-use App\Mail\SendgridMail;
+use App\License;
+use App\LicenseKey;
+use App\School;
 use App\UserLIA;
 use App\UserThinkific;
 use DateTime;
@@ -474,4 +477,74 @@ class UserController extends Controller
         }
     }
 
+    public function assignLicense(Request $limit){
+        try{
+            //listamos todos los usuarios
+            $listUser = self::index()->getOriginalContent();
+
+            $i = 0;
+
+            foreach ($listUser as $obj => $user) {
+
+                $schoolId = $user->school_id;
+                $userUuid = $user->uuid;
+                $roleId = $user->role_id;
+                //Preguntamos si tiene el usuario cuenta con una llave
+                if(LicenseKey::where([['user_id', '=', $userUuid]])->exists()) {
+                    $count[$i++] = [
+                        'message' => 'El usuario ya tiene una llave asignada',
+                        'code' => 201
+                    ];
+                }else{
+                    if ($roleId != 1 ){ //Aqui tienen que ir las demas condiciones de acuerdo al rol
+                        $school = new School();
+                        $school = $school->show($schoolId)->getOriginalContent();
+                        if(License::where([['school_id', '=', $schoolId]])->exists()) {
+
+                            $licenseId = License::where([['school_id', '=', $schoolId]])->first();
+
+                            $dataKey = [
+                                'user_id' => $userUuid,
+                                'license_id' => $licenseId->id
+                            ];
+
+                            $licenseKey = LicenseKey::create($dataKey);
+
+                        }else{
+                            $dataLicense = [
+                                'titular' => $school->name,
+                                'email_admin' => 'dlievano@arkusnexus.com',
+                                'school_id' => $schoolId,
+                                'license_type_id' => 1,
+                                'user_id' => $userUuid,
+                                'studens_limit' => $limit["students_limit"],
+                            ];
+
+                            $license = License::create($dataLicense);
+                            $license->save();
+
+                            $dataKey = [
+                                'user_id' => $userUuid,
+                                'license_id' => $license->id
+                            ];
+
+                            $licenseKey = LicenseKey::create($dataKey);
+                        }
+
+                    }
+                    $count[$i++] = [
+                        'message' => 'El se a asignado una llave al usuario',
+                        'data' => $licenseKey,
+                        'code' => 201
+                    ];
+                }
+            }
+            return [
+                'data' => $count
+            ];
+        }catch (\Exception $exception){
+            return $exception;
+        }
+
+    }
 }

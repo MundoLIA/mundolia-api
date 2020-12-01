@@ -22,6 +22,7 @@ class UserLIA extends Authenticatable
     protected $fillable = [
         'AppUserId','AppUser', 'Names', 'LastNames','Password', 'RoleId', 'IsActive','Email', 'SchoolId', 'SchoolGroupKey', 'MemberSince', 'Grade', 'CreatorId','EditorId', 'Avatar'
     ];
+
     public $timestamps = false;
 //    public function setPasswordAttribute($value)
 //    {

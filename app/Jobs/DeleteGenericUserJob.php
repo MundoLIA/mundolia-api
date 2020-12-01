@@ -39,7 +39,8 @@ class DeleteGenericUserJob implements ShouldQueue
         $userFox = $userFox->deleteUserCommunity($this->dataFox);
 
         $userSync = Arr::collapse(['schooling' => $user, 'comunidad' => $userFox]);
+        var_dump($userSync);
 
-        Log::info(json_encode(["respuesta" => $userSync]));
+        Log::info(json_encode(["respuesta" => $userSync, $this->data, $this->dataFox]));
     }
 }

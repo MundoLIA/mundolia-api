@@ -24,6 +24,13 @@ class UserPhpFoxController extends Controller
         return $user;
     }
 
+    public function destroy($userid)
+    {
+        $userdelete = new UserPhpFox();
+        $userdelete = $userdelete->deleteUserCommunity($userid);
+        return $userdelete;
+    }
+
     public function singleSignPhpFox(){
         try {
             $user = Auth::user();
@@ -38,5 +45,6 @@ class UserPhpFoxController extends Controller
         }
 
     }
+
 
 }

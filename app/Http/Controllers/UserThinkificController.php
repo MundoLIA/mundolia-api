@@ -33,13 +33,13 @@ class UserThinkificController extends Controller
         return $user;
     }
 
-    public function syncUser(){
-        $user = new UserThinkific();
-        $user = $user->transferUsers();
-        return $user;
-    }
+
 
     public function deleteUser($userid){
+
+        $user = new UserThinkific();
+        $user = $user->deleteUserSchooling($userid);
+        return $user;
 
     }
 
@@ -59,6 +59,13 @@ class UserThinkificController extends Controller
     public function syncUserplatform(){
         $user = new SyncUser();
         $user = $user->transferUsers();
+        return $user;
+    }
+
+    public function enrollment($id, $data)
+    {
+        $user = new UserThinkific();
+        $user->enrollmentStudent($id, $data);
         return $user;
     }
 

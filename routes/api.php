@@ -27,6 +27,16 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::delete('escuelas/{id}', 'SchoolController@destroy');
 
     Route::get('periodos', 'PeriodoController@index');
+    Route::get('periodos/{id}', 'PeriodoController@show');
+    Route::post('periodos', 'PeriodoController@store');
+    Route::put('periodos/{id}', 'PeriodoController@update');
+    Route::delete('periodos/{id}', 'PeriodoController@destroy');
+
+    Route::get('inscripciones', 'EnrollmentController@index');
+    Route::get('inscripciones/{id}', 'EnrollmentController@show');
+    Route::post('inscripciones', 'EnrollmentController@store');
+    Route::put('inscripciones/{id}', 'EnrollmentController@update');
+    Route::delete('inscripciones/{id}', 'EnrollmentController@destroy');
 
     Route::get('usuarios', 'UserController@index');
     Route::get('usuarios/{uuid}', ['as' => 'usuarios/{uuid}', 'uses'=>'UserController@show']);
@@ -36,17 +46,22 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::put('usuariosgroup', 'UserController@updateGroup');
 
-    Route::get('tipolicencias', 'LicenseTypeController@index');
-    Route::get('tipolicencias/{id}', 'LicenseTypeController@show');
-    Route::post('tipolicencias', 'LicenseTypeController@store');
-    Route::put('tipolicencias/{id}', 'LicenseTypeController@update');
-    Route::delete('tipolicencias/{id}', 'LicenseTypeController@destroy');
+    Route::get('tipos/licencia', 'LicenseTypeController@index');
+    Route::get('tipos/licencia/{id}', 'LicenseTypeController@show');
+    Route::post('tipos/licencia', 'LicenseTypeController@store');
+    Route::put('tipos/licencia/{id}', 'LicenseTypeController@update');
+    Route::delete('tipos/licencia/{id}', 'LicenseTypeController@destroy');
 
     Route::get('licencias', 'LicenseController@index');
     Route::get('licencias/{id}', 'LicenseController@show');
     Route::post('licencias', 'LicenseController@store');
     Route::put('licencias/{id}', 'LicenseController@update');
     Route::delete('licencias/{id}', 'LicenseController@destroy');
+
+    Route::post('emails', 'MassiveEmailController@send');
+
+    //Asignar Licencias
+    Route::post('asignar/licencias', 'UserController@assignLicense');
 
     Route::get('key/licencias', 'LicenseKeyController@index');
     Route::get('key/licencias/{id}', 'LicenseKeyController@show');
@@ -59,6 +74,12 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('tipos/contacto', 'ContactTypeController@store');
     Route::put('tipos/contacto/{id}', 'ContactTypeController@update');
     Route::delete('tipos/contacto/{id}', 'ContactTypeController@destroy');
+
+    Route::get('grados', 'GradeController@index');
+    Route::get('grados/{id}', 'GradeController@show');
+    Route::post('grados', 'GradeController@store');
+    Route::put('grados/{id}', 'GradeController@update');
+    Route::delete('grados/{id}', 'GradeController@destroy');
 
     Route::get('contacto', 'ContactController@index');
     Route::get('contacto/{id}', 'ContactController@show');
@@ -81,9 +102,19 @@ Route::group(['middleware' => 'auth:api'], function(){
     //THINKIFIC ROUTES
     Route::get('/usuario/thinkific', 'UserThinkificController@getUsers');
 
+    //Enrollment
+    Route::post('/inscripciones/{id}', 'UserThinkificController@enrollment');
+
     //Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
     Route::post('/usuario/comunidad', 'UserPhpFoxController@getToken');
     Route::post('/comunidad/nuevo/usuario', 'UserPhpFoxController@storeUser');
+    Route::post('/comunidad/{user_id}', 'UserPhpFoxController@destroy');
+
+    Route::post('/sincronizar/usuario/', 'SyncUserPlatformController@syncUserplatform');
+
+    Route::post('/usuario/login/', 'UserThinkificController@singleSignThinkific');
+
+    Route::put('/actualizar/usuarios/{id}', 'SyncUserPlatformController@updateUser');
 
     Route::post('sync/usuario/', 'UserThinkificController@syncUser');
     Route::post('platform/usuario/', 'UserThinkificController@syncUserplatform');

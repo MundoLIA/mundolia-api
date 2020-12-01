@@ -44,6 +44,7 @@ class UserImportController extends Controller
             $user = Auth::user();
             $school_id =  $user->school_id;
             $password = null;
+            $tutor_id = null;
             $input = request()->all();
 
             if($user->role_id == 1 || $user->role_id == 2){
@@ -59,9 +60,41 @@ class UserImportController extends Controller
 
                     $insertArr[Str::slug($key, '_')] = $value;
                 }
+                if($insertArr['nombre_padre_madre_o_tutor'] && $insertArr['mail_padre']){
+                    $tutorId = \DB::table('users')->where('email', [$insertArr['mail_padre']])->where('role_id', 10)->get('id')->first();
+
+                    if(!$tutorId){
+
+                        $tutorName = explode(' ',$insertArr['nombre_padre_madre_o_tutor']);
+
+                        $tutor['tipo_usuario'] = 'PADRE';
+                        $tutor['nombre'] = $tutorName[0];
+                        $tutor['username'] = null;
+                        $tutor['apellido_paterno'] = implode(' ',array_slice($tutorName, 1));
+                        $tutor['segundo_nombre'] = null;
+                        $tutor['apellido_materno'] = null;
+                        $tutor['email'] = $insertArr['mail_padre'];
+                        $tutor['seccion'] = $insertArr['seccion'];
+                        $tutor['grado'] = $insertArr['grado'];
+                        $tutor['school_id'] = null;
+                        $tutor['nombre_padre_madre_o_tutor'] = null;
+                        $tutor['mail_padre'] = null;
+                        $tutor['result'] = $insertArr['result'];
+                        
+                        $resp = $tutor;
+                        $respCreate = User::dataUser($tutor, $school_id, $password);
+                        $resp ['result'] = $respCreate["message"];
+                        $resp ['username'] = $respCreate["username"];
+                        $result [++$i] = (array) $resp;
+
+                        $tutorId = \DB::table('users')->where('email', [$insertArr['mail_padre']])->where('role_id', 10)->get('id')->first();
+                    }
+                    $tutor_id = $tutorId->id;
+                }
 
                 $resp = $obj;
-                $respCreate = User::dataUser($insertArr, $school_id, $password);
+                $respCreate = User::dataUser($insertArr, $school_id, $password, $tutor_id);
+                //\DB::table('users')->where('username', $respCreate["username"])->update(['tutor_id' => $tutorId->id]);
                 $resp ['result'] = $respCreate["message"];
                 $resp ['username'] = $respCreate["username"];
                 $result [++$i] = (array) $resp;

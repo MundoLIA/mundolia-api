@@ -21,7 +21,9 @@
         "laravel/ui": "^2.1",
         "predis/predis": "^1.1",
         "webpatser/laravel-uuid": "^3.0",
-       "ext-mysql_xdevapi": "*"
+        "ext-http": "*",
+        "ext-mysql_xdevapi": "*",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

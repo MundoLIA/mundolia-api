@@ -22,4 +22,23 @@ class License extends Model
         'purchase_at' => 'datetime', 'expiration_date' => 'datetime'
     ];
 
+    public function school()
+    {
+        return $this->belongsTo(School::class, 'school_id');
+    }
+    public function licenseType()
+    {
+        return $this->belongsTo(LicenseType::class, 'license_type_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function index()
+    {
+        $licenses = License::get()->toJson(JSON_PRETTY_PRINT);
+        return response($licenses, 200);
+    }
+
 }

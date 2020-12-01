@@ -18,7 +18,7 @@ class User extends Authenticatable
     protected $guarded = [];
 
     protected $fillable = [
-        'id', 'AppUserId','uuid', 'username','role_id', 'school_id', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
+        'id', 'AppUserId','uuid', 'username','role_id', 'tutor_id', 'school_id', 'name','second_name', 'last_name', 'second_last_name', 'email', 'grade', 'avatar','password', 'last_login'
     ];
 
     /**
@@ -31,13 +31,14 @@ class User extends Authenticatable
     ];
 
     protected $rules = [
-        'username' => 'required|unique:users',
-        'name' => 'required',
-        'last_name' => 'required',
-        'role_id' => 'required',
-        'email' => 'required|email',
-        'password' => 'required',
-        'grade' => 'required|max:1',
+            'name' => 'required',
+            'email' => 'required|email',
+            'role_id' => 'required',
+            'school_id' => 'required',
+            'username' => 'required',
+            'last_name' => 'required',
+            'grade' => 'required',
+            'password' => 'required',
     ];
 
     /**

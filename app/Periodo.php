@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Periodo extends Model
 {
-    protected $primaryKey = 'id';
-    protected $fillable = ['id','periodo','name','is_active','is_current','description'];
+    use UpdateGenericClass;
 
+    protected $primaryKey = 'id';
+    protected $fillable = ['id','periodo','name','description','is_active','is_current',];
 }

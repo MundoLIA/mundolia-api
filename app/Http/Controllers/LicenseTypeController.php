@@ -3,102 +3,89 @@
 namespace App\Http\Controllers;
 
 use App\LicenseType;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class LicenseTypeController extends Controller
+class LicenseTypeController extends ApiController
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $licenses = LicenseType::get()->toJson(JSON_PRETTY_PRINT);
-        return response($licenses, 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $licenses = LicenseType::all();
+        return $this->successResponse($licenses);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'description_license_type' => 'required',
-        ]);
+        $validator = $this->validateTypeLicense();
+        if($validator->fails()){
+            return $this->errorResponse($validator->messages(), 422);
+        }
 
-        $licenses = LicenseType::create($request->all());
+        $license = LicenseType::create($request->all());
 
-        return response()->json([
-            $licenses,
-            "message" => "Nuevo tipo de licensia creada existosamente",
-        ], 201);
+        return $this->successResponse($license);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\LicenseType  $licenseType
-     * @param  int $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $licenseType = LicenseType::find($id);
-        return response($licenseType, 200);
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\LicenseType  $licenseType
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(LicenseType $licenseType)
-    {
-        //
+        try {
+            $licenseType = LicenseType::findOrFail($id);
+            return $this->successResponse($licenseType);
+        }catch(ModelNotFoundException $e){
+            return $this->errorResponse('Tipo de licencia invalido', 422);
+        }
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\LicenseType  $licenseType
-     * @return \Illuminate\Http\Response
      */
     public function update($id)
     {
-        LicenseType::updateDataId($id);
+        try {
+            LicenseType::firstOrFail($id);
 
-        return response()->json([
-            "message" => "Se ha actualizado existosamente",
-        ], 201);
+            $type = LicenseType::updateDataId($id);
+            return $this->successResponse($type,'Se ha actualizado el tipo de licencia', 201);
+
+        }catch(ModelNotFoundException $e){
+            return $this->errorResponse('Tipo de lincencia invalido', 422);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\LicenseType  $licenseType
-     * @return \Illuminate\Http\Response
+     * Remove the specified resource from Type license.
      */
-    public function destroy(LicenseType $licenseType, $id)
+    public function destroy($id)
     {
-        $licenseType::destroy($id);
+        try {
+            LicenseType::firstOrFail($id);
+            $type = LicenseType::destroy($id);
 
-        return response()->json(null, 204);
+            return $this->successResponse($type, 'Se ha eliminado correctamente', 201);
+        }catch(ModelNotFoundException $e){
+            return $this->errorResponse('Tipo de lincencia invalido', 422);
+        }
+    }
+
+    public function validateTypeLicense(){
+        $messages = [
+            'requiered' => 'Es necesario agregar una descripción del tipo de licencia',
+        ];
+
+        return Validator::make(request()->all(), [
+            'description_license_type' => 'required',
+        ], $messages);
     }
 }
