@@ -8,35 +8,34 @@ use App\Jobs\UserGenericRegister;
 use App\License;
 use App\LicenseKey;
 use App\School;
+use App\UserCommunity;
 use App\UserLIA;
+use App\UserPhpFox;
 use App\UserThinkific;
+use Carbon\Carbon;
 use DateTime;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
+use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\Console\Input\Input;
-use Validator;
-use function MongoDB\BSON\toJSON;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use \Illuminate\Support\Facades\Validator;
 
 
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function index()
     {
-
             $user = Auth::user();
             $request = request()->all();
             $filter = [];
@@ -77,46 +76,23 @@ class UserController extends Controller
                     'users.is_active',
                     'users.verified_email')
                 ->where($filter)->get();
-            return response($users, 200);
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
+            return $this->successResponse($users);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
 
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email',
-                'role_id' => 'required',
-                'school_id' => 'required',
-                'username' => 'required',
-                'last_name' => 'required',
-                'grade' => 'required',
-                'password' => 'required',
-            ]);
-            if ($validator->fails()) {
-                $error["code"] = 'INVALID_DATA';
-                $error["message"] = "Información Invalida.";
-                $error["errors"] =$validator->errors();
 
-                return response()->json(['error' => $error], 200);
+            $validator = $this->validateUser();
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
             }
 
             $user = Auth::user();
@@ -141,8 +117,9 @@ class UserController extends Controller
             $dataCreate['email'] = $input['email'];
 
             $password  = $input['password'];
-            $passwordEncode = bcrypt($password);
-            $passwordEncode = str_replace("$2y$", "$2a$", $passwordEncode);
+            $passwordBcrypt = bcrypt($password);
+
+            $passwordEncode = str_replace("$2y$", "$2a$", $passwordBcrypt);
             $dataCreate['password'] = $passwordEncode;
 
             $email = $input['email'];
@@ -154,13 +131,7 @@ class UserController extends Controller
 
             if ($reuser) {
                 if ($reuser['email'] == $email ) {
-
-                    $error["code"] = 'INVALID_DATA';
-                    $error["message"] = "El usuario ya existe.";
-                    $errors["username"] = 'El usuario ya existe';
-
-                    $error["errors"] =$errors;
-                    return response()->json(['error' => $error], 200);
+                    return $this->errorResponse('El usuario ya existe.', 422);
                 }
             } else {
                 $dataCreate['username'] = $username;
@@ -190,7 +161,7 @@ class UserController extends Controller
             }
             $user = User::create($dataCreate);
 
-            $data = ([
+            $dataEmail = ([
                 'username' => $user->username,
                 'name' => $user->name,
                 'last_name' => $user->last_name,
@@ -199,75 +170,73 @@ class UserController extends Controller
                 'password' => $password
             ]);
 
-            $dataThink = ([
+            /*$dataThink = ([
                 'first_name' => $user->username,
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'password' => $password
-            ]);
+            ]);*/
+
 
             $dataFox = ([
                 'email' => $user->email,
                 'full_name' => $user->name .' '. $user->last_name,
+                "user_name" => $user->username,
                 'password' => $password,
-                'gender' => "1",
-                "user_name" => $user->username
             ]);
-            if(Config::get('app.sync_thinkific')) {
-                UserGenericRegister::dispatch($dataThink, $dataFox);
-            }
+//            if(Config::get('app.sync_thinkific')) {
+//                UserGenericRegister::dispatch($dataThink, $dataFox);
+//            }
+
+            //$userCommunity = UserCommunity::create($dataFox);
+
+            //$lastUserGroup = UserCommunity::all()->last();
+
+            $userFox = new UserPhpFox();
+            $userFox = $userFox->createUser($dataFox);
+
+            $lastUserGroup = UserCommunity::all()->last();
+            $user->active_phpfox = $lastUserGroup->user_id;
+            $user->save();
 
             if(Config::get('app.send_email')) {
-                SendEmail::dispatchNow($data);
+                SendEmail::dispatchNow($dataEmail);
             }
 
-            $success['message'] = 'Usuario creado';
-            $success['code'] = 200;
-            return response()->json($success,200);
 
-        } catch (Exception $e) {
+            $success['message'] = 'Usuario creado';
+            $success['data'] = $userFox;
+            return $this->successResponse($success,200);
+
+        } catch (ModelNotFoundException $e) {
             $error["code"] = 'INVALID_DATA';
             $error["message"] = "Error al crear el usuario";
             $errors["username"] = "Error al crear el usuario.";
 
             $error["errors"] =[$errors];
 
-            return response()->json(['error' => $error], 500);
+            return $this->errorResponse(['error' => $error], 422);
         }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\User $user
-     * @param \Illuminate\Http\Request $request
      * @param uuid $uuid
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function show($uuid)
     {
-        $user = User::where('uuid', 'like', '%' . $uuid . '%')->get();
-        return $user->toJson(JSON_PRETTY_PRINT);
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\User $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
+        $user = User::where('uuid', 'like', '%' . $uuid . '%')->get();
+        return $this->successResponse($user);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\User $user
      * @param uuid $uuid
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function update($uuid)
     {
@@ -347,13 +316,13 @@ class UserController extends Controller
 
             $success['message'] = 'Usuario Actualizado';
             $success['code'] = 200;
-            return response()->json($success,200);
+            return $this->successResponse($success,200);
 
         } catch (ModelNotFoundException $exception) {
             $error["code"] = '500';
             $error["message"] = "Error al actualizar el usuario";
 
-            return response()->json(['error' => $error], 500);
+            return $this->errorResponse(['error' => $error], 500);
         }
     }
 
@@ -369,7 +338,7 @@ class UserController extends Controller
                 $error["code"] = 'INVALID_DATA';
                 $error["message"] = "Información Invalida.";
                 $error["errors"] =$validator->errors();
-                return response()->json(['error' => $error], 200);
+                return $this->errorResponse(['error' => $error], 422);
             }
 
             $user = Auth::user();
@@ -429,29 +398,31 @@ class UserController extends Controller
                 $success['message'] = '0 usuarios actualizados';
                 $success['code'] = 200;
             }
-            return response()->json($success,200);
+            return $this->successResponse($success,200);
 
         } catch (ModelNotFoundException $exception) {
             $error["code"] = '500';
             $error["message"] = "Error al actualizar los usuarios";
 
-            return response()->json(['error' => $error], 500);
+            return $this->errorResponse(['error' => $error], 500);
         }
 
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param \App\User $user
      * @param uuid $uuid
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function destroy($uuid)
     {
         try {
 
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
+
+            if ($user->role_id == 10) {
+                \DB::table('users')->where('tutor_id', [$user->id])->update(['tutor_id' => null]);
+            }
 
             if(Config::get('app.sync_lia')){
                 $userLIA = UserLIA::find($user->AppUserId);
@@ -467,13 +438,13 @@ class UserController extends Controller
 
             $success['message'] = 'El usuario ha sido eliminado existosamente';
             $success['code'] = 200;
-            return response()->json($success,200);
+            return $this->successResponse($success,200);
         } catch (Exception  $exception) {
             $error["code"] = '500';
             $error["message"] = "Error al eliminar el usuario";
             $error["getMessage"] = $exception->getMessage();
 
-            return response()->json(['error' => $error], 500);
+            return $this->errorResponse(['error' => $error], 500);
         }
     }
 
@@ -546,5 +517,29 @@ class UserController extends Controller
             return $exception;
         }
 
+    }
+
+    public function validateUser(){
+        $messages = [
+            'name.required' => 'El campo nombre es requerido.',
+            'email.required' => 'El correo electrónico es requerido.',
+            'role_id.required' => 'Es necesario seleccionar un tipo de rol',
+            'school_id.required' => 'Es necesario seleccionar una escuela',
+            'username.required' => 'El campo nombre de usuario es requerido',
+            'last_name.required' => 'El campo apellido paterno es requerido',
+            'grade.required' => 'Selecciona un grado',
+            'password.required' => 'El campo contraseña es necesario',
+        ];
+
+        return Validator::make(request()->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'role_id' => 'required',
+            'school_id' => 'required',
+            'username' => 'required',
+            'last_name' => 'required',
+            'grade' => 'required',
+            'password' => 'required',
+        ], $messages);
     }
 }

@@ -6,16 +6,17 @@ use App\Jobs\DeleteGenericUserJob;
 use App\Jobs\SendEmail;
 use App\Mail\PasswordChangeMail;
 use App\Mail\SendgridMail;
-use http\Env\Request;
+use Carbon\Carbon;
+
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use mysql_xdevapi\Exception;
+use function Symfony\Component\String\s;
+
 
 class SyncUser
 {
@@ -78,8 +79,6 @@ class SyncUser
                     $affected->active_thinkific = $inputuser['id'];
                     $affected->active_phpfox = $inputuserFox['data']['user_id'];
                     $affected->save();
-
-
 
                     $count[++$i]= (array) ["schooling" => $inputuser,"comunidad" => $inputuserFox,"id" => $syncUser->id];
 
