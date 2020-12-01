@@ -54,6 +54,9 @@ trait UpdateGenericClass{
         if($role == "MAESTRO"){
             $rol = 4;
         }
+        if($role == "PADRE"){
+            $rol = 10;
+        }
         if($role == "ADMINISTRADOR ESCUELA LIA"){
             $rol = 3;
         }
@@ -78,7 +81,7 @@ trait UpdateGenericClass{
         }
         return $password;
     }
-    public static function dataUser($input, $school_id, $passwordSource = null)
+    public static function dataUser($input, $school_id, $passwordSource = null, $tutorId = null)
     {
         try {
             $user = Auth::user();
@@ -88,7 +91,7 @@ trait UpdateGenericClass{
                 $dataCreate['school_id'] = $school_id;
                 $dataCreate['role_id'] = $role_id;
             }else{
-                if ( $role_id == 4 || $role_id == 5 ||  $role_id == 13 ){
+                if ( $role_id == 4 || $role_id == 5 ||  $role_id == 13 || $role_id == 6 ){
                     $dataCreate['role_id'] = $role_id;
                 }else{
                     $dataCreate['role_id'] = 4;
@@ -99,6 +102,7 @@ trait UpdateGenericClass{
             $dataCreate['last_name'] = $input['apellido_paterno'].' '.$input['apellido_materno'];
             $dataCreate['grade'] = self::getGrade($input['grado'], $input['tipo_usuario'],$input['seccion']);
             $dataCreate['email'] = $input['email'];
+            $dataCreate['tutor_id'] = $tutorId;
 
             $password  = $passwordSource ? $passwordSource : self::createPassword($input['seccion']);
             $passwordEncode = bcrypt($password);
@@ -115,13 +119,18 @@ trait UpdateGenericClass{
                             users.username,
                             users.name,
                             users.last_name,
-                            users.email
+                            users.email,
+                            users.tutor_id
                             FROM users
                             WHERE users.email = "'.$email.'" and username = "'.$username.'"
                             LIMIT 1');
 
             if ($reuser) {
-                    return (["message" => "El usuario ya existe", "username" => $username]);
+                if(!(array)$reuser[0]->tutor_id){
+                    \DB::table('users')->where('username', $username)->update(['tutor_id' => $tutorId]);
+                    return (["message" => "Usuario actualizado", "username" => $username]);
+                } 
+                return (["message" => "El usuario ya existe", "username" => $username]);
             } else {
                 $i = 0;
                 while (self::whereUsername($username)->exists()) {
