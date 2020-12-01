@@ -30,7 +30,8 @@ class UserPhpFox
     public function getAuthorization()
     {
         include public_path('token_phpfox.php');
-        $validateToken = Http::withToken($token_phpfox)->get($this->url . "/restful_api/user");
+        $validateToken = Http::withToken($token_phpfox['access_token'])->get($this->url . "/restful_api/user");
+
         if (!$validateToken->ok()) {
             $response = Http::post($this->url . "/restful_api/token", [
                 'grant_type' => 'client_credentials',
@@ -38,6 +39,7 @@ class UserPhpFox
                 'client_secret' => $this->secret,
             ]);
             if ($response->ok()) {
+                echo 'NEW';
                 $token = json_decode($response, true);
                 $val = $token;
                 $var_str = var_export($val, true);
@@ -48,7 +50,8 @@ class UserPhpFox
                 return false;
             }
         }
-        return $token_phpfox;
+
+        return $token_phpfox['access_token'];
     }
 
     public function createUser($data){
@@ -70,7 +73,7 @@ class UserPhpFox
 
         $token = self::getAuthorization();
 
-        $response = Http::withToken($token['access_token'])->delete($this->url . '/restful_api/user/' . $userId);
+        $response = Http::withToken($token)->delete($this->url . '/restful_api/user/' . $userId);
 
         return $response->json();
     }
@@ -80,7 +83,7 @@ class UserPhpFox
 
         try {
             $token = self::getAuthorization();
-            $response = Http::withToken($token['access_token'])->asForm()->put($this->url . '/restful_api/user/' . $userId, [
+            $response = Http::withToken($token)->asForm()->put($this->url . '/restful_api/user/' . $userId, [
                 'val[email]' => $inputData['email'],
                 'val[full_name]' => $inputData['name'] . ' ' . $inputData['last_name'],
                 'val[password]' => $inputData['name'],
