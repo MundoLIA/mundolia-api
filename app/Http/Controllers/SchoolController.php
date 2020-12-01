@@ -35,15 +35,17 @@ class SchoolController extends ApiController
         if($validator->fails()){
             return $this->errorResponse($validator->messages(), 422);
         }
-
-        $schoolName = $request->name;
-        $schoolDescription = $request->description;
+        
+        $schoolName = $request->School;
+        $schoolDescription = $request->Description;
+        $schoolActive = $request->IsActive;
         $schoolEditor = 68;
         $schoolCreator = 68;
 
         $dataLia = ([
             'School' => $schoolName,
             'Description' => $schoolDescription,
+            'IsActive' => $schoolActive,
             'CreatorId' => $schoolCreator,
             'EditorId' => $schoolEditor
         ]);
@@ -84,7 +86,8 @@ class SchoolController extends ApiController
         $data = ([
            'id' => $schoolId,
            'name' => $schoolName,
-           'description' => $schoolDescription
+           'description' => $schoolDescription,
+           'is_active' => $schoolActive
         ]);
 
         $school = School::create($data);
@@ -169,8 +172,8 @@ class SchoolController extends ApiController
         ];
 
         return Validator::make(request()->all(), [
-                'name' => 'required|max:255',
-                'description' => 'string|max:255',
+                'School' => 'required|max:255',
+                'Description' => 'string|max:255',
             ], $messages);
     }
 }

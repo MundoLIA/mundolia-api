@@ -414,6 +414,10 @@ class UserController extends ApiController
 
             $user = User::where('uuid', 'like', '%' . $uuid . '%')->firstOrFail();
 
+            if ($user->role_id == 10) {
+                \DB::table('users')->where('tutor_id', [$user->id])->update(['tutor_id' => null]);
+            }
+
             if(Config::get('app.sync_lia')){
                 $userLIA = UserLIA::find($user->AppUserId);
                 $userLIA->delete();
