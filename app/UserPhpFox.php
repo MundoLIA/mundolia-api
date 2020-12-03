@@ -30,6 +30,8 @@ class UserPhpFox
     public function getAuthorization()
     {
         include public_path('token_phpfox.php');
+        var_dump($token_phpfox);
+        die();
         $validateToken = Http::withToken($token_phpfox['access_token'])->get($this->url . "/restful_api/user");
 
         if (!$validateToken->ok()) {
