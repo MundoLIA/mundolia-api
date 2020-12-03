@@ -184,6 +184,9 @@ class UserController extends ApiController
                 "user_name" => $user->username,
                 'password' => $password,
             ]);
+//            if(Config::get('app.sync_thinkific')) {
+//                UserGenericRegister::dispatch($dataThink, $dataFox);
+//            }
 
             //$userCommunity = UserCommunity::create($dataFox);
 
@@ -196,7 +199,10 @@ class UserController extends ApiController
             $user->active_phpfox = $lastUserGroup->user_id;
             $user->save();
 
-            SendEmail::dispatchNow($dataEmail);
+            if(Config::get('app.send_email')) {
+                SendEmail::dispatchNow($dataEmail);
+            }
+
 
             $success['message'] = 'Usuario creado';
             $success['data'] = $userFox;

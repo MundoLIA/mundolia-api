@@ -15,14 +15,13 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
-    'thinkific' => env('THINKIFIC_API_KEY'),
-    'subdomain_thinkific' => env('THINKIFIC_SUBDOMAIN'),
+    'thinkific' => env('THINKIFIC_API_KEY', null),
+    'subdomain_thinkific' => env('THINKIFIC_SUBDOMAIN', null),
 
-    'phpfox' => env('PHPFOX_CLIENT_ID', 'clublia'),
-    'secret_phpfox' => env('PHPFOX_CLIENT_SECRET'),
-    'url_phpfox' => env('PHPFOX_URL', 'http://comunidad.test/index.php/restful_api'),
-    'username_comunidad' => env('COMUNIDAD_USERNAME', null),
-    'pass_comunidad' => env('COMUNIDAD_PASSWORD', null),
+    'phpfox' => env('PHPFOX_CLIENT_ID', null),
+    'secret_phpfox' => env('PHPFOX_CLIENT_SECRET', null),
+    'url_phpfox' => env('PHPFOX_URL', null),
+    'token_phpfox' => env('PHPFOX_ACCESS_TOKEN', null),
 
 
     /*
@@ -55,6 +54,7 @@ return [
     'sync_lia' => (bool) env('SYNC_LIA', false),
     'sync_phpfox' => (bool) env('SYNC_PHPFOX', true),
     'sync_thinkific' => (bool) env('SYNC_THINKIFIC', false),
+    'send_email' => (bool) env('SEND_EMAIL', false),
 
     /*
     |--------------------------------------------------------------------------

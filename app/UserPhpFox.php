@@ -39,7 +39,6 @@ class UserPhpFox
                 'client_secret' => $this->secret,
             ]);
             if ($response->ok()) {
-                echo 'NEW';
                 $token = json_decode($response, true);
                 $val = $token_phpfox['access_token'];
                 $var_str = var_export($val, true);
