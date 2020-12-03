@@ -45,6 +45,7 @@ class UserImportController extends Controller
             $school_id =  $user->school_id;
             $password = null;
             $tutor_id = null;
+            $tutorIdLIA = null;
             $input = request()->all();
 
             if($user->role_id == 1 || $user->role_id == 2){
@@ -62,7 +63,7 @@ class UserImportController extends Controller
                 }
                 if($insertArr['nombre_padre_madre_o_tutor'] && $insertArr['mail_padre']){
                     $tutorId = \DB::table('users')->where('email', [$insertArr['mail_padre']])->where('role_id', 10)->get('id')->first();
-
+                    
                     if(!$tutorId){
 
                         $tutorName = explode(' ',$insertArr['nombre_padre_madre_o_tutor']);
@@ -88,12 +89,14 @@ class UserImportController extends Controller
                         $result [++$i] = (array) $resp;
 
                         $tutorId = \DB::table('users')->where('email', [$insertArr['mail_padre']])->where('role_id', 10)->get('id')->first();
+                        $tutorIdLIA = \DB::connection('sqlsrv')->table('dbo.AppUsers')->where('Email', [$insertArr['mail_padre']])->where('RoleId', 10)->get('AppUserId')->first();
+                        $tutorIdLIA = $tutorIdLIA->AppUserId;
                     }
                     $tutor_id = $tutorId->id;
                 }
 
                 $resp = $obj;
-                $respCreate = User::dataUser($insertArr, $school_id, $password, $tutor_id);
+                $respCreate = User::dataUser($insertArr, $school_id, $password, $tutor_id, $tutorIdLIA);
                 //\DB::table('users')->where('username', $respCreate["username"])->update(['tutor_id' => $tutorId->id]);
                 $resp ['result'] = $respCreate["message"];
                 $resp ['username'] = $respCreate["username"];
