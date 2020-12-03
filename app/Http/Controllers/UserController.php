@@ -426,6 +426,11 @@ class UserController extends ApiController
 
             if(Config::get('app.sync_lia')){
                 $userLIA = UserLIA::find($user->AppUserId);
+                if($user->role_id == 10) {
+                    \DB::connection('sqlsrv')->table('dbo.ParentChildren')->where(['ParentId' => $user->AppUserId])->delete();
+                } else {
+                    \DB::connection('sqlsrv')->table('dbo.ParentChildren')->where(['ChildrenId' => $user->AppUserId])->delete();
+                }
                 $userLIA->delete();
             }
 
