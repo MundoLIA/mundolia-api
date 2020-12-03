@@ -4,12 +4,7 @@ namespace App\Http\Controllers;
 
 use App\SyncUser;
 use App\User;
-use App\UserCommunity;
 use App\UserPhpFox;
-use Carbon\Carbon;
-use Facade\FlareClient\Api;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class SyncUserPlatformController extends ApiController

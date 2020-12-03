@@ -30,7 +30,7 @@ class UserPhpFox
     public function getAuthorization()
     {
         include public_path('token_phpfox.php');
-        $validateToken = Http::withToken($token_phpfox['access_token'])->get($this->url . "/restful_api/user");
+        $validateToken = Http::withToken($token_phpfox)->get($this->url . "/restful_api/user");
 
         if (!$validateToken->ok()) {
             $response = Http::post($this->url . "/restful_api/token", [
@@ -40,7 +40,7 @@ class UserPhpFox
             ]);
             if ($response->ok()) {
                 $token = json_decode($response, true);
-                $val = $token_phpfox['access_token'];
+                $val = $token_phpfox;
                 $var_str = var_export($val, true);
                 $var = "<?php\n\n\$token_phpfox = $var_str;\n\n?>";
                 file_put_contents(public_path('token_phpfox.php'), $var);
