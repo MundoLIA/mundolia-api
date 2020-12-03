@@ -20,7 +20,6 @@ class SyncGroupComunnityController extends ApiController
 {
     public function syncSchool()
     {
-
         $results = School::where([
             ['is_active', '=', '1']
         ])->get();
@@ -128,8 +127,6 @@ class SyncGroupComunnityController extends ApiController
     //Method to sync grade to create phpfox groups
     public function syncGroupGrade()
     {
-
-
         $teachers = User::select('AppUserId')->where([
             ['role_id', '=', 4]
         ])->get();
