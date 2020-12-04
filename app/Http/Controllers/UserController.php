@@ -320,6 +320,7 @@ class UserController extends ApiController
 
         } catch (ModelNotFoundException $exception) {
             $error["code"] = '500';
+            $error["exception"] = $exception->getMessage();
             $error["message"] = "Error al actualizar el usuario";
 
             return $this->errorResponse(['error' => $error], 500);

@@ -127,7 +127,6 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('/sync/escuelas/comunidad', 'SyncGroupComunnityController@syncSchool');
     Route::get('/sync/grados/comunidad', 'SyncGroupComunnityController@syncGroupGrade');
 
-    Route::get('usuario/grupos/comunidad', 'LikeUserGroupController@list');
 
     Route::post('sync/usuario/comunidad/', 'SyncUserPlatformController@syncUserCommunity');
 });
