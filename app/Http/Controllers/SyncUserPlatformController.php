@@ -8,6 +8,7 @@ use App\UserCommunity;
 use App\UserPhpFox;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class SyncUserPlatformController extends ApiController
 {
@@ -21,8 +22,10 @@ class SyncUserPlatformController extends ApiController
         return $user;
     }
 
-    public function syncUserCommunity()
+    public function syncUserCommunity(Request $request)
     {
+        $input = request()->all();
+
         $inactive = 0;
 
         $results = User::where([
@@ -31,7 +34,7 @@ class SyncUserPlatformController extends ApiController
         ])->orWhere([
             ['role_id', '>', 1],
             ['active_phpfox', '=', $inactive]
-        ])->get();
+        ])->offset($input["offset"])->limit($input["limit"])->get();
 
         $i = 0;
 

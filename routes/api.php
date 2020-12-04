@@ -129,7 +129,7 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::get('usuario/grupos/comunidad', 'LikeUserGroupController@list');
 
-    Route::get('sync/usuario/comunidad/', 'SyncUserPlatformController@syncUserCommunity');
+    Route::post('sync/usuario/comunidad/', 'SyncUserPlatformController@syncUserCommunity');
 });
 
 
