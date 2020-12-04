@@ -46,7 +46,8 @@ class UserPhpFox
                 file_put_contents(public_path('token_phpfox.php'), $var);
                 return $token['access_token'];
             } else {
-                return false;
+                var_dump($response);
+                exit();
             }
         }
 

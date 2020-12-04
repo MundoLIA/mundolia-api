@@ -81,7 +81,7 @@ trait UpdateGenericClass{
         }
         return $password;
     }
-    public static function dataUser($input, $school_id, $passwordSource = null, $tutorId = null)
+    public static function dataUser($input, $school_id, $passwordSource = null, $tutorId = null, $tutorIdLIA = null)
     {
         try {
             $user = Auth::user();
@@ -161,6 +161,9 @@ trait UpdateGenericClass{
             if(Config::get('app.sync_lia')){
                 $userLIA = UserLIA::create($dataLIA);
                 $dataCreate['AppUserId'] = $userLIA->AppUserId;
+                if($tutorIdLIA){
+                    \DB::connection('sqlsrv')->table('dbo.ParentChildren')->insert(['ParentId' => $tutorIdLIA, 'ChildrenId' => $userLIA->AppUserId]);
+                }
             }
 
             $user = self::create($dataCreate);
