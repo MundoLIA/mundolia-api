@@ -40,7 +40,7 @@ class UserPhpFox
             ]);
             if ($response->ok()) {
                 $token = json_decode($response, true);
-                $val = $token_phpfox;
+                $val = $token['access_token'];
                 $var_str = var_export($val, true);
                 $var = "<?php\n\n\$token_phpfox = $var_str;\n\n?>";
                 file_put_contents(public_path('token_phpfox.php'), $var);
@@ -49,6 +49,7 @@ class UserPhpFox
                 return false;
             }
         }
+
         return $token_phpfox;
     }
 
