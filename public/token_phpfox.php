@@ -1,5 +1,5 @@
 <?php
 
-$token_phpfox = '4b45ba32f76e5b7f986eb5161e2928e86ec05932';
+$token_phpfox = 'be366bb63403109e816a2dbf1b7d5446deccd0e2';
 
 ?>

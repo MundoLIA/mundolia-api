@@ -53,12 +53,11 @@ class SyncUserPlatformController extends ApiController
                     'user_group_id' => 2,
                     'full_name' => $syncUser->name . ' ' . $syncUser->last_name,
                     "user_name" => $syncUser->username,
-                    "password" => 'ClubLia',
                     "joined" => Carbon::now()->timestamp
                 ]);
 
                 if (UserCommunity::where([['email', '=', $syncUser->email]])->exists()) {
-                    $count[++$i] = (array)["message" => 'El correo electronico ya esta asignado', "id" => $syncUser->id];
+                    $count[++$i] = (array)["message" => 'El correo electronico ya esta asignado', "id" => $syncUser->id, "email"=> $syncUser->email];
                 } else {
                     //$user = new UserPhpFox();
                     //$userCommunity = $user->createUser($dataFox);
@@ -66,7 +65,7 @@ class SyncUserPlatformController extends ApiController
 
                     $userCommunityId = ['user_id' => $userCommunity['id']];
                     PhpFox_user_activity::create($userCommunityId);
-                    PhpFox_user_field::created($userCommunityId);
+                    PhpFox_user_field::create($userCommunityId);
                     PhpFox_user_space::create($userCommunityId);
                     PhpFox_user_count::create($userCommunityId);
 
