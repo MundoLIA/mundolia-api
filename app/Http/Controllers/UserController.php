@@ -439,7 +439,7 @@ class UserController extends ApiController
             $success['message'] = 'El usuario ha sido eliminado existosamente';
             $success['code'] = 200;
             return $this->successResponse($success,200);
-        } catch (Exception  $exception) {
+        } catch (ModelNotFoundException  $exception) {
             $error["code"] = '500';
             $error["message"] = "Error al eliminar el usuario";
             $error["getMessage"] = $exception->getMessage();
