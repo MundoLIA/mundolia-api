@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\PhpFox_user_activity;
+use App\PhpFox_user_count;
+use App\PhpFox_user_field;
+use App\PhpFox_user_space;
 use App\SyncUser;
 use App\User;
 use App\UserCommunity;
@@ -53,12 +57,18 @@ class SyncUserPlatformController extends ApiController
                     "joined" => Carbon::now()->timestamp
                 ]);
 
-                if(UserCommunity::where([['email', '=', $syncUser->email]])->exists()){
-                    $count[++$i] = (array)["message" =>'El correo electronico ya esta asignado', "id" => $syncUser->id];
-                }else{
+                if (UserCommunity::where([['email', '=', $syncUser->email]])->exists()) {
+                    $count[++$i] = (array)["message" => 'El correo electronico ya esta asignado', "id" => $syncUser->id];
+                } else {
                     //$user = new UserPhpFox();
                     //$userCommunity = $user->createUser($dataFox);
                     $userCommunity = UserCommunity::create($dataFox)->toArray();
+
+                    $userCommunityId = ['user_id' => $userCommunity['id']];
+                    PhpFox_user_activity::create($userCommunityId);
+                    PhpFox_user_field::created($userCommunityId);
+                    PhpFox_user_space::create($userCommunityId);
+                    PhpFox_user_count::create($userCommunityId);
 
                     if (!empty($userCommunity)) {
                         $affected = User::find($syncUser->id);
