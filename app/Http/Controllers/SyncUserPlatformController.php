@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\SyncUser;
 use App\User;
+use App\UserCommunity;
 use App\UserPhpFox;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class SyncUserPlatformController extends ApiController
@@ -41,25 +43,32 @@ class SyncUserPlatformController extends ApiController
 
                 $dataFox = ([
                     'email' => $syncUser->email,
+                    'user_group_id' => 2,
                     'full_name' => $syncUser->name . ' ' . $syncUser->last_name,
                     "user_name" => $syncUser->username,
-                    "password" => 'ClubLia'
+                    "password" => 'ClubLia',
+                    "joined" => Carbon::now()->timestamp
                 ]);
 
-                $user = new UserPhpFox();
-                $userCommunity = $user->createUser($dataFox);
+                if(UserCommunity::where([['email', '=', $syncUser->email]])->exists()){
+                    $count[++$i] = (array)["message" =>'El correo electronico ya esta asignado', "id" => $syncUser->id];
+                }else{
+                    //$user = new UserPhpFox();
+                    //$userCommunity = $user->createUser($dataFox);
+                    $userCommunity = UserCommunity::create($dataFox)->toArray();
 
-                if (!empty($userCommunity['data'])) {
-                    $affected = User::find($syncUser->id);
-                    $affected->active_phpfox = $userCommunity['data']['user_id'];
-                    $affected->save();
-                    $count[++$i] = (array)["comunidad" => $userCommunity, "id" => $syncUser->id];
-                } else {
-                    if ($userCommunity["status"] === 'failed') {
+                    if (!empty($userCommunity)) {
+                        $affected = User::find($syncUser->id);
+                        $affected->active_phpfox = $userCommunity["id"];
+                        $affected->save();
                         $count[++$i] = (array)["comunidad" => $userCommunity, "id" => $syncUser->id];
+                    } else {
+                        if ($userCommunity["status"] === 'failed') {
+                            $count[++$i] = (array)["comunidad" => $userCommunity, "id" => $syncUser->id];
+                        }
                     }
                 }
-                //$userCommunity = UserCommunity::create($dataFox);
+
             }
             return $this->successResponse(["usuarios" => $count]);
         }
