@@ -34,9 +34,6 @@ class SyncUserPlatformController extends ApiController
 
         $results = User::where([
             ['role_id', '>', 1],
-            ['active_thinkific', '=', $inactive]
-        ])->orWhere([
-            ['role_id', '>', 1],
             ['active_phpfox', '=', $inactive]
         ])->offset($input["offset"])->limit($input["limit"])->get();
 

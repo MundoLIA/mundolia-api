@@ -247,12 +247,16 @@ class SyncGroupComunnityController extends ApiController
                         //$count[$t++] = [$userLike, $groupCreated];
                     }
                 }
+<<<<<<< HEAD
                 $count[$c++] = array([
                     "Grupo" => $groupGradeCommunity->title,
                     "PageText" => $pageText->page_id,
                     "UserCommunity" => $userCommunity->full_name,
                     "UsersEnroller" => $p],
                     ['Group' => $groupCreated, 'user_like' => $userLike],);
+=======
+                $count[$c++] = array("Grupo" => $groupGradeCommunity->title, "PageText" => $pageText->page_id, "UserCommunity" => $userCommunity->full_name, "UsersEnroller" => $p);
+>>>>>>> 35f333ba30883178a85857c8cd18821bd51835d1
             }
         }
         return $this->successResponse($count);
