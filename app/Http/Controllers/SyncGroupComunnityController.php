@@ -34,7 +34,7 @@ class SyncGroupComunnityController extends ApiController
 
                 $syncSchool = $obj;
 
-                if (SyncGroupComunnity::where([['title', '=', $syncSchool->name]])) {
+                if (SyncGroupComunnity::where([['title', '=', $syncSchool->name]])->exists()) {
                     $count[$c++] = array('error' => 'El nombre de grupo ya existe');
                 } else {
                     // DATA PHPFOX_PAGES TABLE
