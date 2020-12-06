@@ -144,7 +144,7 @@ trait UpdateGenericClass{
                 if(!(array)$reuser[0]->tutor_id){
                     \DB::table('users')->where('username', $username)->update(['tutor_id' => $tutorId]);
                     return (["message" => "Usuario actualizado", "username" => $username]);
-                } 
+                }
                 return (["message" => "El usuario ya existe", "username" => $username]);
             } else {
                 $i = 0;
@@ -192,12 +192,12 @@ trait UpdateGenericClass{
                 'password' => $password
             ]);
 
-            $dataThink = ([
+            /*$dataThink = ([
                 'first_name' => $user->username,
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'password' => $password
-            ]);
+            ]);*/
 
             $dataFox = ([
                 'email' => $user->email,
@@ -226,11 +226,9 @@ trait UpdateGenericClass{
             if(Config::get('app.send_email')) {
                 SendEmail::dispatchNow($data);
             }
-
             return (["message" => "Usuario creado", "username" => $username]);
 
-
-        } catch (\mysql_xdevapi\Exception $e) {
+        } catch (Exception $e) {
             return (["message" => "Error al crear el usuario", "username" => ""]);
         }
     }

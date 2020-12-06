@@ -34,16 +34,16 @@ class SyncGroupComunnityController extends ApiController
 
                 $syncSchool = $obj;
 
-                if (SyncGroupComunnity::where([['title', '=', $syncSchool->name]])) {
+                if (SyncGroupComunnity::where([['title', '=', $syncSchool->name]])->exists()) {
                     $count[$c++] = array('error' => 'El nombre de grupo ya existe');
                 } else {
                     // DATA PHPFOX_PAGES TABLE
                     $data = ([
                         'app_id' => 0,
                         'view_id' => 0,
-                        'type_id' => 6,
+                        'type_id' => 9,
                         "category_id" => 0,
-                        "user_id" => 20,
+                        "user_id" => 1,
                         "title" => $syncSchool->name,
                         "reg_method" => 2,
                         "landing_page" => null,
@@ -146,6 +146,7 @@ class SyncGroupComunnityController extends ApiController
 
                 $teacher = User::where([['AppUserId', '=', $gradeGroup->TeacherId]])->firstOrfail();
 
+
                 $gradeGradeGroup = ([
                     'code' => $gradeGroup->Code,
                     'name' => $gradeGroup->Name,
@@ -158,17 +159,21 @@ class SyncGroupComunnityController extends ApiController
 
                 $syncGrade = Group::create($gradeGradeGroup);
 
-                if (SyncGroupComunnity::where([['title', '=', $gradeGroup->Name]])) {
+
+                if (SyncGroupComunnity::where([['title', '=', $gradeGroup->Name]])->exists()) {
                     $count[$c++] = array('error' => 'El nombre de grupo ya existe');
                 } else {
+                    $school = School::find($teacher->school_id);
+                    $schoolName = $school->name;
+
                     // DATA PHPFOX_PAGES TABLE
                     $dataGradeCommunity = ([
                         'app_id' => 0,
                         'view_id' => 0,
-                        'type_id' => 6,
+                        'type_id' => 9,
                         "category_id" => 0,
                         "user_id" => $teacher->active_phpfox,
-                        "title" => $gradeGroup->Name,
+                        "title" => $schoolName . '-' .$gradeGroup->Name,
                         "reg_method" => 2,
                         "landing_page" => null,
                         "time_stamp" => Carbon::now()->timestamp,
@@ -246,19 +251,16 @@ class SyncGroupComunnityController extends ApiController
                         $p++;
                         //$count[$t++] = [$userLike, $groupCreated];
                     }
+                    $count[$c++] = array([
+                        "Grupo" => $groupGradeCommunity->title,
+                        "PageText" => $pageText->page_id,
+                        "UserCommunity" => $userCommunity->full_name,
+                        "UsersEnroller" => $p],
+                        ['Group' => $groupCreated, 'user_like' => $userLike],);
                 }
-<<<<<<< HEAD
-                $count[$c++] = array([
-                    "Grupo" => $groupGradeCommunity->title,
-                    "PageText" => $pageText->page_id,
-                    "UserCommunity" => $userCommunity->full_name,
-                    "UsersEnroller" => $p],
-                    ['Group' => $groupCreated, 'user_like' => $userLike],);
-=======
-                $count[$c++] = array("Grupo" => $groupGradeCommunity->title, "PageText" => $pageText->page_id, "UserCommunity" => $userCommunity->full_name, "UsersEnroller" => $p);
->>>>>>> 35f333ba30883178a85857c8cd18821bd51835d1
             }
         }
         return $this->successResponse($count);
     }
+
 }

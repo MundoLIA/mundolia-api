@@ -225,7 +225,6 @@ class UserController extends ApiController
                 SendEmail::dispatchNow($dataEmail);
             }
 
-
             $success['message'] = 'Usuario creado';
             $success['data'] = $userCommunity;
             return $this->successResponse($success,200);

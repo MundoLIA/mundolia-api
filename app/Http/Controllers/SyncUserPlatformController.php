@@ -55,6 +55,8 @@ class SyncUserPlatformController extends ApiController
             foreach ($results as $obj) {
                 $syncUser = $obj;
 
+
+
                 $dataFox = ([
                     'email' => $syncUser->email,
                     'full_name' => $syncUser->name . ' ' . $syncUser->last_name,
