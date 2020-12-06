@@ -12,6 +12,10 @@ use App\UserCommunity;
 use App\UserLIA;
 use App\UserPhpFox;
 use App\UserThinkific;
+use App\PhpFox_user_activity;
+use App\PhpFox_user_count;
+use App\PhpFox_user_field;
+use App\PhpFox_user_space;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\JsonResponse;
@@ -98,6 +102,16 @@ class UserController extends ApiController
             $user = Auth::user();
             $input = $request->all();
 
+            $roleFox = [
+                '1' => '1', //Admin - Administrator
+                '2' => '2', //Ventas - Registered User
+                '3' => '7', //Admin Escuela - Escuela LIA - Director /coordinador
+                '4' => '8', //Maestro - MaestroLIA
+                '5' => '9', //Alumno - AlumnoLIA
+                '10' => '10', //Padre - Papá-EscuelaLIA
+                '13' => '9' //Preescolar - AlumnoLIA
+            ];
+
             if($user->role_id == 1 || $user->role_id == 2){
                 $dataCreate['role_id'] = $input['role_id'];
                 $dataCreate['school_id'] = $input['school_id'];
@@ -183,20 +197,28 @@ class UserController extends ApiController
                 'full_name' => $user->name .' '. $user->last_name,
                 "user_name" => $user->username,
                 'password' => $password,
+                'user_group_id' => $roleFox[$dataCreate['role_id']],
+                'joined' => Carbon::now()->timestamp,
             ]);
 //            if(Config::get('app.sync_thinkific')) {
 //                UserGenericRegister::dispatch($dataThink, $dataFox);
 //            }
 
-            //$userCommunity = UserCommunity::create($dataFox);
+            $userCommunity = UserCommunity::create($dataFox)->toArray();
+            $userCommunityId = ['user_id' => $userCommunity['id']];
+                    PhpFox_user_activity::create($userCommunityId);
+                    PhpFox_user_field::create($userCommunityId);
+                    PhpFox_user_space::create($userCommunityId);
+                    PhpFox_user_count::create($userCommunityId);
 
             //$lastUserGroup = UserCommunity::all()->last();
 
-            $userFox = new UserPhpFox();
-            $userFox = $userFox->createUser($dataFox);
+            /*******************Create User trougth API****************/
+            //$userFox = new UserPhpFox();
+            //$userFox = $userFox->createUser($dataFox);
 
             $lastUserGroup = UserCommunity::all()->last();
-            $user->active_phpfox = $lastUserGroup->user_id;
+            $user->active_phpfox = $userCommunity['id'];
             $user->save();
 
             if(Config::get('app.send_email')) {
@@ -205,7 +227,7 @@ class UserController extends ApiController
 
 
             $success['message'] = 'Usuario creado';
-            $success['data'] = $userFox;
+            $success['data'] = $userCommunity;
             return $this->successResponse($success,200);
 
         } catch (ModelNotFoundException $e) {

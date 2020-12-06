@@ -32,6 +32,16 @@ class SyncUserPlatformController extends ApiController
 
         $inactive = 0;
 
+        $roleFox = [
+            '1' => '1', //Admin - Administrator
+            '2' => '2', //Ventas - Registered User
+            '3' => '7', //Admin Escuela - Escuela LIA - Director /coordinador
+            '4' => '8', //Maestro - MaestroLIA
+            '5' => '9', //Alumno - AlumnoLIA
+            '10' => '10', //Padre - Papá-EscuelaLIA
+            '13' => '9' //Preescolar - AlumnoLIA
+        ];
+
         $results = User::where([
             ['role_id', '>', 1],
             ['active_phpfox', '=', $inactive]
@@ -47,9 +57,9 @@ class SyncUserPlatformController extends ApiController
 
                 $dataFox = ([
                     'email' => $syncUser->email,
-                    'user_group_id' => 2,
                     'full_name' => $syncUser->name . ' ' . $syncUser->last_name,
                     "user_name" => $syncUser->username,
+                    "user_group_id" => $roleFox[$syncUser->role_id],
                     "joined" => Carbon::now()->timestamp
                 ]);
 

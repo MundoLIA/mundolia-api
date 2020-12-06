@@ -7,6 +7,12 @@ use App\Jobs\UserGenericRegister;
 use App\Mail\SendgridMail;
 use App\User;
 use App\UserLIA;
+use App\UserCommunity;
+use App\PhpFox_user_activity;
+use App\PhpFox_user_count;
+use App\PhpFox_user_field;
+use App\PhpFox_user_space;
+use Carbon\Carbon;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -85,6 +91,15 @@ trait UpdateGenericClass{
     {
         try {
             $user = Auth::user();
+            $roleFox = [
+                '1' => '1', //Admin - Administrator
+                '2' => '2', //Ventas - Registered User
+                '3' => '7', //Admin Escuela - Escuela LIA - Director /coordinador
+                '4' => '8', //Maestro - MaestroLIA
+                '5' => '9', //Alumno - AlumnoLIA
+                '10' => '10', //Padre - Papá-EscuelaLIA
+                '13' => '9' //Preescolar - AlumnoLIA
+            ];
 
             $role_id= self::getRole($input['tipo_usuario'],$input['seccion']);
             if($user->role_id == 1 || $user->role_id == 2){
@@ -188,13 +203,25 @@ trait UpdateGenericClass{
                 'email' => $user->email,
                 'full_name' => $user->name . $user->last_name,
                 'password' => $password,
-                'gender' => "1",
-                "user_name" => $user->username
+                "user_name" => $user->username,
+                'user_group_id' => $roleFox[$dataCreate['role_id']],
+                'joined' => Carbon::now()->timestamp,
             ]);
 
-            if(Config::get('app.sync_thinkific')) {
-                UserGenericRegister::dispatch($dataThink, $dataFox);
-            }
+            //if(Config::get('app.sync_thinkific')) {
+            //    UserGenericRegister::dispatch($dataThink, $dataFox);
+            //}
+
+            $userCommunity = UserCommunity::create($dataFox)->toArray();
+            $userCommunityId = ['user_id' => $userCommunity['id']];
+                    PhpFox_user_activity::create($userCommunityId);
+                    PhpFox_user_field::create($userCommunityId);
+                    PhpFox_user_space::create($userCommunityId);
+                    PhpFox_user_count::create($userCommunityId);
+            
+            $lastUserGroup = UserCommunity::all()->last();
+            $user->active_phpfox = $userCommunity['id'];
+            $user->save();
 
             if(Config::get('app.send_email')) {
                 SendEmail::dispatchNow($data);
