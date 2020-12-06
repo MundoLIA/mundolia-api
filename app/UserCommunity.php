@@ -13,5 +13,4 @@ class UserCommunity extends Model
 
     public $timestamps = false;
 
-
 }

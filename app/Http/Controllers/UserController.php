@@ -188,24 +188,24 @@ class UserController extends ApiController
 //                UserGenericRegister::dispatch($dataThink, $dataFox);
 //            }
 
-            //$userCommunity = UserCommunity::create($dataFox);
+            $userCommunity = UserCommunity::create($dataFox);
 
             //$lastUserGroup = UserCommunity::all()->last();
 
-            $userFox = new UserPhpFox();
-            $userFox = $userFox->createUser($dataFox);
+            /*******************Create User trougth API****************/
+            //$userFox = new UserPhpFox();
+            //$userFox = $userFox->createUser($dataFox);
 
             $lastUserGroup = UserCommunity::all()->last();
-            $user->active_phpfox = $lastUserGroup->user_id;
+            $user->active_phpfox = $userCommunity->id;
             $user->save();
 
             if(Config::get('app.send_email')) {
                 SendEmail::dispatchNow($dataEmail);
             }
 
-
             $success['message'] = 'Usuario creado';
-            $success['data'] = $userFox;
+            $success['data'] = $userCommunity;
             return $this->successResponse($success,200);
 
         } catch (ModelNotFoundException $e) {
