@@ -34,8 +34,22 @@ class SyncGroupComunnityController extends ApiController
 
                 $syncSchool = $obj;
 
+                if(User::select('active_phpfox')->where([
+                    ['school_id', '=', $syncSchool->id ],
+                    ['role_id', '=', 3]
+                ])->exists()){
+                    $userAdmin =  User::select('active_phpfox')->where([
+                        ['school_id', '=', $syncSchool->id ],
+                        ['role_id', '=', 3]
+                    ])->get()->toArray();
+
+                    $userAdmin = $userAdmin[0]['active_phpfox'];
+                } else{
+                    $userAdmin = 1;
+                }
+
                 if (SyncGroupComunnity::where([['title', '=', $syncSchool->name]])->exists()) {
-                    $count[$c++] = array('error' => 'El nombre de grupo ya existe');
+                    $count[$i++] = array('error' => 'El nombre de grupo ya existe');
                 } else {
                     // DATA PHPFOX_PAGES TABLE
                     $data = ([
@@ -43,7 +57,7 @@ class SyncGroupComunnityController extends ApiController
                         'view_id' => 0,
                         'type_id' => 9,
                         "category_id" => 0,
-                        "user_id" => 1,
+                        "user_id" => $userAdmin,
                         "title" => $syncSchool->name,
                         "reg_method" => 2,
                         "landing_page" => null,
@@ -121,8 +135,9 @@ class SyncGroupComunnityController extends ApiController
                         $t++;
                         //$count[$t++] = [$userLike, $groupCreated];
                     }
+                    $count[$i++] = array(["Grupo" => $group->title, "PageText" => $pageText->page_id,
+                        "UserCommunity" => $userCommunity->full_name, "UsersEnroller" => $t],['Userlike' => $userLike, 'gropup' => $groupCreated, $t]);
                 }
-                $count[$i++] = array("Grupo" => $group->title, "PageText" => $pageText->page_id, "UserCommunity" => $userCommunity->full_name, "UsersEnroller" => $t);
             }
         }
         return $this->successResponse($count);
@@ -145,8 +160,7 @@ class SyncGroupComunnityController extends ApiController
             foreach ($resultsGroups as $gradeGroup) {
 
                 $teacher = User::where([['AppUserId', '=', $gradeGroup->TeacherId]])->firstOrfail();
-
-
+                
                 $gradeGradeGroup = ([
                     'code' => $gradeGroup->Code,
                     'name' => $gradeGroup->Name,
