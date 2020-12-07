@@ -160,7 +160,7 @@ class SyncGroupComunnityController extends ApiController
             foreach ($resultsGroups as $gradeGroup) {
 
                 $teacher = User::where([['AppUserId', '=', $gradeGroup->TeacherId]])->firstOrfail();
-                
+
                 $gradeGradeGroup = ([
                     'code' => $gradeGroup->Code,
                     'name' => $gradeGroup->Name,
@@ -187,7 +187,7 @@ class SyncGroupComunnityController extends ApiController
                         'type_id' => 9,
                         "category_id" => 0,
                         "user_id" => $teacher->active_phpfox,
-                        "title" => $schoolName . '-' .$gradeGroup->Name,
+                        "title" => $schoolName . '-' .$teacher->name.' '.$teacher->last_name,
                         "reg_method" => 2,
                         "landing_page" => null,
                         "time_stamp" => Carbon::now()->timestamp,
