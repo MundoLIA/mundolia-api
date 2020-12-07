@@ -172,13 +172,13 @@ class SyncGroupComunnityController extends ApiController
                 ]);
 
                 $syncGrade = Group::create($gradeGradeGroup);
+                $school = School::find($teacher->school_id);
+                $schoolName = $school->name;
 
-
-                if (SyncGroupComunnity::where([['title', '=', $gradeGroup->Name]])->exists()) {
+                if (SyncGroupComunnity::where([['title', '=', $schoolName . '-' .$teacher->name.' '.$teacher->last_name]])->exists()) {
                     $count[$c++] = array('error' => 'El nombre de grupo ya existe');
                 } else {
-                    $school = School::find($teacher->school_id);
-                    $schoolName = $school->name;
+
 
                     // DATA PHPFOX_PAGES TABLE
                     $dataGradeCommunity = ([
