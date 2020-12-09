@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Jobs\DeleteGenericUserJob;
 use App\Jobs\SendEmail;
-use App\Jobs\UserGenericRegister;
 use App\License;
 use App\LicenseKey;
 use App\School;
 use App\UserCommunity;
 use App\UserLIA;
-use App\UserPhpFox;
 use App\UserThinkific;
 use App\PhpFox_user_activity;
 use App\PhpFox_user_count;
@@ -18,14 +16,12 @@ use App\PhpFox_user_field;
 use App\PhpFox_user_space;
 use Carbon\Carbon;
 use DateTime;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use mysql_xdevapi\Exception;
-use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use \Illuminate\Support\Facades\Validator;
@@ -169,6 +165,7 @@ class UserController extends ApiController
                 'EditorId' => 68,
                 'Avatar' => null,
             ]);
+
             if(Config::get('app.sync_lia')) {
                 $userLIA = UserLIA::create($dataLIA);
                 $dataCreate['AppUserId'] = $userLIA->AppUserId;
@@ -190,48 +187,51 @@ class UserController extends ApiController
                 'email' => $user->email,
                 'password' => $password
             ]);*/
+            if (UserCommunity::where([['email', '=', $user->email]])->exists()) {
+                $comunidad['error'] = 'El correo electronico ya esta asignado';
+            }else{
 
-
-            $dataFox = ([
-                'email' => $user->email,
-                'full_name' => $user->name .' '. $user->last_name,
-                "user_name" => $user->username,
-                'password' => $password,
-                'user_group_id' => $roleFox[$dataCreate['role_id']],
-                'joined' => Carbon::now()->timestamp,
-            ]);
+                $dataFox = ([
+                    'email' => $user->email,
+                    'full_name' => $user->name .' '. $user->last_name,
+                    "user_name" => $user->username,
+                    'password' => $passwordBcrypt,
+                    'user_group_id' => $roleFox[$dataCreate['role_id']],
+                    'joined' => Carbon::now()->timestamp,
+                ]);
 //            if(Config::get('app.sync_thinkific')) {
 //                UserGenericRegister::dispatch($dataThink, $dataFox);
 //            }
 
-            $userCommunity = UserCommunity::create($dataFox)->toArray();
-            $userCommunityId = ['user_id' => $userCommunity['id']];
-                    PhpFox_user_activity::create($userCommunityId);
-                    PhpFox_user_field::create($userCommunityId);
-                    PhpFox_user_space::create($userCommunityId);
-                    PhpFox_user_count::create($userCommunityId);
+                $userCommunity = UserCommunity::create($dataFox)->toArray();
+                $userCommunityId = ['user_id' => $userCommunity['id']];
+                PhpFox_user_activity::create($userCommunityId);
+                PhpFox_user_field::create($userCommunityId);
+                PhpFox_user_space::create($userCommunityId);
+                PhpFox_user_count::create($userCommunityId);
 
-            //$lastUserGroup = UserCommunity::all()->last();
+                $user->active_phpfox = $userCommunity['id'];
+                $user->save();
 
-            /*******************Create User trougth API****************/
-            //$userFox = new UserPhpFox();
-            //$userFox = $userFox->createUser($dataFox);
-
-            $lastUserGroup = UserCommunity::all()->last();
-            $user->active_phpfox = $userCommunity['id'];
-            $user->save();
+                $success['data'] = $userCommunity;
+            }
 
             if(Config::get('app.send_email')) {
                 SendEmail::dispatchNow($dataEmail);
             }
 
+            if (!empty($comunidad)){
+                $success['comunidad']= $comunidad['error'];
+            }
+
             $success['message'] = 'Usuario creado';
-            $success['data'] = $userCommunity;
+
             return $this->successResponse($success,200);
 
-        } catch (ModelNotFoundException $e) {
-            $error["code"] = 'INVALID_DATA';
-            $error["message"] = "Error al crear el usuario";
+        } catch (Exception $e) {
+
+            $errors["code"] = 'INVALID_DATA';
+            $errors["message"] = $e->getMessage();
             $errors["username"] = "Error al crear el usuario.";
 
             $error["errors"] =[$errors];

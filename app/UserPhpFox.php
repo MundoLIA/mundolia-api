@@ -105,7 +105,6 @@ class UserPhpFox
     {
         $token = self::getAuthorization();
 
-
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
 
         // Create token payload as a JSON string

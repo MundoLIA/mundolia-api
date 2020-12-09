@@ -37,7 +37,6 @@ class UserPhpFoxController extends Controller
             $phpfox = new UserPhpFox();
             $url = $phpfox->singleSignOn($user);
 
-
             return response( $url,200);
 
         } catch (Exception $e) {
