@@ -188,9 +188,11 @@ class UserController extends ApiController
                 'password' => $password
             ]);*/
             if (UserCommunity::where([['email', '=', $user->email]])->exists()) {
-                $comunidad['error'] = 'El correo electronico ya esta asignado';
+                $repeatCommunity = UserCommunity::where([['email', '=', $user->email]])->first()->toArray();
+                $user->active_phpfox = $repeatCommunity['user_id'];
+                $user->save();
+                $comunidad['error'] = ['El correo electronico ya esta asignado', $repeatCommunity, $user];
             }else{
-
                 $dataFox = ([
                     'email' => $user->email,
                     'full_name' => $user->name .' '. $user->last_name,
